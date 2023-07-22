@@ -17,11 +17,11 @@ USAGE:
     goshare [OPTIONS]
 
 OPTIONS:
-    -d
+    -d string
     	Direcotry path
-    -p
+    -p string
         Password (default is none)
-    -port 
+    -port number
         Port number (default is "8001")
 `
 

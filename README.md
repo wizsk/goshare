@@ -11,7 +11,13 @@ is a file server or sharer.
 - For styling tailwincss was used
 - and so on..
 
-## usages
+## install
+```bash
+go install github.com/wizsk/goshare@latest
+goshare -h
+```
+
+## or build
 
 ```bash
 git clone --depth 1 https://github.com/wizsk/goshare/
