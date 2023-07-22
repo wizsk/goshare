@@ -1,0 +1,130 @@
+<!-- this file is used for styling perposes -->
+{{ define "main"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Dirtitle}}</title>
+
+    <link rel="stylesheet" href="/dQw4w9WgXcQ/css" />
+    <link rel="icon" href="/dQw4w9WgXcQ/favicon.svg" />
+  </head>
+  <body class="dark relative">
+    <div class="dark:bg-black dark:text-gray-50 ease-in duration-300 min-h-screen">
+      <!-- container -->
+      <div class="w-11/12 md:w-3/4 mx-auto pb-16 pt-4">
+        <!-- navigation -->
+        <input type="text" id="search" class="border dark:border-gray-700 bg-inherit rounded-full px-4 py-1 mx-auto block text-xl md:w-2/5 my-4" placeholder="Search"/>
+        <div class="flex items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap">
+          {{range .ProgessPah}}
+          <a href="{{.Url}}" class="font-bold hover:underline text-lg"> {{if .SlashPre}}/{{end}}{{.Title}}</a>
+          {{end}}
+        </div>
+
+        <!-- diretoris and files list -->
+        <div class="my-8">
+          {{range .Directories }}
+          <a fill-black dark:fill-slate-50 href="{{.Url}}" class="files flex gap-6 items-center px-2 py-1 md:py-2 mb-3 bg--100 bg-gray-100 dark:bg-gray-900/90 shadow-lg dark:hover:bg-gray-800 dark:shadow-gray-700/40 md:shadow-none md:hover:shadow-lg duration-300 md:hover:ease-in-out">
+            <div class="ml-1 w-8/12 flex items-center gap-2">
+              <span>{{ .Icon }}</span>
+              <span class="name overflow-hidden text-ellipsis w-full whitespace-nowrap">{{.Name}}</span >
+            </div>
+            <div class="overflow-hidden text-ellipsis whitespace-nowrap">
+              {{if .IsDir}} -- {{else}}{{.Size}}{{end}}
+            </div>
+          </a>
+          {{else}}
+          <div class="text-center font-bold w-full h-screen flex justify-center mt-[30vh] text-2xl">
+            <span>No files</span>
+          </div>
+          {{end}}
+        </div>
+
+        <!-- navigation -->
+        <div class="fixed right-4 bottom-6 w-12 h-fit flex flex-col items-center justify-center gap-2">
+          <!-- menu items -->
+          <div id="menu-items" class="hidden bg-gray-50/40 dark:bg-gray-900/30 px-2 py-2 rounded border border-slate-100 dark:border-slate-600 shadow-2xl">
+            <div class="flex gap-2 flex-col items-center justify-center fill-blue-600 dark:fill-blue-300">
+              <button id="theme-btn" class="w-8 h-8"></button>
+              <button id="menu-cancel" class="w-8 h-8">
+                <svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" > <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" /> </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- menu tougle -->
+          <div id="menu" class="w-8 h-8 p-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-three-dots w-full h-full fill-blue-600 dark:fill-blue-300" viewBox="0 0 16 16" > <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" /> </svg>
+          </div>
+
+          <a href="{{.PreviousPage}}" class="w-8 h-8 block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-full h-full fill-blue-600 dark:fill-blue-300" viewBox="0 0 16 16" > <path fill-rule="evenodd"
+                d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <script>
+      const light = '<svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>brightness-6</title><path d="M12,18V6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z" /></svg>';
+      const dark = '<svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>brightness-4</title><path d="M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z" /></svg>';
+
+      const body = document.body;
+      const theme_btn = document.getElementById("theme-btn");
+      const menu = document.getElementById("menu");
+      const menu_items = document.getElementById("menu-items");
+      const menu_cancel = document.getElementById("menu-cancel");
+
+      menu.addEventListener("click", () => {
+        menu.style.display = "none";
+        menu_items.classList.remove("hidden");
+      });
+
+      menu_cancel.addEventListener("click", () => {
+        menu.style.display = "block";
+        menu_items.classList.add("hidden");
+      });
+
+      // On page load or when changing themes, best to add inline in to avoid FOUC
+      if (
+        localStorage.theme === "dark" ||
+        (!("theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        body.classList.add("dark");
+        theme_btn.innerHTML = dark;
+      } else {
+        body.classList.remove("dark");
+        theme_btn.innerHTML = light;
+      }
+
+      theme_btn.addEventListener("click", () => {
+        if (body.classList.contains("dark")) {
+          body.classList.remove("dark");
+          theme_btn.innerHTML = light;
+          localStorage.theme = "light";
+        } else {
+          body.classList.add("dark");
+          theme_btn.innerHTML = dark;
+          localStorage.theme = "dark";
+        }
+      });
+
+      const files = document.querySelectorAll(".files");
+      document.getElementById("search").addEventListener("input", (e) => {
+        let value = e.target.value;
+        files.forEach((file) => {
+          const visible = file
+            .querySelector(".name")
+            .innerText.toLowerCase()
+            .includes(value);
+
+          file.classList.toggle("hidden", !visible);
+        });
+      });
+    </script>
+  </body>
+</html>
+{{end}}
