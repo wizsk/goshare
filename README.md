@@ -11,7 +11,17 @@ is a file server or sharer.
 - For styling tailwincss was used
 - and so on..
 
+## get binnary from releases
+
+```bash
+wget 'https://github.com/wizsk/goshare/releases/download/v1.0/goshare_linux64.tar.gz'
+# see realse page for windows
+tar xvf 'goshare_linux64.tar.gz'
+sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
+```
+
 ## install
+
 ```bash
 go install github.com/wizsk/goshare@latest
 goshare -h
