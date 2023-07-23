@@ -22,7 +22,7 @@ goshare -h
 ```bash
 git clone --depth 1 https://github.com/wizsk/goshare/
 cd goshare
-go run . -d [directory path] # -p [passowrd] -- port [port number]
+go run . # -d [directory path] -p [passowrd] -port [port number]
 ```
 
 ## Screenshots

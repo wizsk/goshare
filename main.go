@@ -5,49 +5,53 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/wizsk/goshare/auth"
 )
 
-var dir = flag.String("d", "", "direcotry name")
+var dir = flag.String("d", ".", "direcotry name")
 var port = flag.String("port", "8001", "port number")
 var pass = flag.String("p", "", "port number")
 
-const randomPath = "/dQw4w9WgXcQ"
-
 func main() {
 	flag.Parse()
-	if *dir == "" {
-		fmt.Println("error: directory name not provided")
-		fmt.Print(usages)
-		os.Exit(1)
-	}
-	FileSeverInit(*dir)
+	fileSeverInit(*dir)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if *pass == "" {
-			ServeFiles(w, r)
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "sorry someting went wrong", http.StatusInternalServerError)
 			return
 		}
-		if err := auth.ReadCookie(r, auth.CookieName); err != nil {
-			w.Write(form)
+
+		if res := r.FormValue("res"); res != "" {
+			serveResource(w, res)
 			return
+		}
+
+		if *pass != "" {
+			if r.Method == http.MethodPost {
+				if r.FormValue("password") != *pass {
+					serveResource(w, "form")
+					return
+				}
+				auth.WriteCookie(w)
+				http.Redirect(w, r, "/", http.StatusMovedPermanently)
+				return
+			}
+
+			if err := auth.ReadCookie(r, auth.CookieName); err != nil {
+				serveResource(w, "form")
+				return
+			}
 		}
 		ServeFiles(w, r)
 	})
 
-	http.HandleFunc(randomPath + "/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path[len(randomPath):] {
-		case "/favicon.svg":
-			w.Write(favicon)
-		case "/auth":
-			authHelper(w, r)
-		case "/css":
-			http.ServeFile(w,r,"tailwind/output.css")
-		}
-	})
+	if *pass == "" {
+		fmt.Printf("serving %q at http://localhost:%s\n", *dir, *port)
+	} else {
+		fmt.Printf("serving %q at http://localhost:%s\npassword: %s\n", *dir, *port, *pass)
+	}
 
-	fmt.Println("serving at http://localhost:" + *port)
 	log.Fatal(http.ListenAndServe(":"+*port, nil))
 }

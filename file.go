@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,13 +11,16 @@ import (
 	"strings"
 )
 
+//go:embed tailwind/src/index.html
+var templateFiles embed.FS
+var indexTemplate *template.Template
+
 type ProgessPah struct {
 	Title    string
 	Url      string
 	SlashPre bool
 }
 
-// type Dir string
 type Data struct {
 	Dirtitle     string
 	PreviousPage string
@@ -34,7 +38,7 @@ type Directory struct {
 
 var root string
 
-func FileSeverInit(file string) {
+func fileSeverInit(file string) {
 	if file == "" {
 		log.Fatal("root file should not be empty")
 	}
@@ -48,6 +52,11 @@ func FileSeverInit(file string) {
 	_, err = rootFile.ReadDir(1)
 	if err != nil {
 		log.Fatal("root file should be a directory;", err)
+	}
+
+	indexTemplate, err = template.ParseFS(templateFiles, "tailwind/src/index.html")
+	if err != nil {
+		log.Fatal(err)
 	}
 
 }
@@ -108,16 +117,13 @@ func ServeFiles(w http.ResponseWriter, r *http.Request) {
 	datas.ProgessPah = possiblePahts(r)
 	datas.Dirtitle = datas.ProgessPah[len(datas.ProgessPah)-1].Title
 
-	t, err := template.New("new").Parse(indexPage)
-	// for working on style the page
-	// t, err := template.ParseFiles("index.html")
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	err = t.ExecuteTemplate(w, "main", datas)
+	err = indexTemplate.ExecuteTemplate(w, "main", datas)
 	if err != nil {
 		log.Println(err)
 		return

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -8,8 +9,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-
-	"github.com/wizsk/goshare/auth"
 )
 
 const usages = `
@@ -25,17 +24,38 @@ OPTIONS:
         Port number (default is "8001")
 `
 
-func authHelper(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		http.Error(w, "bad req", http.StatusBadRequest)
-		return
+//go:embed tailwind/src/*
+var staticFiles embed.FS
+
+func serveResource(w http.ResponseWriter, file string) {
+	switch file {
+	case "form":
+		form, err := staticFiles.ReadFile("tailwind/src/form.html")
+		if err != nil {
+			http.Error(w, "something went wrong", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html")
+		w.Write(form)
+
+	case "css":
+		css, err := staticFiles.ReadFile("tailwind/src/output.css")
+		if err != nil {
+			http.Error(w, "Failed to read css file", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/css")
+		w.Write(css)
+
+	case "favicon":
+		faviconData, err := staticFiles.ReadFile("tailwind/src/favicon.ico")
+		if err != nil {
+			http.Error(w, "Failed to read favicon.ico", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "image/x-icon")
+		w.Write(faviconData)
 	}
-	inputPass := r.FormValue("password")
-	if *pass == inputPass {
-		auth.WriteCookie(w)
-	}
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
 func fileSize(file fs.FileInfo) string {
@@ -54,6 +74,7 @@ func fileSize(file fs.FileInfo) string {
 	return ""
 }
 
+// for genarating root/file/..
 func possiblePahts(r *http.Request) []ProgessPah {
 	var p []ProgessPah
 	poosiblePaht := ""
@@ -123,42 +144,3 @@ func detectFileType(filePath string) template.HTML {
 		return unknownFileIcon
 	}
 }
-
-/*
-func detectFileType(filePath string) string {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return "Unknown"
-	}
-	defer file.Close()
-
-	buffer := make([]byte, 512)
-	_, err = file.Read(buffer)
-	if err != nil {
-		return "Unknown"
-	}
-
-	fileType := http.DetectContentType(buffer)
-
-	switch fileType {
-	case "image/jpeg", "image/png":
-		return "Image"
-	case "video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska":
-		return "Video"
-	case "audio/mpeg", "audio/wav", "audio/midi":
-		return "Audio"
-	case "application/pdf":
-		return "PDF Document"
-	case "text/plain":
-		return "Text File"
-	case "application/zip", "application/x-tar", "application/x-gzip", "application/x-bzip2", "application/x-rar-compressed":
-		return "Archive"
-	case "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		"application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-		"application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-		return "Document"
-	default:
-		return "Unknown"
-	}
-}
-*/
