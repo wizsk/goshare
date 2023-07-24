@@ -59,7 +59,7 @@ dependencies: `curl`, `wget` and `fzf`
 # sudo dnf install curl wget fzf
 wget 'https://github.com/wizsk/goshare/blob/main/goshare-cli'
 chmod +x goshare-cli
-sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
+sudo mv goshare-cli /usr/local/bin/ # or mv goshare-cli ~/.local/bin/
 ```
 
 ## Screenshots
