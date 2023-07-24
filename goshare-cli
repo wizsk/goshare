@@ -1,0 +1,83 @@
+#!/bin/env bash
+# cli client for the goshare server
+
+version="v1.0"
+usages='GoShare client
+USAGE:
+    goshare-cli url [password]
+EXAMPLE:
+    goshare-cli http://example.com/ 123
+'
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    echo "$usages"
+    exit 0
+elif [ "$1" = "-V" ] || [ "$1" = "--version" ]; then
+    echo "goshare $version"
+    exit 0
+fi
+
+url=$1
+pass=$2
+pass_err="please provide as such http://example.com/file?cli=password"
+
+if [ "$url" = "" ];then
+    printf "what URL of the server: "
+    read -r url
+fi
+
+if [ "$pass" = "" ];then
+    printf "password for the server:[leave blank if none] "
+    read -r pass
+fi
+
+[ "$url" = "" ] && echo "url can't be empty" && exit 1
+[ "$pass" = "" ] && pass="_"
+
+ran=0
+
+while true
+do
+    echo "connecting to:$url"
+    res=$(curl -s "$url?cli=$pass") 
+    if [ "$res" = "" ]; then
+        echo "someting went wrong or file is empty"
+        exit 1
+    elif [ "$res" = "$pass_err" ];then
+        echo "Please provide the password; goshare-cli url pass"
+        exit 1
+    fi
+
+    # choose a file
+    selected=$(echo "$res" | sed 's/^name:://; s/type::.*//' | fzf)
+    [ "$selected" = "" ] && exit 1
+
+    # get info about the file
+    type_of=$(echo "$res" | grep "^name::$selected" | sed -n 's/.*type::\([^ ]*\).*/\1/p')
+    url=$(echo "$res" | grep "^name::$selected" | sed -n 's/.*url::\([^ ]*\).*/\1/p')
+
+    # chechk the file type
+    if [ "$type_of" = "File" ] || [ "type_of" = "" ] ;then
+        break
+    fi
+
+    # safety macanism
+    ran=$(($ran+1))
+    if [ "$ran" -gt 200 ];then
+        exit 1
+    fi
+done
+
+# making sure url is not empty
+[ "$url" = "" ] && echo "err: url empty" && exit 0
+
+printf 'Do you want to download "%s"? [Y/n] ' "$selected"
+read -r promt
+
+if [ "$promt" = "" ] || [ "$promt" = "y" ] || [ "$promt" = "Y" ];then
+    wget "$url"
+else 
+    echo
+    echo "$selected"
+    echo "url: $url"
+fi

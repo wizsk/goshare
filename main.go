@@ -11,7 +11,7 @@ import (
 
 var dir = flag.String("d", ".", "direcotry name")
 var port = flag.String("port", "8001", "port number")
-var pass = flag.String("p", "", "port number")
+var pass = flag.String("p", "", "password")
 
 func main() {
 	flag.Parse()
@@ -19,7 +19,18 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
-			http.Error(w, "sorry someting went wrong", http.StatusInternalServerError)
+			http.Error(w, "sorry someting went wrong", http.StatusBadRequest)
+			return
+		}
+
+		// useing ?query=string to avoid making atoher handeler
+		// http://example.com/file?cli=password
+		if cli := r.FormValue("cli"); cli != "" {
+			if cli == *pass || *pass == "" {
+				cliUi(w, r, cli)
+			} else {
+				http.Error(w, "please provide as such http://example.com/file?cli=password", http.StatusBadRequest)
+			}
 			return
 		}
 
@@ -44,7 +55,8 @@ func main() {
 				return
 			}
 		}
-		ServeFiles(w, r)
+
+		ServeWebUi(w, r)
 	})
 
 	if *pass == "" {

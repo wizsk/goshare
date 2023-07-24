@@ -11,21 +11,42 @@ import (
 	"strings"
 )
 
-const usages = `
-USAGE:
-    goshare [OPTIONS]
+// const usages = `
+// USAGE:
+//     goshare [OPTIONS]
 
-OPTIONS:
-    -d string
-    	Direcotry path
-    -p string
-        Password (default is none)
-    -port number
-        Port number (default is "8001")
-`
+// OPTIONS:
+//     -d string
+//     	Direcotry path
+//     -p string
+//         Password (default is none)
+//     -port number
+//         Port number (default is "8001")
+// `
+
+type CliUiData struct {
+	Root string
+	Dirs []Directory
+}
 
 //go:embed tailwind/src/*
 var staticFiles embed.FS
+
+const cliUiTemplate = `{{range .Dirs}}
+name::{{.Name}} type::{{if .IsDir}}Dir{{else}}File{{end}} url::http://{{$.Root}}{{.Url}}{{end}}
+`
+
+func cliUi(w http.ResponseWriter, r *http.Request, pass string) {
+	var err error
+	var data CliUiData
+	data.Root = r.Host
+
+	data.Dirs, err = file(w, r)
+	if err != nil {
+		return
+	}
+	indexTemplate.ExecuteTemplate(w, "cli", data)
+}
 
 func serveResource(w http.ResponseWriter, file string) {
 	switch file {
