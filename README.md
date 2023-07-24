@@ -35,6 +35,20 @@ tar xvf 'goshare_linux64.tar.gz'
 sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
 ```
 
+## usages
+
+```bash
+Usage of goshare:
+  -d string
+    	direcotry name (default "." current direcotry)
+  -p string
+    	password (default is empty)
+  -port string
+    	port number (default "8001")
+  -v	prints current version
+
+```
+
 ## cli client
 
 I love to work in cli so made this.
@@ -46,18 +60,6 @@ dependencies: `curl`, `wget` and `fzf`
 wget 'https://github.com/wizsk/goshare/blob/main/goshare-cli'
 chmod +x goshare-cli
 sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
-```
-
-## usages
-
-```bash
-Usage of goshare:
-  -d string
-    	direcotry name (default "." current direcotry)
-  -p string
-    	password (default is empty)
-  -port string
-    	port number (default "8001")
 ```
 
 ## Screenshots

@@ -5,16 +5,25 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/wizsk/goshare/auth"
 )
 
+const version = "v1.1"
+
 var dir = flag.String("d", ".", "direcotry name")
 var port = flag.String("port", "8001", "port number")
 var pass = flag.String("p", "", "password")
+var verstionFlag = flag.Bool("v", false, "prints current version")
 
 func main() {
 	flag.Parse()
+	if *verstionFlag {
+		fmt.Printf("goshare current version: %s\n", version)
+		os.Exit(0)
+	}
+
 	fileSeverInit(*dir)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
