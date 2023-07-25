@@ -32,6 +32,23 @@
           {{end}}
         </div>
 
+        <div>
+          <h1>Sort suff</h1>
+          <form action="????">
+            <select name="sort" id="sort">
+              {{range .SortOptions}}
+              <option
+                value="{{if .Name}}{{.Name}}{{end}}"
+                {{if
+                .Selected}}selected="true"
+                {{end}}
+              >
+                {{.Title}}
+              </option>
+              {{end}}
+            </select>
+          </form>
+        </div>
         <!-- diretoris and files list -->
         <div class="my-8">
           {{range .Directories }}
@@ -41,7 +58,7 @@
             not
             .IsDir}}download="{{.Name}}"
             {{end}}
-            class="files flex gap-6 items-center px-2 py-3 md:py-2 mb-3 bg--100 bg-gray-100 dark:bg-gray-900/90 shadow-lg dark:hover:bg-gray-800  md:shadow-none md:hover:shadow-lg duration-300 md:hover:ease-in-out"
+            class="files flex gap-6 items-center px-2 py-3 md:py-2 mb-3 bg--100 bg-gray-100 dark:bg-gray-900/90 shadow-lg dark:hover:bg-gray-800 md:shadow-none md:hover:shadow-lg duration-300 md:hover:ease-in-out"
           >
             <div class="ml-1 w-8/12 flex items-center gap-2">
               <span>{{ .Icon }}</span>
@@ -182,6 +199,42 @@
 
           file.classList.toggle("hidden", !visible);
         });
+      });
+
+      document.getElementById("sort").addEventListener("change", (e) => {
+        // if (e.target.value === "") {
+        //   window.location.assign(
+        //     `${window.location.protocol}//${window.location.host}${window.location.pathname}`
+        //   );
+        //   return;
+        // }
+
+        let params = `${window.location.search}`;
+        let cleaned_params = "";
+
+        if (params.includes("sort")) {
+          const param = params.split("&");
+          // console.log(param);
+          for (let i = 0; i < param.length; i++) {
+            itm = param[i];
+            if (itm.includes("sort")) {
+              continue;
+            }
+            if (itm !== "") {
+              cleaned_params += (cleaned_params.length !== 0 ? "&" : "?") + itm;
+            }
+          }
+        }
+        // console.log(cleaned_params);
+        cleaned_params +=
+          cleaned_params.length > 0
+            ? "&sort=" + e.target.value
+            : "?sort=" + e.target.value;
+
+        // console.log(cleaned_params);
+        const fullURL = `${window.location.protocol}//${window.location.host}${window.location.pathname}${cleaned_params}${window.location.hash}`;
+        // console.log(fullURL);
+        window.location.assign(fullURL);
       });
     </script>
   </body>

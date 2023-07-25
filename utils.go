@@ -40,6 +40,28 @@ func sortDir(d []Directory, item string) {
 		sort.Slice(d, func(i, j int) bool {
 			return d[i].SizeBytes > d[j].SizeBytes
 		})
+	case "bydir":
+		sort.Slice(d, func(i, j int) bool {
+			if d[i].IsDir && d[j].IsDir {
+				return false
+			}
+			if d[i].IsDir {
+				return true
+			}
+			// default d[j].IsDir
+			return false
+		})
+	case "byfile":
+		sort.Slice(d, func(i, j int) bool {
+			if d[i].IsDir && d[j].IsDir {
+				return false
+			}
+			if !d[i].IsDir {
+				return true
+			}
+			// defaulty !d[j].IsDir
+			return false
+		})
 	default:
 		// "nameasc"
 		sort.Slice(d, func(i, j int) bool {
