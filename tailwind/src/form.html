@@ -1,3 +1,4 @@
+{{ define "form" }}
 <!DOCTYPE html>
 <html>
   <head>
@@ -96,7 +97,10 @@
   <body>
     <div>
       <div>
-        <form action="/" method="post">
+        <form
+          action="/{{if .RedirectURL}}?redirect={{.RedirectURL}}{{end}}"
+          method="post"
+        >
           <h1>Authorize</h1>
           <fieldset>
             <label for="password">Password:</label>
@@ -108,3 +112,4 @@
     </div>
   </body>
 </html>
+{{end}}

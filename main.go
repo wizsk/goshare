@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/wizsk/goshare/auth"
@@ -32,6 +33,7 @@ func main() {
 			return
 		}
 
+		// titleasc, namedesc, sizeasc, sizedesc
 		// useing ?query=string to avoid making atoher handeler
 		// http://example.com/file?cli=password
 		if cli := r.FormValue("cli"); cli != "" {
@@ -49,18 +51,24 @@ func main() {
 		}
 
 		if *pass != "" {
+			// redirectTo :=
+			// 			fmt.Println("main url", r.URL.Path+"?"+r.URL.RawQuery, "\t\t", redirectTo)
 			if r.Method == http.MethodPost {
 				if r.FormValue("password") != *pass {
-					serveResource(w, "form")
+					serveForm(w, r)
 					return
 				}
 				auth.WriteCookie(w)
-				http.Redirect(w, r, "/", http.StatusMovedPermanently)
+				redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
+				if redirectURL == "" {
+					redirectURL = "/"
+				}
+				http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
 				return
 			}
 
 			if err := auth.ReadCookie(r, auth.CookieName); err != nil {
-				serveResource(w, "form")
+				serveForm(w, r)
 				return
 			}
 		}

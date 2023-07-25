@@ -8,32 +8,19 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
-//go:embed tailwind/src/index.html
+//go:embed tailwind/src/index.html tailwind/src/form.html
 var templateFiles embed.FS
 var indexTemplate *template.Template
 
-type ProgessPah struct {
-	Title    string
-	Url      string
-	SlashPre bool
-}
-
-type Data struct {
-	Dirtitle     string
-	PreviousPage string
-	Directories  []Directory
-	ProgessPah   []ProgessPah
-}
-
 type Directory struct {
-	Name  string
-	Size  string
-	Url   string
-	IsDir bool
-	Icon  template.HTML
+	Name      string
+	SizeBytes int64
+	Size      string
+	Url       string
+	IsDir     bool
+	Icon      template.HTML
 }
 
 var root string
@@ -54,7 +41,7 @@ func fileSeverInit(file string) {
 		log.Fatal("root file should be a directory;", err)
 	}
 
-	indexTemplate, err = template.ParseFS(templateFiles, "tailwind/src/index.html")
+	indexTemplate, err = template.ParseFS(templateFiles, "tailwind/src/index.html", "tailwind/src/form.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,37 +49,6 @@ func fileSeverInit(file string) {
 	_, err = indexTemplate.New("cli").Parse(cliUiTemplate)
 	if err != nil {
 		log.Fatal(err)
-	}
-}
-
-func ServeWebUi(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var datas Data
-	datas.Directories, err = file(w, r)
-	if err != nil {
-		return
-	}
-
-	// web ui part
-	if split := strings.Split(r.URL.EscapedPath(), "/"); len(split) > 2 {
-		datas.PreviousPage = strings.Join(split[:len(split)-1], "/")
-	} else {
-		datas.PreviousPage = "/"
-	}
-
-	datas.ProgessPah = possiblePahts(r)
-	datas.Dirtitle = datas.ProgessPah[len(datas.ProgessPah)-1].Title
-
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html")
-	err = indexTemplate.ExecuteTemplate(w, "main", datas)
-	if err != nil {
-		log.Println(err)
-		return
 	}
 }
 
@@ -113,13 +69,16 @@ func file(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
 		return directories, err
 	}
 
-	directories = directoriesList(dirs, fileUri, r.URL.Path)
+	directories = directoriesList(dirs, r)
+	sortDir(directories, r.FormValue("sort"))
 
 	return directories, nil
 }
 
-func directoriesList(dirEntries []os.DirEntry, fileUri string, URLpath string) []Directory {
+func directoriesList(dirEntries []os.DirEntry, r *http.Request) []Directory {
+	fileUri := root + filepath.Clean(r.URL.Path)
 	var dirs []Directory
+	quries := allQueries(r)
 	for _, dir := range dirEntries {
 		info, err := dir.Info()
 		if err != nil {
@@ -128,19 +87,20 @@ func directoriesList(dirEntries []os.DirEntry, fileUri string, URLpath string) [
 		}
 
 		// -> / + "name" || /file + "/" + "name"
-		path := URLpath
+		path := r.URL.Path
 		if path == "/" {
-			path += url.PathEscape(dir.Name())
+			path += url.PathEscape(dir.Name()) + quries
 		} else {
-			path += "/" + url.PathEscape(dir.Name())
+			path += "/" + url.PathEscape(dir.Name()) + quries
 		}
 
 		dr := Directory{
-			Name:  dir.Name(),
-			Size:  fileSize(info),
-			Url:   path,
-			IsDir: dir.IsDir(),
-			Icon:  directoryIcon,
+			Name:      dir.Name(),
+			SizeBytes: info.Size(),
+			Size:      fileSize(info.Size()),
+			Url:       path,
+			IsDir:     dir.IsDir(),
+			Icon:      directoryIcon,
 		}
 
 		if !dir.IsDir() {

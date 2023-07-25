@@ -16,7 +16,7 @@ I have developed a convenient solution that enables seamless file-sharing betwee
 
 ## Perks
 
-- [cli user interface](https://github.com/wizsk/goshare/blob/main/goshare-cli) made with `bash`
+- [cli user interface](https://github.com/wizsk/goshare/blob/main/assets/goshare-cli) made with `bash`
 - if passord is set then video or other files can be directly streamed any apps with `$ mpv http://example.com/link/to/vid?cli=pass`
 
 ## Install
@@ -57,7 +57,7 @@ dependencies: `curl`, `wget` and `fzf`
 
 ```bash
 # sudo dnf install curl wget fzf
-wget 'https://github.com/wizsk/goshare/blob/main/goshare-cli'
+wget 'https://github.com/wizsk/goshare/blob/main/assets/goshare-cli'
 chmod +x goshare-cli
 sudo mv goshare-cli /usr/local/bin/ # or mv goshare-cli ~/.local/bin/
 ```

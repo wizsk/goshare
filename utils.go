@@ -1,86 +1,17 @@
 package main
 
 import (
-	"embed"
 	"fmt"
 	"html/template"
-	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"strings"
 )
 
-// const usages = `
-// USAGE:
-//     goshare [OPTIONS]
-
-// OPTIONS:
-//     -d string
-//     	Direcotry path
-//     -p string
-//         Password (default is none)
-//     -port number
-//         Port number (default is "8001")
-// `
-
-type CliUiData struct {
-	Root string
-	Dirs []Directory
-}
-
-//go:embed tailwind/src/*
-var staticFiles embed.FS
-
-const cliUiTemplate = `{{range .Dirs}}
-name::{{.Name}} type::{{if .IsDir}}Dir{{else}}File{{end}} url::http://{{$.Root}}{{.Url}}{{end}}
-`
-
-func cliUi(w http.ResponseWriter, r *http.Request, pass string) {
-	var err error
-	var data CliUiData
-	data.Root = r.Host
-
-	data.Dirs, err = file(w, r)
-	if err != nil {
-		return
-	}
-	indexTemplate.ExecuteTemplate(w, "cli", data)
-}
-
-func serveResource(w http.ResponseWriter, file string) {
-	switch file {
-	case "form":
-		form, err := staticFiles.ReadFile("tailwind/src/form.html")
-		if err != nil {
-			http.Error(w, "something went wrong", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "text/html")
-		w.Write(form)
-
-	case "css":
-		css, err := staticFiles.ReadFile("tailwind/src/output.css")
-		if err != nil {
-			http.Error(w, "Failed to read css file", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "text/css")
-		w.Write(css)
-
-	case "favicon":
-		faviconData, err := staticFiles.ReadFile("tailwind/src/favicon.ico")
-		if err != nil {
-			http.Error(w, "Failed to read favicon.ico", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "image/x-icon")
-		w.Write(faviconData)
-	}
-}
-
-func fileSize(file fs.FileInfo) string {
-	s := float64(file.Size())
+func fileSize(size int64) string {
+	s := float64(size)
 	switch {
 	case s < 1024:
 		return fmt.Sprintf("%.0f B", s)
@@ -95,21 +26,43 @@ func fileSize(file fs.FileInfo) string {
 	return ""
 }
 
+func sortDir(d []Directory, item string) {
+	switch item {
+	case "namedesc":
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].Name > d[j].Name
+		})
+	case "sizeasc":
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].SizeBytes < d[j].SizeBytes
+		})
+	case "sizedesc":
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].SizeBytes > d[j].SizeBytes
+		})
+	default:
+		// "nameasc"
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].Name < d[j].Name
+		})
+	}
+}
+
 // for genarating root/file/..
-func possiblePahts(r *http.Request) []ProgessPah {
+func possiblePahts(r *http.Request, quries string) []ProgessPah {
 	var p []ProgessPah
 	poosiblePaht := ""
 	for i, v := range strings.Split(strings.TrimRight(r.URL.EscapedPath(), "/"), "/") {
 		if v == "" {
 			p = append(p, ProgessPah{
 				Title:    "root/",
-				Url:      "/",
+				Url:      "/" + quries,
 				SlashPre: false,
 			})
 			continue
 		}
 
-		poosiblePaht += "/" + v
+		poosiblePaht += "/" + v + quries
 		title, _ := url.PathUnescape(v)
 		p = append(p, ProgessPah{
 			Title:    title,
