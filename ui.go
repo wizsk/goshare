@@ -95,43 +95,30 @@ func ServeWebUi(w http.ResponseWriter, r *http.Request) {
 
 	datas.ProgessPah = possiblePahts(r, allQueries(r))
 	datas.Dirtitle = datas.ProgessPah[len(datas.ProgessPah)-1].Title
-	// "namedesc":
-	// 		sort.Slice(d, func(i, j int) bool {
-	// 			return d[i].Name > d[j].Name
-	// 		})
-	// 	case "sizeasc":
-	// 		sort.Slice(d, func(i, j int) bool {
-	// 			return d[i].SizeBytes < d[j].SizeBytes
-	// 		})
-	// 	case "sizedesc":
-	// 		sort.Slice(d, func(i, j int) bool {
-	// 			return d[i].SizeBytes > d[j].SizeBytes
-	// 		})
-	// 	default:
-	// "nameasc"
+
 	datas.SortOptions = []SortOption{
 		{
-			Title: "Letter asn",
+			Title: "a-z",
 			Name:  "nameasc",
 		},
 		{
-			Title: "Letter desc",
+			Title: "z-a",
 			Name:  "namedesc",
 		},
 		{
-			Title: "size soto to boto",
+			Title: "smallar to larger",
 			Name:  "sizeasc",
 		},
 		{
-			Title: "size boto to soto",
+			Title: "larger to smaller",
 			Name:  "sizedesc",
 		},
 		{
-			Title: "by dir",
+			Title: "directory first",
 			Name:  "bydir",
 		},
 		{
-			Title: "by file",
+			Title: "file first",
 			Name:  "byfile",
 		},
 	}
@@ -145,9 +132,8 @@ func ServeWebUi(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	if indexTemplate.ExecuteTemplate(w, "main", datas) != nil {
+	if err := indexTemplate.ExecuteTemplate(w, "main", datas); err != nil {
 		log.Println(err)
-		http.Error(w, "someting went wrong", http.StatusInternalServerError)
 		return
 	}
 }

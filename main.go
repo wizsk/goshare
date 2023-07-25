@@ -18,6 +18,14 @@ var port = flag.String("port", "8001", "port number")
 var pass = flag.String("p", "", "password")
 var verstionFlag = flag.Bool("v", false, "prints current version")
 
+// for ptintstat
+const (
+	NORMAL_REQUEST = "browseing"
+	LOGIN_ATTEMT   = "login attemt"
+	LOGIN_SUCCESS  = "login success"
+	FILE_DOWN      = "downloading"
+)
+
 func main() {
 	flag.Parse()
 	if *verstionFlag {
@@ -40,6 +48,7 @@ func main() {
 			if cli == *pass || *pass == "" {
 				cliUi(w, r, cli)
 			} else {
+				printStat(r, LOGIN_ATTEMT)
 				http.Error(w, "please provide as such http://example.com/file?cli=password", http.StatusBadRequest)
 			}
 			return
@@ -56,8 +65,10 @@ func main() {
 			if r.Method == http.MethodPost {
 				if r.FormValue("password") != *pass {
 					serveForm(w, r)
+					printStat(r, LOGIN_ATTEMT)
 					return
 				}
+				printStat(r, LOGIN_SUCCESS)
 				auth.WriteCookie(w)
 				redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
 				if redirectURL == "" {
@@ -73,6 +84,7 @@ func main() {
 			}
 		}
 
+		printStat(r, NORMAL_REQUEST)
 		ServeWebUi(w, r)
 	})
 

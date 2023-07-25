@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 )
 
 func fileSize(size int64) string {
@@ -68,6 +69,44 @@ func sortDir(d []Directory, item string) {
 			return d[i].Name < d[j].Name
 		})
 	}
+}
+
+/*
+const (
+	// ANSI escape code for resetting text color to default
+	CONSOL_Reset = "\033[0m"
+
+	// ANSI escape codes for different colors with CONSOL_ prefix
+	CONSOL_Red    = "\033[31m"
+	CONSOL_Green  = "\033[32m"
+	CONSOL_Yellow = "\033[33m"
+	CONSOL_Blue   = "\033[34m"
+	CONSOL_Purple = "\033[35m"
+	CONSOL_Cyan   = "\033[36m"
+	CONSOL_White  = "\033[37m"
+)
+*/
+
+// print the pretty output ^_^
+func printStat(r *http.Request, from string) {
+	// formPadding := (18 - len(from)) / 2
+	// addr := strings.Split(r.RemoteAddr, ":")[0]
+	// addrPadding := (17 - len(addr)) / 2
+
+	fmt.Printf("[%16s] %s | %15s | %s | %q\n",
+		from,
+		time.Now().Format("2006/01/02 - 03:04:05 PM"),
+		strings.Split(r.RemoteAddr, ":")[0],
+		r.Method,
+		r.URL.Path,
+	)
+	// fmt.Printf("[%*s%s%*s] %s | %*s%s%*s | %s | %q\n",
+	// 	// formPadding, "", from, formPadding, "",
+	// 	time.Now().Format("2006/01/02 - 03:04:05 PM"),
+	// 	// addrPadding, "", addr, addrPadding, "",
+	// 	r.Method,
+	// 	r.URL.Path,
+	// )
 }
 
 // for genarating root/file/..

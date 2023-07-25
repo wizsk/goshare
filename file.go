@@ -58,13 +58,14 @@ func file(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
 	file, err := os.Open(fileUri)
 	if err != nil {
 		http.Error(w, "File not found 404", http.StatusNotFound)
-		log.Printf("root dir not found; %s\n", err)
+		// log.Printf("root dir not found; %s\n", err)
 		return directories, err
 	}
 	defer file.Close()
 
 	dirs, err := file.ReadDir(0)
 	if err != nil {
+		printStat(r, FILE_DOWN)
 		http.ServeFile(w, r, fileUri)
 		return directories, err
 	}

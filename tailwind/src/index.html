@@ -32,10 +32,14 @@
           {{end}}
         </div>
 
-        <div>
-          <h1>Sort suff</h1>
-          <form action="????">
-            <select name="sort" id="sort">
+        <div class="w-full flex justify-end">
+          <form class="text-lg">
+            <label for="sort">Sort by:</label>
+            <select
+              name="sort"
+              id="sort"
+              class="bg-gray-100 dark:bg-gray-900 pl-2 pr-1 py-1 ml-2 text-inherit outline-none rounded focus:outline-none"
+            >
               {{range .SortOptions}}
               <option
                 value="{{if .Name}}{{.Name}}{{end}}"
