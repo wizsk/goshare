@@ -62,6 +62,10 @@ func main() {
 		if *pass != "" {
 			// redirectTo :=
 			// 			fmt.Println("main url", r.URL.Path+"?"+r.URL.RawQuery, "\t\t", redirectTo)
+			redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
+			if redirectURL == "" {
+				redirectURL = "/"
+			}
 			if r.Method == http.MethodPost {
 				if r.FormValue("password") != *pass {
 					serveForm(w, r)
@@ -70,10 +74,6 @@ func main() {
 				}
 				printStat(r, LOGIN_SUCCESS)
 				auth.WriteCookie(w)
-				redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
-				if redirectURL == "" {
-					redirectURL = "/"
-				}
 				http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
 				return
 			}

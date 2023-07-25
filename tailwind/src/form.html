@@ -95,21 +95,17 @@
     </style>
   </head>
   <body>
-    <div>
-      <div>
-        <form
-          action="/{{if .RedirectURL}}?redirect={{.RedirectURL}}{{end}}"
-          method="post"
-        >
-          <h1>Authorize</h1>
-          <fieldset>
-            <label for="password">Password:</label>
-            <input autofocus type="password" id="password" name="password" />
-            <button type="submit">Go</button>
-          </fieldset>
-        </form>
-      </div>
-    </div>
+    <form
+      action="/{{if .RedirectURL}}?redirect={{.RedirectURL}}{{end}}"
+      method="post"
+    >
+      <h1>Authorize</h1>
+      <fieldset>
+        <label for="password">Password:</label>
+        <input autofocus type="password" id="password" name="password" />
+        <button type="submit">Go</button>
+      </fieldset>
+    </form>
   </body>
 </html>
 {{end}}

@@ -10,9 +10,18 @@ import (
 var staticFiles embed.FS
 
 func serveForm(w http.ResponseWriter, r *http.Request) {
-	data := FormPageDatas{
-		RedirectURL: url.QueryEscape(r.URL.Path + "?" + r.URL.RawQuery),
+	var data FormPageDatas
+	if exisingRedirectURL := r.FormValue("redirect"); exisingRedirectURL != "" {
+		data.RedirectURL = exisingRedirectURL
+	} else {
+		rawQ := ""
+		if r.URL.RawQuery != "" {
+			rawQ += "?" + r.URL.RawQuery
+
+		}
+		data.RedirectURL = url.QueryEscape(r.URL.Path + rawQ)
 	}
+
 	if indexTemplate.ExecuteTemplate(w, "form", data) != nil {
 		http.Error(w, "someting went wrong", http.StatusInternalServerError)
 	}
