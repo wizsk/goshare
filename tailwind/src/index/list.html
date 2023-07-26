@@ -1,0 +1,49 @@
+{{ define "index-dir"}}
+<div class="my-8">
+    <table class="w-full">
+        {{range .Directories }}
+        <td>
+            <tr>
+                <!-- <div class="files flex gap-6 items-center px-2 py-3 md:py-2 mb-3 bg--100 bg-gray-100 dark:bg-gray-900/90 shadow-lg dark:hover:bg-gray-800 md:shadow-none md:hover:shadow-lg duration-300 md:hover:ease-in-out"> -->
+                <td class="">
+                    <a class="block bg-red-400" href="{{.Url}}{{$.Queries}}" {{if not .IsDir}}download="{{.Name}}"
+                        {{end}}>
+                        <span class="block w-full name whitespace-nowrap overflow-hidden text-ellipsis">
+                            {{.Name}}
+                        </span>
+                    </a>
+                </td>
+                <td>
+                    <!-- <div class="w-2/5 flex items-center justify-end"> -->
+                    <div class="overflow-hidden text-ellipsis whitespace-nowrap">
+                        {{if .IsDir}} -- {{else}}{{.Size}}{{end}}
+                    </div>
+                </td>
+                <td>
+                    <div class="relative md:hidden">
+                        {{if .IsDir}}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16" class="w-5 h-5">
+                            <path
+                                d="M5.5 9.438V8.5h1v.938a1 1 0 0 0 .03.243l.4 1.598-.93.62-.93-.62.4-1.598a1 1 0 0 0 .03-.243z" />
+                            <path
+                                d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-4-.5V2h-1V1H6v1h1v1H6v1h1v1H6v1h1v1H5.5V6h-1V5h1V4h-1V3h1zm0 4.5h1a1 1 0 0 1 1 1v.938l.4 1.599a1 1 0 0 1-.416 1.074l-.93.62a1 1 0 0 1-1.109 0l-.93-.62a1 1 0 0 1-.415-1.074l.4-1.599V8.5a1 1 0 0 1 1-1z" />
+                        </svg>
+                        {{else}}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16" class="w-5 h-5">
+                            <path
+                                d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0z" />
+                        </svg>
+                        {{end}}
+                    </div>
+                    <!-- </div> -->
+                </td>
+                {{else}}
+                <div class="text-center font-bold w-full h-screen flex justify-center mt-[30vh] text-2xl">
+                    <span>No files</span>
+                </div>
+                {{end}}
+    </table>
+</div>
+{{end}}

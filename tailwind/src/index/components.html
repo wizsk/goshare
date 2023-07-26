@@ -1,0 +1,77 @@
+{{ define "index-header"}}
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{.}}</title>
+
+  <link rel="stylesheet" href="/?res=css" />
+  <link rel="icon" href="/?res=favicon" />
+</head>
+{{end}}
+
+{{ define "index-searh-possible-paths"}}
+<input type="text" id="search"
+  class="border dark:border-gray-700 bg-inherit rounded-full px-4 py-1 mx-auto block text-xl md:w-2/5 my-4"
+  placeholder="Search" />
+<div class="flex items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap">
+  {{range .ProgessPah}}
+  <a href="{{.Url}}{{$.Queries}}" class="font-bold hover:underline text-lg">
+    {{if .SlashPre}}/{{end}}{{.Title}}
+  </a>
+  {{end}}
+</div>
+{{end}}
+
+
+{{ define "index-sort"}}
+<div class="w-full flex justify-end">
+  <form class="text-lg">
+    <label for="sort">Sort by:</label>
+    <select name="sort" id="sort"
+      class="bg-gray-100 dark:bg-gray-900 pl-2 pr-1 py-1 ml-2 text-inherit outline-none rounded focus:outline-none">
+      {{range .}}
+      <option value="{{if .Name}}{{.Name}}{{end}}" {{if .Selected}}selected="true" {{end}}>
+        {{.Title}}
+      </option>
+      {{end}}
+    </select>
+  </form>
+</div>
+{{end}}
+
+{{ define "index-nav"}}
+<div class="fixed right-4 bottom-6 w-12 h-fit flex flex-col items-center justify-center gap-2">
+  <!-- menu items -->
+  <div id="menu-items"
+    class="hidden bg-gray-50/40 dark:bg-gray-900/30 px-2 py-2 rounded border border-slate-100 dark:border-slate-600 shadow-2xl">
+    <div class="flex gap-2 flex-col items-center justify-center fill-blue-600 dark:fill-blue-300">
+      <button id="theme-btn" class="w-8 h-8"></button>
+      <button id="menu-cancel" class="w-8 h-8">
+        <svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+          viewBox="0 0 16 16">
+          <path
+            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- menu tougle -->
+  <div id="menu" class="w-8 h-8 p-1">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+      class="bi bi-three-dots w-full h-full fill-blue-600 dark:fill-blue-300" viewBox="0 0 16 16">
+      <path
+        d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+    </svg>
+  </div>
+
+  <a href="{{.PreviousPage}}" class="w-8 h-8 block">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+      class="w-full h-full fill-blue-600 dark:fill-blue-300" viewBox="0 0 16 16">
+      <path fill-rule="evenodd"
+        d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
+    </svg>
+  </a>
+</div>
+{{end}}
