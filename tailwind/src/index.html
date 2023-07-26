@@ -26,7 +26,10 @@
           class="flex items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap"
         >
           {{range .ProgessPah}}
-          <a href="{{.Url}}" class="font-bold hover:underline text-lg">
+          <a
+            href="{{.Url}}{{$.Queries}}"
+            class="font-bold hover:underline text-lg"
+          >
             {{if .SlashPre}}/{{end}}{{.Title}}
           </a>
           {{end}}
@@ -57,7 +60,7 @@
         <div class="my-8">
           {{range .Directories }}
           <a
-            href="{{.Url}}"
+            href="{{.Url}}{{$.Queries}}"
             {{if
             not
             .IsDir}}download="{{.Name}}"
@@ -76,7 +79,15 @@
               {{if .IsDir}} -- {{else}}{{.Size}}{{end}}
             </div>
           </a>
-          {{else}}
+          {{if .IsDir}}
+          <div
+            style="background-color: red; padding: 0.5rem"
+            onclick="getZipFile(this)"
+            data-link="{{.Url}}?zip=make"
+          >
+            zip
+          </div>
+          {{end}} {{else}}
           <div
             class="text-center font-bold w-full h-screen flex justify-center mt-[30vh] text-2xl"
           >
@@ -145,6 +156,7 @@
         </div>
       </div>
     </div>
+    <div class="fixed left-4 bottom-4 bg-red-200" id="zip-progress"></div>
     <script>
       const light =
         '<svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>brightness-6</title><path d="M12,18V6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z" /></svg>';
@@ -240,6 +252,54 @@
         // console.log(fullURL);
         window.location.assign(fullURL);
       });
+
+      function eventM(link) {
+        const eventSource = new EventSource(link);
+
+        // Event listener to handle messages received from the server
+        // eventSource.onmessage = function (event) {
+        //   const message = event.data;
+        //   console.log(message);
+        // };
+
+        // Event listener to handle errors and closed connections
+        eventSource.onerror = function (event) {
+          console.error("Error occurred:", event);
+          eventSource.close();
+        };
+
+        eventSource.addEventListener("error", async (e) => {
+          // console.log(e.data);
+          // const jsn = await JSON.parse(e.data);
+          zip_progress.innerText = "someting went wrong";
+          eventSource.close();
+        });
+
+        eventSource.addEventListener("done", async (e) => {
+          console.log(e.data);
+          const jsn = await JSON.parse(e.data);
+          zip_progress.innerHTML = `<a href="${jsn.status}?zip=down">Download zip</a>`;
+          eventSource.close();
+        });
+
+        eventSource.addEventListener("onProgress", async (e) => {
+          // console.log(e.data.value);
+          // console.log(e.data);
+          const jsn = await JSON.parse(e.data);
+          zip_progress.innerText = jsn.status;
+        });
+        // Event listener to handle the SSE connection being closed
+        eventSource.onclose = function () {
+          console.log("SSE connection closed.");
+        };
+      }
+
+      const zip_progress = document.getElementById("zip-progress");
+      function getZipFile(elemnt) {
+        const link = elemnt.getAttribute("data-link");
+        // console.log(link);
+        eventM(link);
+      }
     </script>
   </body>
 </html>
