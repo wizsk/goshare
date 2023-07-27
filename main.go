@@ -42,10 +42,6 @@ func main() {
 			return
 		}
 
-		if zip := r.FormValue("zip"); zip != "" {
-			serveZipFile(w, r, zip)
-			return
-		}
 
 		// titleasc, namedesc, sizeasc, sizedesc
 		// useing ?query=string to avoid making atoher handeler
@@ -90,6 +86,10 @@ func main() {
 			}
 		}
 
+		if zip := r.FormValue("zip"); zip != "" {
+			serveZipFile(w, r, zip)
+			return
+		}
 		printStat(r, NORMAL_REQUEST)
 		ServeWebUi(w, r)
 	})
