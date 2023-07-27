@@ -6,17 +6,19 @@ I have developed a convenient solution that enables seamless file-sharing betwee
 
 ## About
 
+- Only standard library used
 - Password protection
-- CLI client (goshare-cli)
+- Zip files and Download
 - Super-fast transfers
 - Stylish UI (Tailwind CSS)
 - Cross-platform compatible
 - Simultaneous multi-file sharing
 - Lightweight & efficient.
+<!-- - CLI client (goshare-cli) -->
 
 ## Perks
 
-- [cli user interface](https://github.com/wizsk/goshare/blob/main/assets/goshare-cli) made with `bash`
+<!-- - [cli user interface](https://github.com/wizsk/goshare/blob/main/assets/goshare-cli) made with `bash` -->
 - if passord is set then video or other files can be directly streamed any apps with `$ mpv http://example.com/link/to/vid?cli=pass`
 
 ## Install
@@ -49,18 +51,18 @@ Usage of goshare:
 
 ```
 
-## cli client
-
-I love to work in cli so made this.
-
-dependencies: `curl`, `wget` and `fzf`
-
-```bash
-# sudo dnf install curl wget fzf
-wget 'https://github.com/wizsk/goshare/blob/main/assets/goshare-cli'
-chmod +x goshare-cli
-sudo mv goshare-cli /usr/local/bin/ # or mv goshare-cli ~/.local/bin/
-```
+<!-- ## cli client -->
+<!---->
+<!-- I love to work in cli so made this. -->
+<!---->
+<!-- dependencies: `curl`, `wget` and `fzf` -->
+<!---->
+<!-- ```bash -->
+<!-- # sudo dnf install curl wget fzf -->
+<!-- wget 'https://github.com/wizsk/goshare/blob/main/assets/goshare-cli' -->
+<!-- chmod +x goshare-cli -->
+<!-- sudo mv goshare-cli /usr/local/bin/ # or mv goshare-cli ~/.local/bin/ -->
+<!-- ``` -->
 
 ## Screenshots
 

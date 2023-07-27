@@ -83,7 +83,7 @@ func file(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
 }
 
 func directoriesList(dirEntries []os.DirEntry, r *http.Request) []Directory {
-	fileUri := root + filepath.Clean(r.URL.Path)
+	// fileUri := root + filepath.Clean(r.URL.Path)
 	var dirs []Directory
 	for _, dir := range dirEntries {
 		info, err := dir.Info()
@@ -109,9 +109,9 @@ func directoriesList(dirEntries []os.DirEntry, r *http.Request) []Directory {
 			Icon:      directoryIcon,
 		}
 
-		if !dir.IsDir() {
-			dr.Icon = detectFileType(fileUri + "/" + dir.Name())
-		}
+		// if !dir.IsDir() {
+		// 	dr.Icon = detectFileType(fileUri + "/" + dir.Name())
+		// }
 
 		dirs = append(dirs, dr)
 	}
