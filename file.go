@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-//go:embed tailwind/src/index.html tailwind/src/form.html
+//go:embed tailwind/src/index.html tailwind/src/form.html tailwind/src/index/*
 var templateFiles embed.FS
 var indexTemplate *template.Template
 
@@ -41,7 +41,13 @@ func fileSeverInit(file string) {
 		log.Fatal("root file should be a directory;", err)
 	}
 
-	indexTemplate, err = template.ParseFS(templateFiles, "tailwind/src/index.html", "tailwind/src/form.html")
+	indexTemplate, err = template.ParseFS(templateFiles,
+		"tailwind/src/index.html",
+		"tailwind/src/form.html",
+		"tailwind/src/index/components.html",
+		"tailwind/src/index/list.html",
+		"tailwind/src/index/index.js",
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,7 +85,6 @@ func file(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
 func directoriesList(dirEntries []os.DirEntry, r *http.Request) []Directory {
 	fileUri := root + filepath.Clean(r.URL.Path)
 	var dirs []Directory
-	quries := allQueries(r)
 	for _, dir := range dirEntries {
 		info, err := dir.Info()
 		if err != nil {
@@ -90,9 +95,9 @@ func directoriesList(dirEntries []os.DirEntry, r *http.Request) []Directory {
 		// -> / + "name" || /file + "/" + "name"
 		path := r.URL.Path
 		if path == "/" {
-			path += url.PathEscape(dir.Name()) + quries
+			path += url.PathEscape(dir.Name())
 		} else {
-			path += "/" + url.PathEscape(dir.Name()) + quries
+			path += "/" + url.PathEscape(dir.Name())
 		}
 
 		dr := Directory{

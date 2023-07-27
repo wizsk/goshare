@@ -12,6 +12,7 @@ import (
 )
 
 const version = "v1.1"
+const styling = false
 
 var dir = flag.String("d", ".", "direcotry name")
 var port = flag.String("port", "8001", "port number")
@@ -38,6 +39,11 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, "sorry someting went wrong", http.StatusBadRequest)
+			return
+		}
+
+		if zip := r.FormValue("zip"); zip != "" {
+			serveZipFile(w, r, zip)
 			return
 		}
 

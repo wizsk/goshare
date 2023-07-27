@@ -110,20 +110,20 @@ func printStat(r *http.Request, from string) {
 }
 
 // for genarating root/file/..
-func possiblePahts(r *http.Request, quries string) []ProgessPah {
+func possiblePahts(r *http.Request) []ProgessPah {
 	var p []ProgessPah
 	poosiblePaht := ""
 	for i, v := range strings.Split(strings.TrimRight(r.URL.EscapedPath(), "/"), "/") {
 		if v == "" {
 			p = append(p, ProgessPah{
 				Title:    "root/",
-				Url:      "/" + quries,
+				Url:      "/",
 				SlashPre: false,
 			})
 			continue
 		}
 
-		poosiblePaht += "/" + v + quries
+		poosiblePaht += "/" + v
 		title, _ := url.PathUnescape(v)
 		p = append(p, ProgessPah{
 			Title:    title,

@@ -1,25 +1,24 @@
 {{ define "index-dir"}}
-<div class="my-8">
-    {{ $tdstyle := "px-2 py-4" }}
-    <table class="mx-auto">
+<div class="my-8 mx-auto text-xl">
+    <table class="mx-auto w-[95%]">
         <tr class="text-left border-b border-emerald-600 dark:border-emerald-300">
-            <th class="{{$tdstyle}}">
-                <div class="w-48">
-                    File name
+            <th>
+                <div class="w-56 md:w-full md:ml-2">
+                    File names
                 </div>
             </th>
-            <th class="{{$tdstyle}}">
+            <th>
                 <div class="w-[4.2rem]">Size</div>
             </th>
-            <th class="w-14 {{$tdstyle}}">Down</th>
+            <th class="w-14">Down</th>
         </tr>
         {{range .Directories }}
         <tr class="file-name-rows border-b border-emerald-600 dark:border-emerald-300">
             <!-- <div class="files flex gap-6 items-center px-2 py-3 md:py-2 mb-3 bg--100 bg-gray-100 dark:bg-gray-900/90 shadow-lg dark:hover:bg-gray-800 md:shadow-none md:hover:shadow-lg duration-300 md:hover:ease-in-out"> -->
-            <td class="{{$tdstyle}}">
+            <td>
                 <!-- main is width 90% for mobile -->
-                <div class="w-56">
-                    <a class="file-names block w-full whitespace-nowrap overflow-hidden text-ellipsis"
+                <div class="w-56 md:w-full md:mr-4">
+                    <a class="file-names block w-full whitespace-nowrap overflow-hidden text-ellipsis hover:underline px-2 py-4"
                         href="{{.Url}}{{$.Queries}}" {{if not .IsDir}}download="{{.Name}}" {{end}}>
                         <!-- <span class="block w-[50%] name whitespace-nowrap overflow-hidden text-ellipsis"> -->
                         {{.Name}}
@@ -27,7 +26,7 @@
                     </a>
                 </div>
             </td>
-            <td class="{{$tdstyle}}">
+            <td>
                 <!-- <div class="w-2/5 flex items-center justify-end"> -->
                 <div class="w-[4.2rem]">
                     {{if .IsDir}}--{{else}}{{.Size}}{{end}}
@@ -35,21 +34,27 @@
             </td>
             <td class="flex justify-center px-0 py-4">
                 {{if .IsDir}}
-                <div class="w-9 h-9 mx-auto p-1">
+                <!-- onclick="getZipFile(this)" -->
+                <div data-link="{{.Url}}?zip=make"
+                    class="group relative w-9 h-9 mx-auto p-1 zip-file hover:fill-amber-500 fill-amber-600 dark:fill-amber-400 dark:hover:fill-amber-600  cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        viewBox="0 0 16 16" class="w-full h-full fill-amber-600">
+                        viewBox="0 0 16 16" class="w-full h-full fill-inherit">
                         <path
                             d="M5.5 9.438V8.5h1v.938a1 1 0 0 0 .03.243l.4 1.598-.93.62-.93-.62.4-1.598a1 1 0 0 0 .03-.243z" />
                         <path
                             d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-4-.5V2h-1V1H6v1h1v1H6v1h1v1H6v1h1v1H5.5V6h-1V5h1V4h-1V3h1zm0 4.5h1a1 1 0 0 1 1 1v.938l.4 1.599a1 1 0 0 1-.416 1.074l-.93.62a1 1 0 0 1-1.109 0l-.93-.62a1 1 0 0 1-.415-1.074l.4-1.599V8.5a1 1 0 0 1 1-1z" />
                     </svg>
+                    <span
+                        class="hidden absolute group-hover:block bg-black text-white text-sm whitespace-nowrap right-10 bottom-0 p-1">Download
+                        as zip</span>
                 </div>
 
                 {{else}}
 
                 <a href="{{.Url}}{{$.Queries}}" download="{{.Name}}" class="block w-9 h-9 mx-auto p-1"> <svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        viewBox="0 0 16 16" class="w-full h-full fill-sky-600 dark:fill-sky-300">
+                        viewBox="0 0 16 16"
+                        class="w-full h-full fill-sky-600 dark:fill-sky-300 dark:hover:fill-sky-600 hover:fill-sky-400">
                         <path
                             d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0z" />
                     </svg>

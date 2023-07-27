@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
@@ -61,6 +62,7 @@ func allQueries(r *http.Request) string {
 type WebUiData struct {
 	Dirtitle     string
 	PreviousPage string
+	Queries      string
 	Directories  []Directory
 	ProgessPah   []ProgessPah
 	SortOptions  []SortOption
@@ -93,7 +95,8 @@ func ServeWebUi(w http.ResponseWriter, r *http.Request) {
 		datas.PreviousPage = "/"
 	}
 
-	datas.ProgessPah = possiblePahts(r, allQueries(r))
+	datas.ProgessPah = possiblePahts(r)
+	datas.Queries = allQueries(r)
 	datas.Dirtitle = datas.ProgessPah[len(datas.ProgessPah)-1].Title
 
 	datas.SortOptions = []SortOption{
@@ -128,6 +131,20 @@ func ServeWebUi(w http.ResponseWriter, r *http.Request) {
 				datas.SortOptions[i].Selected = true
 				break
 			}
+		}
+	}
+
+	if styling {
+		indexTemplate, err = template.ParseFiles(
+			"tailwind/src/index.html",
+			"tailwind/src/form.html",
+			"tailwind/src/index/components.html",
+			"tailwind/src/index/list.html",
+			"tailwind/src/index/index.js",
+		)
+		if err != nil {
+			log.Println(err)
+			return
 		}
 	}
 

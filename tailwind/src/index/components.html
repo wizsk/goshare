@@ -12,9 +12,10 @@
 
 {{ define "index-searh-possible-paths"}}
 <input type="text" id="search"
-  class="border dark:border-gray-700 bg-inherit rounded-full px-4 py-1 mx-auto block text-xl md:w-2/5 my-4"
+  class="border dark:border-gray-700 bg-inherit rounded-full px-4 py-1 mx-auto block text-xl w-[60%] my-4"
   placeholder="Search" />
-<div class="flex items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap">
+<div
+  class="w-[95%] mx-auto flex noscrollbar items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap">
   {{range .ProgessPah}}
   <a href="{{.Url}}{{$.Queries}}" class="font-bold hover:underline text-lg">
     {{if .SlashPre}}/{{end}}{{.Title}}
@@ -41,8 +42,7 @@
 {{end}}
 
 {{ define "index-nav"}}
-<div
-  class="fixed right-4 bottom-6 w-12 h-fit flex flex-col items-center justify-center gap-2 dark:fill-emerald-300 ">
+<div class="fixed right-4 bottom-6 w-12 h-fit flex flex-col items-center justify-center gap-2 dark:fill-emerald-300 ">
   <!-- menu items -->
   <div id="menu-items"
     class="hidden bg-gray-50/40 dark:bg-gray-900/30 px-2 py-2 rounded border border-slate-100 dark:border-slate-600 shadow-2xl">
@@ -74,5 +74,18 @@
         d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
     </svg>
   </a>
+</div>
+{{end}}
+
+
+{{define "index-zip"}}
+<div
+  class="fixed noscrollbar scroll-m-2 left-4 bottom-4 bg-emerald-700 text-white dark:bg-emerald-300 dark:text-black  rounded-sm max-h-40 md:max-h-64 shadow-lg overflow-y-scroll">
+  <div class="flex justify-center">
+    <div id="zip-progress">
+      <div id="progress-div" class="hidden p-2">
+      </div>
+    </div>
+  </div>
 </div>
 {{end}}

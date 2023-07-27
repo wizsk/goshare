@@ -1,24 +1,17 @@
 // {{define "index-js"}}
+const body = document.body;
 const light =
     '<svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>brightness-6</title><path d="M12,18V6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z" /></svg>';
 const dark =
     '<svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>brightness-4</title><path d="M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z" /></svg>';
 
-const body = document.body;
 const theme_btn = document.getElementById("theme-btn");
 const menu = document.getElementById("menu");
 const menu_items = document.getElementById("menu-items");
 const menu_cancel = document.getElementById("menu-cancel");
+const zip_file_divs = document.querySelectorAll(".zip-file");
 
-menu.addEventListener("click", () => {
-    menu.style.display = "none";
-    menu_items.classList.remove("hidden");
-});
-
-menu_cancel.addEventListener("click", () => {
-    menu.style.display = "block";
-    menu_items.classList.add("hidden");
-});
+let Ziping = false;
 
 // On page load or when changing themes, best to add inline in to avoid FOUC
 if (
@@ -32,6 +25,17 @@ if (
     body.classList.remove("dark");
     theme_btn.innerHTML = light;
 }
+
+
+menu.addEventListener("click", () => {
+    menu.style.display = "none";
+    menu_items.classList.remove("hidden");
+});
+
+menu_cancel.addEventListener("click", () => {
+    menu.style.display = "block";
+    menu_items.classList.add("hidden");
+});
 
 theme_btn.addEventListener("click", () => {
     if (body.classList.contains("dark")) {
@@ -48,8 +52,6 @@ theme_btn.addEventListener("click", () => {
 const file_name_rows = document.querySelectorAll(".file-name-rows");
 document.getElementById("search").addEventListener("input", (e) => {
     let value = e.target.value;
-    console.log(value)
-    // let match = 0;
     file_name_rows.forEach((file) => {
         const visible = file
             .querySelector(".file-names")
@@ -61,19 +63,11 @@ document.getElementById("search").addEventListener("input", (e) => {
 });
 
 document.getElementById("sort").addEventListener("change", (e) => {
-    // if (e.target.value === "") {
-    //   window.location.assign(
-    //     `${window.location.protocol}//${window.location.host}${window.location.pathname}`
-    //   );
-    //   return;
-    // }
-
     let params = `${window.location.search}`;
     let cleaned_params = "";
 
     if (params.includes("sort")) {
         const param = params.split("&");
-        // console.log(param);
         for (let i = 0; i < param.length; i++) {
             itm = param[i];
             if (itm.includes("sort")) {
@@ -84,26 +78,20 @@ document.getElementById("sort").addEventListener("change", (e) => {
             }
         }
     }
-    // console.log(cleaned_params);
     cleaned_params +=
         cleaned_params.length > 0
             ? "&sort=" + e.target.value
             : "?sort=" + e.target.value;
 
-    // console.log(cleaned_params);
     const fullURL = `${window.location.protocol}//${window.location.host}${window.location.pathname}${cleaned_params}${window.location.hash}`;
-    // console.log(fullURL);
     window.location.assign(fullURL);
 });
 
+let progress_div = document.getElementById("progress-div");
 function eventM(link) {
+    console.log("sending sse request to to for sse:", link);
+    progress_div.classList.remove("hidden");
     const eventSource = new EventSource(link);
-
-    // Event listener to handle messages received from the server
-    // eventSource.onmessage = function (event) {
-    //   const message = event.data;
-    //   console.log(message);
-    // };
 
     // Event listener to handle errors and closed connections
     eventSource.onerror = function (event) {
@@ -111,27 +99,42 @@ function eventM(link) {
         eventSource.close();
     };
 
+    // castom err event
     eventSource.addEventListener("error", async (e) => {
-        // console.log(e.data);
-        // const jsn = await JSON.parse(e.data);
-        zip_progress.innerText = "someting went wrong";
+        const div = document.createElement('div');
+        div.classList.add("block", "p-3")
+        div.innerText = "someting went wrong";
+        zip_progress.appendChild(div)
         eventSource.close();
     });
 
+    // done event
     eventSource.addEventListener("done", async (e) => {
-        console.log(e.data);
         const jsn = await JSON.parse(e.data);
-        zip_progress.innerHTML = `<a href="${jsn.status}?zip=down">Download zip</a>`;
+        console.log("zipping done:", jsn.status);
+        // Create a new <a> element
+        const link = document.createElement('a');
+        link.classList.add("block", "p-3", "hover:underline")
+        link.href = `${jsn.status}?zip=down`;
+        // link.download = jsn.status;
+        link.innerText = `Download ${jsn.status}`;
+
+        // Append the <a> element to the specified container
+        // zip_progress.innerHTML = `<a href="${jsn.status}?zip=down">Download zip</a>`;
+        progress_div = zip_progress.removeChild(progress_div);
+        zip_progress.appendChild(link);
         eventSource.close();
+        Ziping = false;
     });
 
     eventSource.addEventListener("onProgress", async (e) => {
-        // console.log(e.data.value);
-        // console.log(e.data);
+        if (!document.getElementById("progress-div")) {
+            zip_progress.appendChild(progress_div);
+        }
         const jsn = await JSON.parse(e.data);
-        zip_progress.innerText = jsn.status;
+        progress_div.innerText = jsn.status;
     });
-    // Event listener to handle the SSE connection being closed
+
     eventSource.onclose = function () {
         console.log("SSE connection closed.");
     };
@@ -139,8 +142,19 @@ function eventM(link) {
 
 const zip_progress = document.getElementById("zip-progress");
 function getZipFile(elemnt) {
+    if (Ziping) return;
+    Ziping = true;
     const link = elemnt.getAttribute("data-link");
-    // console.log(link);
     eventM(link);
 }
+
+zip_file_divs.forEach((elemnt) => {
+    elemnt.addEventListener("click", (e) => {
+        getZipFile(elemnt);
+        elemnt.classList.remove("zip-file")
+        const cp = elemnt.cloneNode(true);
+        elemnt.parentNode.replaceChild(cp, elemnt);
+    })
+})
+
 // {{end}}
