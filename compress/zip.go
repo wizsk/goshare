@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var ZIP_PATH = ""
+var ZIP_PATH = os.TempDir()
 
 func Zip(ctx context.Context, rootDir string, progress chan<- string) (string, error) {
 	defer close(progress)

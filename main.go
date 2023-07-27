@@ -42,7 +42,6 @@ func main() {
 			return
 		}
 
-
 		// titleasc, namedesc, sizeasc, sizedesc
 		// useing ?query=string to avoid making atoher handeler
 		// http://example.com/file?cli=password
@@ -62,8 +61,6 @@ func main() {
 		}
 
 		if *pass != "" {
-			// redirectTo :=
-			// 			fmt.Println("main url", r.URL.Path+"?"+r.URL.RawQuery, "\t\t", redirectTo)
 			redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
 			if redirectURL == "" {
 				redirectURL = "/"
@@ -90,6 +87,7 @@ func main() {
 			serveZipFile(w, r, zip)
 			return
 		}
+
 		printStat(r, NORMAL_REQUEST)
 		ServeWebUi(w, r)
 	})

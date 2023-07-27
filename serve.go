@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/wizsk/goshare/compress"
 )
@@ -63,11 +62,11 @@ func serveResource(w http.ResponseWriter, file string) {
 	}
 }
 
-const ZIP_PATH = "/tmp/zipTest/"
-
 func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
+	ZIP_PATH := os.TempDir()
 	if zipType == "down" {
-		path := strings.TrimPrefix(r.URL.Path, "/")
+		// path := strings.TrimPrefix(r.URL.Path, "/")
+		path := r.URL.Path
 		http.ServeFile(w, r, ZIP_PATH+filepath.Clean(path))
 		return
 	}
