@@ -93,9 +93,9 @@ func main() {
 	})
 
 	if *pass == "" {
-		fmt.Printf("serving %q at http://localhost:%s\n", *dir, *port)
+		fmt.Printf("serving %q at http://localhost:%s\n\n", *dir, *port)
 	} else {
-		fmt.Printf("serving %q at http://localhost:%s\npassword: %s\n", *dir, *port, *pass)
+		fmt.Printf("serving %q at http://localhost:%s\npassword: %s\n\n", *dir, *port, *pass)
 	}
 
 	log.Fatal(http.ListenAndServe(":"+*port, nil))
