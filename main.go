@@ -11,7 +11,7 @@ import (
 	"github.com/wizsk/goshare/auth"
 )
 
-const version = "v1.1"
+const version = "v2.0"
 const styling = false
 
 var dir = flag.String("d", ".", "direcotry name")
