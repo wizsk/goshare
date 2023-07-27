@@ -580,10 +580,6 @@ video {
   position: fixed;
 }
 
-.absolute {
-  position: absolute;
-}
-
 .relative {
   position: relative;
 }
@@ -604,8 +600,8 @@ video {
   right: 1rem;
 }
 
-.right-5 {
-  right: 1.25rem;
+.m-4 {
+  margin: 1rem;
 }
 
 .mx-auto {
@@ -639,6 +635,22 @@ video {
   margin-top: 30vh;
 }
 
+.ml-4 {
+  margin-left: 1rem;
+}
+
+.mr-4 {
+  margin-right: 1rem;
+}
+
+.mr-8 {
+  margin-right: 2rem;
+}
+
+.mr-6 {
+  margin-right: 1.5rem;
+}
+
 .block {
   display: block;
 }
@@ -663,6 +675,10 @@ video {
   height: 2rem;
 }
 
+.h-9 {
+  height: 2.25rem;
+}
+
 .h-fit {
   height: -moz-fit-content;
   height: fit-content;
@@ -676,18 +692,6 @@ video {
   height: 100vh;
 }
 
-.h-4 {
-  height: 1rem;
-}
-
-.h-6 {
-  height: 1.5rem;
-}
-
-.h-5 {
-  height: 1.25rem;
-}
-
 .min-h-screen {
   min-height: 100vh;
 }
@@ -696,20 +700,36 @@ video {
   width: 3rem;
 }
 
+.w-14 {
+  width: 3.5rem;
+}
+
+.w-16 {
+  width: 4rem;
+}
+
 .w-2\/5 {
   width: 40%;
 }
 
-.w-3\/5 {
-  width: 60%;
+.w-48 {
+  width: 12rem;
+}
+
+.w-52 {
+  width: 13rem;
 }
 
 .w-8 {
   width: 2rem;
 }
 
-.w-9\/12 {
-  width: 75%;
+.w-9 {
+  width: 2.25rem;
+}
+
+.w-\[50\%\] {
+  width: 50%;
 }
 
 .w-\[95\%\] {
@@ -720,40 +740,64 @@ video {
   width: 100%;
 }
 
-.w-4 {
-  width: 1rem;
-}
-
-.w-6 {
-  width: 1.5rem;
-}
-
-.w-5 {
-  width: 1.25rem;
+.w-1 {
+  width: 0.25rem;
 }
 
 .w-\[\] {
   width: ;
 }
 
+.w-\[4\.\] {
+  width: 4.;
+}
+
+.w-\[4\.2rem\] {
+  width: 4.2rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.w-\[60\] {
+  width: 60;
+}
+
 .w-\[60\%\] {
   width: 60%;
 }
 
-.w-32 {
-  width: 8rem;
+.w-\[96\] {
+  width: 96;
 }
 
-.w-40 {
-  width: 10rem;
+.w-\[96\%\] {
+  width: 96%;
 }
 
-.w-4\/5 {
-  width: 80%;
+.w-\[100\] {
+  width: 100;
 }
 
-.w-2 {
-  width: 0.5rem;
+.w-\[40\] {
+  width: 40;
+}
+
+.w-\[40\%\] {
+  width: 40%;
+}
+
+.w-\[100\%\] {
+  width: 100%;
+}
+
+.w-56 {
+  width: 14rem;
 }
 
 .flex-col {
@@ -812,6 +856,20 @@ video {
   border-width: 1px;
 }
 
+.border-b {
+  border-bottom-width: 1px;
+}
+
+.border-emerald-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(110 231 183 / var(--tw-border-opacity));
+}
+
+.border-emerald-600 {
+  --tw-border-opacity: 1;
+  border-color: rgb(5 150 105 / var(--tw-border-opacity));
+}
+
 .border-slate-100 {
   --tw-border-opacity: 1;
   border-color: rgb(241 245 249 / var(--tw-border-opacity));
@@ -835,14 +893,8 @@ video {
   background-color: rgb(254 202 202 / var(--tw-bg-opacity));
 }
 
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
-}
-
-.bg-red-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+.fill-amber-600 {
+  fill: #d97706;
 }
 
 .fill-blue-600 {
@@ -851,6 +903,26 @@ video {
 
 .fill-inherit {
   fill: inherit;
+}
+
+.fill-sky-600 {
+  fill: #0284c7;
+}
+
+.fill-emerald-600 {
+  fill: #059669;
+}
+
+.fill-emerald-700 {
+  fill: #047857;
+}
+
+.fill-emerald-400 {
+  fill: #34d399;
+}
+
+.fill-emerald-300 {
+  fill: #6ee7b7;
 }
 
 .p-1 {
@@ -882,6 +954,16 @@ video {
   padding-bottom: 0.75rem;
 }
 
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.px-0 {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 .pb-16 {
   padding-bottom: 4rem;
 }
@@ -896,6 +978,10 @@ video {
 
 .pt-4 {
   padding-top: 1rem;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-center {
@@ -963,6 +1049,11 @@ video {
   outline-offset: 2px;
 }
 
+:is(.dark .dark\:border-emerald-300) {
+  --tw-border-opacity: 1;
+  border-color: rgb(110 231 183 / var(--tw-border-opacity));
+}
+
 :is(.dark .dark\:border-gray-700) {
   --tw-border-opacity: 1;
   border-color: rgb(55 65 81 / var(--tw-border-opacity));
@@ -995,6 +1086,14 @@ video {
   fill: #93c5fd;
 }
 
+:is(.dark .dark\:fill-sky-300) {
+  fill: #7dd3fc;
+}
+
+:is(.dark .dark\:fill-emerald-300) {
+  fill: #6ee7b7;
+}
+
 :is(.dark .dark\:text-gray-50) {
   --tw-text-opacity: 1;
   color: rgb(249 250 251 / var(--tw-text-opacity));
@@ -1006,14 +1105,6 @@ video {
 }
 
 @media (min-width: 768px) {
-  .md\:block {
-    display: block;
-  }
-
-  .md\:hidden {
-    display: none;
-  }
-
   .md\:w-2\/5 {
     width: 40%;
   }

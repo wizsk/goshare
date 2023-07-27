@@ -26,7 +26,7 @@
 
 {{ define "index-sort"}}
 <div class="w-full flex justify-end">
-  <form class="text-lg">
+  <form class="text-lg mr-4">
     <label for="sort">Sort by:</label>
     <select name="sort" id="sort"
       class="bg-gray-100 dark:bg-gray-900 pl-2 pr-1 py-1 ml-2 text-inherit outline-none rounded focus:outline-none">
@@ -41,11 +41,12 @@
 {{end}}
 
 {{ define "index-nav"}}
-<div class="fixed right-4 bottom-6 w-12 h-fit flex flex-col items-center justify-center gap-2">
+<div
+  class="fixed right-4 bottom-6 w-12 h-fit flex flex-col items-center justify-center gap-2 dark:fill-emerald-300 ">
   <!-- menu items -->
   <div id="menu-items"
     class="hidden bg-gray-50/40 dark:bg-gray-900/30 px-2 py-2 rounded border border-slate-100 dark:border-slate-600 shadow-2xl">
-    <div class="flex gap-2 flex-col items-center justify-center fill-blue-600 dark:fill-blue-300">
+    <div class="flex gap-2 flex-col items-center justify-center fill-inherit">
       <button id="theme-btn" class="w-8 h-8"></button>
       <button id="menu-cancel" class="w-8 h-8">
         <svg class="w-full h-full fill-inherit" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -59,8 +60,8 @@
 
   <!-- menu tougle -->
   <div id="menu" class="w-8 h-8 p-1">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-      class="bi bi-three-dots w-full h-full fill-blue-600 dark:fill-blue-300" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="three-dots fill-inherit w-full h-full "
+      viewBox="0 0 16 16">
       <path
         d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
     </svg>
@@ -68,7 +69,7 @@
 
   <a href="{{.PreviousPage}}" class="w-8 h-8 block">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-      class="w-full h-full fill-blue-600 dark:fill-blue-300" viewBox="0 0 16 16">
+      class="w-full h-full fill-inherit" viewBox="0 0 16 16">
       <path fill-rule="evenodd"
         d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
     </svg>

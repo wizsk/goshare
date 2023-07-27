@@ -45,12 +45,14 @@ theme_btn.addEventListener("click", () => {
     }
 });
 
-const files = document.querySelectorAll(".files");
+const file_name_rows = document.querySelectorAll(".file-name-rows");
 document.getElementById("search").addEventListener("input", (e) => {
     let value = e.target.value;
-    files.forEach((file) => {
+    console.log(value)
+    // let match = 0;
+    file_name_rows.forEach((file) => {
         const visible = file
-            .querySelector(".name")
+            .querySelector(".file-names")
             .innerText.toLowerCase()
             .includes(value);
 
