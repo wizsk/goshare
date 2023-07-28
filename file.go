@@ -51,14 +51,10 @@ func fileSeverInit(file string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	_, err = indexTemplate.New("cli").Parse(cliUiTemplate)
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
-func file(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
+// if it's a directory then return details or serve the file
+func directories(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
 	var directories []Directory
 	fileUri := root + filepath.Clean(r.URL.Path)
 	file, err := os.Open(fileUri)
@@ -67,12 +63,12 @@ func file(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
 		// log.Printf("root dir not found; %s\n", err)
 		return directories, err
 	}
+	
 	defer file.Close()
 
 	dirs, err := file.ReadDir(0)
 	if err != nil {
-		printStat(r, FILE_DOWN)
-		http.ServeFile(w, r, fileUri)
+	
 		return directories, err
 	}
 
@@ -82,8 +78,8 @@ func file(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
 	return directories, nil
 }
 
+// get the directories details
 func directoriesList(dirEntries []os.DirEntry, r *http.Request) []Directory {
-	// fileUri := root + filepath.Clean(r.URL.Path)
 	var dirs []Directory
 	for _, dir := range dirEntries {
 		info, err := dir.Info()
@@ -106,13 +102,7 @@ func directoriesList(dirEntries []os.DirEntry, r *http.Request) []Directory {
 			Size:      fileSize(info.Size()),
 			Url:       path,
 			IsDir:     dir.IsDir(),
-			Icon:      directoryIcon,
 		}
-
-		// if !dir.IsDir() {
-		// 	dr.Icon = detectFileType(fileUri + "/" + dir.Name())
-		// }
-
 		dirs = append(dirs, dr)
 	}
 

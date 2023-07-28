@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"sync"
+	"time"
 )
 
 var cUsers = map[string]bool{}
@@ -26,11 +27,13 @@ func WriteCookie(w http.ResponseWriter) error {
 		u, _ = createUUID()
 	}
 
+	sevenDays := 7 * 24 * 60 * 60
 	c := http.Cookie{
 		Name:     CookieName,
 		Value:    u,
 		Path:     "/",
-		MaxAge:   3600,
+		MaxAge:   sevenDays,
+		Expires:  time.Now().Add(time.Second * time.Duration(sevenDays)),
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	}

@@ -41,7 +41,7 @@ func serveResource(w http.ResponseWriter, file string) {
 			http.Error(w, "Failed to read css file", http.StatusInternalServerError)
 			return
 		}
-		if styling {
+		if debug {
 			css, err = os.ReadFile("tailwind/src/output.css")
 			if err != nil {
 				http.Error(w, "Failed to read css file", http.StatusInternalServerError)
@@ -62,12 +62,15 @@ func serveResource(w http.ResponseWriter, file string) {
 	}
 }
 
+// zipType == make then start a server send event and send the progess
+// zipType == down then just serve the file
 func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
-	ZIP_PATH := os.TempDir()
 	if zipType == "down" {
-		// path := strings.TrimPrefix(r.URL.Path, "/")
-		path := r.URL.Path
-		http.ServeFile(w, r, ZIP_PATH+filepath.Clean(path))
+		http.ServeFile(w, r, ZIP_DIR+filepath.Clean(r.URL.Path))
+		return
+	}
+
+	if zipType != "make" {
 		return
 	}
 
@@ -91,12 +94,10 @@ func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	flusher.Flush()
 
 	fileUri := root + filepath.Clean(r.URL.Path)
-	compress.ZIP_PATH = ZIP_PATH
 	process := make(chan string)
 
 	var file string
 	var err error
-	// ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
 		file, err = compress.Zip(r.Context(), fileUri, process)

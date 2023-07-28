@@ -9,10 +9,13 @@ import (
 	"os"
 
 	"github.com/wizsk/goshare/auth"
+	"github.com/wizsk/goshare/compress"
 )
 
 const version = "v2.0"
-const styling = false
+const debug = false
+
+var ZIP_DIR string
 
 var dir = flag.String("d", ".", "direcotry name")
 var port = flag.String("port", "8001", "port number")
@@ -22,6 +25,7 @@ var verstionFlag = flag.Bool("v", false, "prints current version")
 // for ptintstat
 const (
 	NORMAL_REQUEST = "browseing"
+	ZIP_REQUEST    = "Zipping file"
 	LOGIN_ATTEMT   = "login attemt"
 	LOGIN_SUCCESS  = "login success"
 	FILE_DOWN      = "downloading"
@@ -36,18 +40,31 @@ func main() {
 
 	fileSeverInit(*dir)
 
+	var err error
+	ZIP_DIR, err = os.MkdirTemp(os.TempDir(), "goshare-zip-")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.RemoveAll(ZIP_DIR)
+	fmt.Println(ZIP_DIR)
+	compress.ZIP_PATH = ZIP_DIR
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, "sorry someting went wrong", http.StatusBadRequest)
 			return
 		}
 
-		// titleasc, namedesc, sizeasc, sizedesc
-		// useing ?query=string to avoid making atoher handeler
-		// http://example.com/file?cli=password
+		// useing ?query=string to avoid making more handelers
+		if res := r.FormValue("res"); res != "" {
+			serveResource(w, res)
+			return
+		}
+
+		// http://localhost/file?cli=password for using or downloading from the cli
 		if cli := r.FormValue("cli"); cli != "" {
 			if cli == *pass || *pass == "" {
-				cliUi(w, r, cli)
+				ServeWebUi(w, r)
 			} else {
 				printStat(r, LOGIN_ATTEMT)
 				http.Error(w, "please provide as such http://example.com/file?cli=password", http.StatusBadRequest)
@@ -55,11 +72,7 @@ func main() {
 			return
 		}
 
-		if res := r.FormValue("res"); res != "" {
-			serveResource(w, res)
-			return
-		}
-
+		// if password was set then authorize
 		if *pass != "" {
 			redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
 			if redirectURL == "" {
@@ -84,6 +97,7 @@ func main() {
 		}
 
 		if zip := r.FormValue("zip"); zip != "" {
+			printStat(r, ZIP_REQUEST)
 			serveZipFile(w, r, zip)
 			return
 		}

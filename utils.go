@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"net/url"
-	"os"
 	"sort"
 	"strings"
 	"time"
@@ -22,6 +20,29 @@ func fileSize(size int64) string {
 		return fmt.Sprintf("%.01f Mb", (s/1024)/1024)
 	case s >= 1024*1024*1024:
 		return fmt.Sprintf("%.01f Gb", ((s/1024)/1024)/1024)
+	}
+
+	return ""
+}
+
+func allQueries(r *http.Request) string {
+	params := r.URL.Query()
+	if len(params) == 0 {
+		return ""
+	}
+
+	var builder strings.Builder
+	builder.WriteString("?")
+	// Loop through all the parameters and print them.
+	for key, values := range params {
+		for _, value := range values {
+			builder.WriteString(key + "=" + value + "&")
+		}
+	}
+
+	str := builder.String()
+	if len(str) > 1 {
+		return str[:len(str)-1]
 	}
 
 	return ""
@@ -137,6 +158,7 @@ func possiblePahts(r *http.Request) []ProgessPah {
 	return p
 }
 
+/*
 func detectFileType(filePath string) template.HTML {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -179,3 +201,4 @@ func detectFileType(filePath string) template.HTML {
 		return unknownFileIcon
 	}
 }
+*/
