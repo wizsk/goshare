@@ -115,9 +115,9 @@ function eventM(link) {
         // Create a new <a> element
         const link = document.createElement('a');
         link.classList.add("block", "p-3", "hover:underline")
-        link.href = `${jsn.status}?zip=down`;
+        link.href = `${jsn.url}?zip=down`;
         // link.download = jsn.status;
-        link.innerText = `Download ${jsn.status}`;
+        link.innerText = `Download ${jsn.name}`;
 
         // Append the <a> element to the specified container
         // zip_progress.innerHTML = `<a href="${jsn.status}?zip=down">Download zip</a>`;

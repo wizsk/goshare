@@ -8,12 +8,14 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/wizsk/goshare/compress"
 )
 
 //go:embed tailwind/src/favicon.ico tailwind/src/output.css
 var staticFiles embed.FS
+var zipMut sync.Mutex
 
 func serveForm(w http.ResponseWriter, r *http.Request) {
 	var data FormPageDatas
@@ -62,11 +64,16 @@ func serveResource(w http.ResponseWriter, file string) {
 	}
 }
 
+var zipFileIndex = make(map[string]compress.ZipFileInfo)
+
 // zipType == make then start a server send event and send the progess
 // zipType == down then just serve the file
 func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	if zipType == "down" {
-		http.ServeFile(w, r, ZIP_DIR+filepath.Clean(r.URL.Path))
+		if file, ok := zipFileIndex[r.URL.Path]; ok {
+			// fmt.Println(ZIP_DIR+"/"+file)
+			http.ServeFile(w, r, file.FilePath)
+		}
 		return
 	}
 
@@ -86,6 +93,17 @@ func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	}
 	flusher.Flush()
 
+	if file, ok := zipFileIndex[r.URL.Path]; ok {
+		d, _ := json.Marshal(ZipData{
+			URL:  r.URL.Path,
+			Name: file.Name,
+		})
+		fmt.Fprintf(w, "event: done\n")
+		fmt.Fprintf(w, "data: %s\n\n", d)
+		flusher.Flush()
+		return
+	}
+
 	fmt.Fprintf(w, "event: onProgress\n")
 	d, _ := json.Marshal(ZipData{
 		Status: "praparing",
@@ -96,11 +114,11 @@ func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	fileUri := root + filepath.Clean(r.URL.Path)
 	process := make(chan string)
 
-	var file string
+	var zipFile compress.ZipFileInfo
 	var err error
 
 	go func() {
-		file, err = compress.Zip(r.Context(), fileUri, process)
+		zipFile, err = compress.Zip(r.Context(), process, fileUri)
 	}()
 
 	if err != nil {
@@ -122,17 +140,24 @@ func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	if err != nil {
 		fmt.Fprintf(w, "event: errror\n")
 		fmt.Fprintf(w, "data: {}\n\n")
-	} else {
-		fmt.Fprintf(w, "event: done\n")
-		d, _ := json.Marshal(ZipData{
-			Status: file,
-		})
-		fmt.Fprintf(w, "data: %s\n\n", d)
+		return
 	}
 
+	zipMut.Lock()
+	zipFileIndex[r.URL.Path] = zipFile
+	zipMut.Unlock()
+
+	d, _ = json.Marshal(ZipData{
+		URL:  r.URL.Path,
+		Name: zipFile.Name,
+	})
+	fmt.Fprintf(w, "event: done\n")
+	fmt.Fprintf(w, "data: %s\n\n", d)
 	flusher.Flush()
 }
 
 type ZipData struct {
-	Status string `json:"status"`
+	Status string `json:"status,omitempty"`
+	URL    string `json:"url,omitempty"`
+	Name   string `json:"name,omitempty"`
 }

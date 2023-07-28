@@ -9,45 +9,53 @@ import (
 	"strings"
 )
 
-var ZIP_PATH = os.TempDir()
+var ZIP_PATH string
 
-func Zip(ctx context.Context, rootDir string, progress chan<- string) (string, error) {
+type ZipFileInfo struct {
+	Name     string
+	FilePath string
+}
+
+func Zip(ctx context.Context, progress chan<- string, rootDir string) (ZipFileInfo, error) {
 	defer close(progress)
 
+	var output ZipFileInfo
 	var outputFileName string
 	var trimFromRoot string
 
 	if stat, err := os.Stat(rootDir); err != nil {
-		return "", err
+		return output, err
 	} else {
 		outputFileName = stat.Name()
 		trimFromRoot = strings.TrimRight(rootDir, outputFileName)
 	}
 
 	if ZIP_PATH == "" {
-		return "", fmt.Errorf("please specify the ZIP_PATH")
-	} else if ZIP_PATH[len(ZIP_PATH)-1] != '/' {
-		ZIP_PATH += "/"
+		return output, fmt.Errorf("please specify the ZIP_PATH")
 	}
+	// else if ZIP_PATH[len(ZIP_PATH)-1] != '/' {
+	// 	ZIP_PATH += "/"
+	// }
 
 	progress <- "preparing"
 	files, err := getFilePaths(ctx, rootDir)
 	if err != nil {
-		return "", err
+		return output, err
 	}
 
 	filesCount := float64(len(files))
 
-	archive, err := os.Create(ZIP_PATH + outputFileName + ".zip")
+	// je name dia create kori file.Name() dakle oi name e dei!!
+	archive, err := os.Create(fmt.Sprintf("%s/%s.zip-%s", ZIP_PATH, outputFileName, genRandomPostFix()))
 	if err != nil {
-		return "", err
+		return output, err
 	}
 	defer archive.Close()
 
 	zipper := zip.NewWriter(archive)
 	defer zipper.Close()
 
-	progress <- ""
+zipLoop:
 	for i, file := range files {
 		var opneFile *os.File
 		opneFile, err = os.Open(file)
@@ -70,14 +78,16 @@ func Zip(ctx context.Context, rootDir string, progress chan<- string) (string, e
 		select {
 		case <-ctx.Done():
 			fmt.Println("cancel hoiye gese")
-			return "", fmt.Errorf("cancelled")
+			err = fmt.Errorf("cancelled")
+			break zipLoop
 		default:
-			continue
 		}
 	}
 	if err != nil {
-		return "", err
+		return output, err
 	}
 
-	return outputFileName + ".zip", nil
+	output.FilePath = archive.Name()
+	output.Name = outputFileName + ".zip"
+	return output, nil
 }

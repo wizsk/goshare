@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"time"
 )
 
 func getFilePaths(ctx context.Context, dir string) ([]string, error) {
@@ -27,4 +28,8 @@ func getFilePaths(ctx context.Context, dir string) ([]string, error) {
 		return nil
 	})
 	return files, err
+}
+
+func genRandomPostFix() string {
+	return fmt.Sprint(time.Now().UnixNano())
 }
