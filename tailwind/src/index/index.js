@@ -156,8 +156,7 @@ function getZipFile(elemnt) {
 }
 
 zip_file_divs.forEach((elemnt) => {
-    elemnt.addEventListener("click", (e) => {
-        console.log("getting stuff:", elemnt)
+    elemnt.addEventListener("click", () => {
         getZipFile(elemnt);
         elemnt.classList.remove("zip-file")
         const cp = elemnt.cloneNode(true);

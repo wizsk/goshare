@@ -9,10 +9,8 @@
     <div class="md:w-3/4 mx-auto pb-16 pt-4">
       <!-- navigation -->
       {{ template "index-searh"}}
-      {{ template "index-possible-paths" .}}
+      {{ template "index-possible-paths-and-sort" .}}
 
-
-      {{ template "index-sort" .SortOptions}}
       <!-- diretoris and files list -->
       {{template "index-dir" .}}
 

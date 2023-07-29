@@ -12,36 +12,35 @@
 
 {{ define "index-searh"}}
 <input type="text" id="search"
-  class="bg-inherit rounded px-2 py-2 mx-auto block text-xl w-[90%] md:w-[40%] my-4 outline-none border border-emerald-600/40 dark:border-emerald-300/40"
+  class="bg-inherit rounded px-2 py-2 mx-auto block text-xl w-[90%] md:w-[50%] my-4 outline-none border border-emerald-600/40 dark:border-emerald-300/40"
   placeholder="Search" />
 
 {{end}}
 
-{{ define "index-possible-paths"}}
-<div
-  class="w-[95%] mx-auto flex noscrollbar items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap">
-  {{range .ProgessPah}}
-  <a href="{{.Url}}{{$.Queries}}" class="font-bold hover:underline text-xl">
-    {{if .SlashPre}}/{{end}}{{.Title}}
-  </a>
-  {{end}}
-</div>
-{{end}}
+{{ define "index-possible-paths-and-sort"}}
+<div class="mx-auto w-[95%] md:w-[85%] lg:w-[60%]">
+  <div
+    class="flex noscrollbar items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap">
+    {{range .ProgessPah}}
+    <a href="{{.Url}}{{$.Queries}}" class="font-bold hover:underline text-xl">
+      {{if .SlashPre}}/{{end}}{{.Title}}
+    </a>
+    {{end}}
+  </div>
 
-
-{{ define "index-sort"}}
-<div class="w-full flex justify-end">
-  <form class="text-lg mr-4">
-    <label for="sort">Sort by:</label>
-    <select name="sort" id="sort"
-      class="bg-gray-100 dark:bg-gray-900 pl-2 pr-1 py-1 ml-2 text-inherit outline-none rounded focus:outline-none">
-      {{range .}}
-      <option value="{{if .Name}}{{.Name}}{{end}}" {{if .Selected}}selected="true" {{end}}>
-        {{.Title}}
-      </option>
-      {{end}}
-    </select>
-  </form>
+  <div class="flex justify-end">
+    <form class="text-lg">
+      <label for="sort">Sort by:</label>
+      <select name="sort" id="sort"
+        class="bg-gray-100 dark:bg-gray-900 pl-2 pr-1 py-1 text-inherit outline-none rounded focus:outline-none">
+        {{range .SortOptions}}
+        <option value="{{if .Name}}{{.Name}}{{end}}" {{if .Selected}}selected="true" {{end}}>
+          {{.Title}}
+        </option>
+        {{end}}
+      </select>
+    </form>
+  </div>
 </div>
 {{end}}
 

@@ -18,7 +18,7 @@ func getFilePaths(ctx context.Context, dir string) ([]string, error) {
 
 		select {
 		case <-ctx.Done():
-			return fmt.Errorf("canceled")
+			return fmt.Errorf("cancelled by context")
 		default:
 		}
 

@@ -77,8 +77,7 @@ zipLoop:
 		progress <- fmt.Sprintf("zipping %0.1f%%", (float64(i)/filesCount)*100)
 		select {
 		case <-ctx.Done():
-			fmt.Println("cancel hoiye gese")
-			err = fmt.Errorf("cancelled")
+			err = fmt.Errorf("cancelled by context")
 			break zipLoop
 		default:
 		}

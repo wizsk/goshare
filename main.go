@@ -18,7 +18,7 @@ import (
 )
 
 const version = "v2.1"
-const debug = false
+const debug = true
 
 var ZIP_DIR string
 
@@ -127,7 +127,7 @@ func mainHandeler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if zip := r.FormValue("zip"); zip != "" {
-		printStat(r, ZIP_REQUEST)
+		// printStat(r, ZIP_REQUEST)
 		serveZipFile(w, r, zip)
 		return
 	}
