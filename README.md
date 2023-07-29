@@ -2,24 +2,25 @@
 
 is a file server or sharer over the local network.
 
-I have developed a convenient solution that enables seamless file-sharing between my computer, phone, and other devices within the local network.
+I have made this tool for seamless file sharing from computer's (or home server's) directory to phone and other devices within the local network. This tool allows for efficient sharing of files between devices, enhancing convenience and accessibility.
+
+It consumes minimal resources, making it the perfect choice for running on a home server 24/7.
 
 ## About
 
 - Only standard library used
 - Password protection
-- Zip files and Download
+- Zip directories
 - Super-fast transfers
 - Stylish UI (Tailwind CSS)
 - Cross-platform compatible
 - Simultaneous multi-file sharing
 - Lightweight & efficient.
-<!-- - CLI client (goshare-cli) -->
 
 ## Perks
 
-<!-- - [cli user interface](https://github.com/wizsk/goshare/blob/main/assets/goshare-cli) made with `bash` -->
-- if passord is set then video or other files can be directly streamed any apps with `$ mpv http://example.com/link/to/vid?cli=pass`
+- for streaming or downlading files form cli `$ mpv http://example.com/link/to/vid?cli=pass`
+- Zip files for batch download
 
 ## Install
 
@@ -42,27 +43,14 @@ sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
 ```bash
 Usage of goshare:
   -d string
-    	direcotry name (default "." current direcotry)
+        direcotry name (default ".")
   -p string
-    	password (default is empty)
+        password
   -port string
-    	port number (default "8001")
-  -v	prints current version
-
+        port number (default "8001")
+  -s    silence print informating about requests
+  -v    prints current version
 ```
-
-<!-- ## cli client -->
-<!---->
-<!-- I love to work in cli so made this. -->
-<!---->
-<!-- dependencies: `curl`, `wget` and `fzf` -->
-<!---->
-<!-- ```bash -->
-<!-- # sudo dnf install curl wget fzf -->
-<!-- wget 'https://github.com/wizsk/goshare/blob/main/assets/goshare-cli' -->
-<!-- chmod +x goshare-cli -->
-<!-- sudo mv goshare-cli /usr/local/bin/ # or mv goshare-cli ~/.local/bin/ -->
-<!-- ``` -->
 
 ## Screenshots
 

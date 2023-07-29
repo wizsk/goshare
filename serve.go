@@ -70,7 +70,9 @@ var zipFileIndex = make(map[string]compress.ZipFileInfo)
 // zipType == down then just serve the file
 func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	if zipType == "down" {
-		printStat(r, "zip download")
+		if *showStat {
+			printStat(r, "zip download")
+		}
 		if file, ok := zipFileIndex[r.URL.Path]; ok {
 			http.ServeFile(w, r, file.FilePath)
 		}
@@ -80,7 +82,9 @@ func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	if zipType != "make" {
 		return
 	}
-	printStat(r, "zip make")
+	if *showStat {
+		printStat(r, "zip make")
+	}
 
 	// Set the response header for SSE
 	w.Header().Set("Content-Type", "text/event-stream")

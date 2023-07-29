@@ -7,12 +7,6 @@ import (
 	"strings"
 )
 
-// cli
-type CliUiData struct {
-	Root string
-	Dirs []Directory
-}
-
 // form page
 type FormPageDatas struct {
 	RedirectURL string
@@ -27,16 +21,16 @@ type WebUiData struct {
 	SortOptions  []SortOption
 }
 
-type SortOption struct {
-	Title    string
-	Name     string
-	Selected bool
-}
-
 type ProgessPah struct {
 	Title    string
 	Url      string
 	SlashPre bool
+}
+
+type SortOption struct {
+	Title    string
+	Name     string
+	Selected bool
 }
 
 var sortOptions = []SortOption{
@@ -84,15 +78,20 @@ func ServeWebUi(w http.ResponseWriter, r *http.Request) error {
 	datas.ProgessPah = possiblePahts(r)
 	datas.Queries = allQueries(r)
 	datas.Dirtitle = datas.ProgessPah[len(datas.ProgessPah)-1].Title
-	datas.SortOptions = sortOptions
+	datas.SortOptions = make([]SortOption, len(sortOptions))
+	copy(datas.SortOptions, sortOptions)
 
-	// gigure out which sort is in use
+	// figure out which sort is in use
 	if s := r.FormValue("sort"); s != "" {
 		for i, options := range datas.SortOptions {
 			if options.Name == s {
 				datas.SortOptions[i].Selected = true
 				break
 			}
+		}
+	} else {
+		if len(datas.SortOptions) > 0 {
+			datas.SortOptions[0].Selected = true
 		}
 	}
 

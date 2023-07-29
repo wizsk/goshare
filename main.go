@@ -27,6 +27,10 @@ var port = flag.String("port", "8001", "port number")
 var pass = flag.String("p", "", "password")
 var verstionFlag = flag.Bool("v", false, "prints current version")
 
+var showStat = flag.Bool("s", false, "silence print informating about requests")
+
+// var showStat bool
+
 // for ptintstat
 const (
 	NORMAL_REQUEST = "browseing"
@@ -38,6 +42,8 @@ const (
 
 func main() {
 	flag.Parse()
+	// ican't find a bette way
+	*showStat = !*showStat
 	if *verstionFlag {
 		fmt.Printf("goshare current version: %s\n", version)
 		os.Exit(0)
@@ -98,7 +104,9 @@ func mainHandeler(w http.ResponseWriter, r *http.Request) {
 	if *pass != "" {
 		if cli := r.FormValue("cli"); cli != "" {
 			if cli != *pass {
-				printStat(r, LOGIN_ATTEMT)
+				if *showStat {
+					printStat(r, LOGIN_ATTEMT)
+				}
 				http.Error(w, "please provide as such http://example.com/file?cli=password", http.StatusBadRequest)
 				return
 			}
@@ -110,10 +118,14 @@ func mainHandeler(w http.ResponseWriter, r *http.Request) {
 			if r.Method == http.MethodPost {
 				if r.FormValue("password") != *pass {
 					serveForm(w, r)
-					printStat(r, LOGIN_ATTEMT)
+					if *showStat {
+						printStat(r, LOGIN_ATTEMT)
+					}
 					return
 				}
-				printStat(r, LOGIN_SUCCESS)
+				if *showStat {
+					printStat(r, LOGIN_SUCCESS)
+				}
 				auth.WriteCookie(w)
 				http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
 				return
@@ -132,7 +144,9 @@ func mainHandeler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	printStat(r, NORMAL_REQUEST)
+	if *showStat {
+		printStat(r, NORMAL_REQUEST)
+	}
 	if err := ServeWebUi(w, r); err != nil {
 		if errors.Is(err, ErrNotDirectory) {
 			fileUri := root + filepath.Clean(r.URL.Path)
