@@ -18,7 +18,7 @@ import (
 )
 
 const version = "v2.1"
-const debug = true
+const debug = false
 
 var ZIP_DIR string
 
