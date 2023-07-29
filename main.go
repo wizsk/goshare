@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -8,13 +9,15 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/wizsk/goshare/auth"
 	"github.com/wizsk/goshare/compress"
 )
 
-const version = "v2.0"
+const version = "v2.1"
 const debug = false
 
 var ZIP_DIR string
@@ -52,13 +55,16 @@ func main() {
 	}
 	compress.ZIP_PATH = ZIP_DIR
 
+	// exiting gracefully
 	go func() {
 		<-sighalChannel
-		fmt.Println("terminating server and cleaning temp files")
+		fmt.Println("\nterminating server and cleaning temp files")
 		err := os.RemoveAll(ZIP_DIR)
 		if err != nil {
 			log.Println(err)
 		}
+		fmt.Println("waiting for backgorund prcoesses to stop")
+		time.Sleep(1 * time.Second)
 		os.Exit(0)
 	}()
 
@@ -72,6 +78,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+*port, nil))
 
 }
+
 func mainHandeler(w http.ResponseWriter, r *http.Request) {
 
 	if err := r.ParseForm(); err != nil {
@@ -86,37 +93,36 @@ func mainHandeler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// http://localhost/file?cli=password for using or downloading from the cli
-	if cli := r.FormValue("cli"); cli != "" {
-		if cli == *pass || *pass == "" {
-			ServeWebUi(w, r)
-		} else {
-			printStat(r, LOGIN_ATTEMT)
-			http.Error(w, "please provide as such http://example.com/file?cli=password", http.StatusBadRequest)
-		}
-		return
-	}
 
 	// if password was set then authorize
 	if *pass != "" {
-		redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
-		if redirectURL == "" {
-			redirectURL = "/"
-		}
-		if r.Method == http.MethodPost {
-			if r.FormValue("password") != *pass {
-				serveForm(w, r)
+		if cli := r.FormValue("cli"); cli != "" {
+			if cli != *pass {
 				printStat(r, LOGIN_ATTEMT)
+				http.Error(w, "please provide as such http://example.com/file?cli=password", http.StatusBadRequest)
 				return
 			}
-			printStat(r, LOGIN_SUCCESS)
-			auth.WriteCookie(w)
-			http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
-			return
-		}
+		} else {
+			redirectURL, _ := url.QueryUnescape(r.FormValue("redirect"))
+			if redirectURL == "" {
+				redirectURL = "/"
+			}
+			if r.Method == http.MethodPost {
+				if r.FormValue("password") != *pass {
+					serveForm(w, r)
+					printStat(r, LOGIN_ATTEMT)
+					return
+				}
+				printStat(r, LOGIN_SUCCESS)
+				auth.WriteCookie(w)
+				http.Redirect(w, r, redirectURL, http.StatusMovedPermanently)
+				return
+			}
 
-		if err := auth.ReadCookie(r, auth.CookieName); err != nil {
-			serveForm(w, r)
-			return
+			if err := auth.ReadCookie(r, auth.CookieName); err != nil {
+				serveForm(w, r)
+				return
+			}
 		}
 	}
 
@@ -127,5 +133,16 @@ func mainHandeler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	printStat(r, NORMAL_REQUEST)
-	ServeWebUi(w, r)
+	if err := ServeWebUi(w, r); err != nil {
+		if errors.Is(err, ErrNotDirectory) {
+			fileUri := root + filepath.Clean(r.URL.Path)
+			http.ServeFile(w, r, fileUri)
+		} else if errors.Is(err, ErrFileNotFound) {
+			http.Error(w, fmt.Sprintf("%q not found", r.URL.Path), http.StatusInternalServerError)
+		} else {
+			http.Error(w, "somethign went wrong", http.StatusInternalServerError)
+
+		}
+		return
+	}
 }

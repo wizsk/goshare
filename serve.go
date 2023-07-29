@@ -71,7 +71,6 @@ var zipFileIndex = make(map[string]compress.ZipFileInfo)
 func serveZipFile(w http.ResponseWriter, r *http.Request, zipType string) {
 	if zipType == "down" {
 		if file, ok := zipFileIndex[r.URL.Path]; ok {
-			// fmt.Println(ZIP_DIR+"/"+file)
 			http.ServeFile(w, r, file.FilePath)
 		}
 		return

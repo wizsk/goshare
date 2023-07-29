@@ -10,7 +10,7 @@ const menu = document.getElementById("menu");
 const menu_items = document.getElementById("menu-items");
 const menu_cancel = document.getElementById("menu-cancel");
 const zip_file_divs = document.querySelectorAll(".zip-file");
-
+const search_bar = document.getElementById("search");
 let Ziping = false;
 
 // On page load or when changing themes, best to add inline in to avoid FOUC
@@ -50,8 +50,8 @@ theme_btn.addEventListener("click", () => {
 });
 
 const file_name_rows = document.querySelectorAll(".file-name-rows");
-document.getElementById("search").addEventListener("input", (e) => {
-    let value = e.target.value;
+search_bar.addEventListener("input", (e) => {
+    let value = e.target.value.toLowerCase();
     file_name_rows.forEach((file) => {
         const visible = file
             .querySelector(".file-names")
@@ -61,6 +61,15 @@ document.getElementById("search").addEventListener("input", (e) => {
         file.classList.toggle("hidden", !visible);
     });
 });
+
+addEventListener("keydown", (event) => {
+    if (event.key === "/") {
+        event.preventDefault();
+        search_bar.focus();
+    }
+});
+
+
 
 document.getElementById("sort").addEventListener("change", (e) => {
     let params = `${window.location.search}`;
@@ -101,17 +110,15 @@ function eventM(link) {
 
     // castom err event
     eventSource.addEventListener("error", async (e) => {
-        const div = document.createElement('div');
-        div.classList.add("block", "p-3")
-        div.innerText = "someting went wrong";
-        zip_progress.appendChild(div)
+        progress_div.innerText = "cond't zip"
         eventSource.close();
+        Ziping = false;
     });
 
     // done event
     eventSource.addEventListener("done", async (e) => {
         const jsn = await JSON.parse(e.data);
-        console.log("zipping done:", jsn.status);
+        console.log("zipping done:", jsn.name);
         // Create a new <a> element
         const link = document.createElement('a');
         link.classList.add("block", "p-3", "hover:underline")
@@ -150,6 +157,7 @@ function getZipFile(elemnt) {
 
 zip_file_divs.forEach((elemnt) => {
     elemnt.addEventListener("click", (e) => {
+        console.log("getting stuff:", elemnt)
         getZipFile(elemnt);
         elemnt.classList.remove("zip-file")
         const cp = elemnt.cloneNode(true);

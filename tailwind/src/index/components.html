@@ -10,14 +10,18 @@
 </head>
 {{end}}
 
-{{ define "index-searh-possible-paths"}}
+{{ define "index-searh"}}
 <input type="text" id="search"
-  class="border dark:border-gray-700 bg-inherit rounded-full px-4 py-1 mx-auto block text-xl w-[70%] md:w-[60%] my-4"
+  class="bg-inherit rounded px-2 py-2 mx-auto block text-xl w-[90%] md:w-[40%] my-4 outline-none border border-emerald-600/40 dark:border-emerald-300/40"
   placeholder="Search" />
+
+{{end}}
+
+{{ define "index-possible-paths"}}
 <div
   class="w-[95%] mx-auto flex noscrollbar items-center py-2 px-2 mb-4 overflow-x-scroll scroll-smooth text-ellipsis whitespace-nowrap">
   {{range .ProgessPah}}
-  <a href="{{.Url}}{{$.Queries}}" class="font-bold hover:underline text-lg">
+  <a href="{{.Url}}{{$.Queries}}" class="font-bold hover:underline text-xl">
     {{if .SlashPre}}/{{end}}{{.Title}}
   </a>
   {{end}}

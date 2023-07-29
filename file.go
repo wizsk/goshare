@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"errors"
 	"html/template"
 	"log"
 	"net/http"
@@ -23,8 +24,15 @@ type Directory struct {
 	Icon      template.HTML
 }
 
+// file server root directory
 var root string
 
+var (
+	ErrNotDirectory = errors.New("not a direcotory")
+	ErrFileNotFound = errors.New("file not found")
+)
+
+// init the file server and set values for vars
 func fileSeverInit(file string) {
 	if file == "" {
 		log.Fatal("root file should not be empty")
@@ -54,22 +62,19 @@ func fileSeverInit(file string) {
 }
 
 // if it's a directory then return details or serve the file
-func directories(w http.ResponseWriter, r *http.Request) ([]Directory, error) {
+func directories(r *http.Request) ([]Directory, error) {
 	var directories []Directory
 	fileUri := root + filepath.Clean(r.URL.Path)
 	file, err := os.Open(fileUri)
 	if err != nil {
-		http.Error(w, "File not found 404", http.StatusNotFound)
-		// log.Printf("root dir not found; %s\n", err)
-		return directories, err
+		return directories, ErrFileNotFound
 	}
-	
+
 	defer file.Close()
 
 	dirs, err := file.ReadDir(0)
 	if err != nil {
-	
-		return directories, err
+		return directories, ErrNotDirectory
 	}
 
 	directories = directoriesList(dirs, r)

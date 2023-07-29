@@ -66,13 +66,12 @@ var sortOptions = []SortOption{
 	},
 }
 
-func ServeWebUi(w http.ResponseWriter, r *http.Request) {
+func ServeWebUi(w http.ResponseWriter, r *http.Request) error {
 	var err error
 	var datas WebUiData
-	datas.Directories, err = directories(w, r)
+	datas.Directories, err = directories(r)
 	if err != nil {
-		http.Error(w, "something went wrong", http.StatusInternalServerError)
-		return
+		return err
 	}
 
 	// previus page sananagans
@@ -108,13 +107,15 @@ func ServeWebUi(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			log.Println(err)
-			return
+			return err
 		}
 	}
 
 	w.Header().Set("Content-Type", "text/html")
 	if err := indexTemplate.ExecuteTemplate(w, "main", datas); err != nil {
 		log.Println(err)
-		return
+		return err
 	}
+
+	return nil
 }
