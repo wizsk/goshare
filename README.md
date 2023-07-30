@@ -2,7 +2,7 @@
 
 is a file server or sharer over the local network.
 
-I have made this tool for sharing files from my computer's (or home server's) to my phone and other devices within the local network.
+I have made this tool for sharing files from my computer (or home server) to my phone and other devices within the local network.
 
 It consumes minimal resources, making it the perfect choice for running on a home server 24/7.
 
