@@ -17,7 +17,7 @@ import (
 	"github.com/wizsk/goshare/compress"
 )
 
-const version = "v2.1"
+const version = "v3"
 const debug = false
 
 var ZIP_DIR string
