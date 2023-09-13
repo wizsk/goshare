@@ -1,8 +1,2 @@
-github.com/wizsk/fileup v0.0.0-20230909120843-5b5f0aa8d36b h1:dEKA0JsbtHgcGwQUWPquVjTa/PpzOgP4Er6oSCesJeQ=
-github.com/wizsk/fileup v0.0.0-20230909120843-5b5f0aa8d36b/go.mod h1:c+iYWHuxL15AVraGEFGJdRpALM1eMkz46rV3ORo8Mm4=
-github.com/wizsk/fileup v0.0.0-20230913075033-57e8a1dc8f97 h1:8U+he1/yEefGvKDGsDetX374qkvOWrCCPPVH8BbnWAc=
-github.com/wizsk/fileup v0.0.0-20230913075033-57e8a1dc8f97/go.mod h1:c+iYWHuxL15AVraGEFGJdRpALM1eMkz46rV3ORo8Mm4=
-github.com/wizsk/fileup v0.0.0-20230913094107-c17df5665346 h1:bnR05us0hH5CwKMwj9+xvtZQP7r8gVAxkvTMBxdeJic=
-github.com/wizsk/fileup v0.0.0-20230913094107-c17df5665346/go.mod h1:c+iYWHuxL15AVraGEFGJdRpALM1eMkz46rV3ORo8Mm4=
-github.com/wizsk/fileup v0.0.0-20230913094749-3b8388418cbc h1:hfq1tqg6+JtBEho+eQAv/uC8/NApgH2I3wj8ui3R3V0=
-github.com/wizsk/fileup v0.0.0-20230913094749-3b8388418cbc/go.mod h1:c+iYWHuxL15AVraGEFGJdRpALM1eMkz46rV3ORo8Mm4=
+github.com/wizsk/fileup v0.0.0-20230913100508-9f55a81dfac7 h1:3Zb2+sAmFnA3pVRVi8NmFxPXQQYoG+jUEYBZ48J6cQI=
+github.com/wizsk/fileup v0.0.0-20230913100508-9f55a81dfac7/go.mod h1:c+iYWHuxL15AVraGEFGJdRpALM1eMkz46rV3ORo8Mm4=

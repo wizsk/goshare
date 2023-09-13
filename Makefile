@@ -1,7 +1,7 @@
-EXEC_DIR = build/
 PACKAGE_NAME = goshare
-VERSION = 3.0
+VERSION = 3.1
 ARCHITECTURE = amd64
+EXEC_DIR = build/
 # DEB_PACKAGE_DIR = $(EXEC_DIR)/debian
 # DEBIAN_DIR = $(DEB_PACKAGE_DIR)/DEBIAN
 # CONTROL_FILE = $(DEBIAN_DIR)/control
@@ -22,7 +22,7 @@ build: clean update tidyup format vet test
 	@mkdir -p $(EXEC_DIR)
 	# @mkdir -p $(DEB_PACKAGE_DIR)
 	# @mkdir -p $(DEBIAN_DIR)
-	@mkdir -p $(TARGET_EXECUTABLE_PATH)
+	# @mkdir -p $(TARGET_EXECUTABLE_PATH)
 	
 	@echo "[+] Building the Linux version"
 	@go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
