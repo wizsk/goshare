@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,9 +14,25 @@ import (
 	"github.com/wizsk/goshare/compress"
 )
 
-//go:embed tailwind/src/favicon.ico tailwind/src/output.css
+//go:embed tailwind/src/favicon.ico tailwind/src/output.css tailwind/src/upload/index.html
 var staticFiles embed.FS
 var zipMut sync.Mutex
+
+func serverUploadPage(w http.ResponseWriter, r *http.Request) {
+	up := r.FormValue("upload")
+	if up == "true" {
+		fileupServer.Handeler(w, r)
+		return
+	}
+
+	page, err := staticFiles.Open("tailwind/src/upload/index.html")
+	if err != nil {
+		printStat(r, err.Error())
+		return
+	}
+
+	io.Copy(w, page)
+}
 
 func serveForm(w http.ResponseWriter, r *http.Request) {
 	var data FormPageDatas
