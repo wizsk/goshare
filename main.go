@@ -13,9 +13,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/wizsk/fileup"
 	"github.com/wizsk/goshare/auth"
 	"github.com/wizsk/goshare/compress"
 )
+
+// I'm learning stuff every day
+// so thisgs what I have done here are totally wirted(most things are)..
+// I will clean this up.. maybe..
 
 const version = "v3"
 const debug = false
@@ -23,13 +28,17 @@ const debug = false
 var ZIP_DIR string
 
 var dir = flag.String("d", ".", "direcotry name")
+var upDir = flag.String("u", "uploads", "upload directory")
 var port = flag.String("port", "8001", "port number")
 var pass = flag.String("p", "", "password")
 var verstionFlag = flag.Bool("v", false, "prints current version")
-
 var showStat = flag.Bool("s", false, "silence print informating about requests")
 
-// var showStat bool
+const fileUpRoute = "/"
+
+var (
+	fileupServer *fileup.Saver
+)
 
 // for ptintstat
 const (
@@ -51,10 +60,15 @@ func main() {
 
 	fileSeverInit(*dir)
 
+	var err error
+	fileupServer, err = fileup.NewSaverMkdir(fileUpRoute, *upDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	sighalChannel := make(chan os.Signal, 1)
 	signal.Notify(sighalChannel, os.Interrupt, syscall.SIGTERM)
 
-	var err error
 	ZIP_DIR, err = os.MkdirTemp(os.TempDir(), "goshare-zip-")
 	if err != nil {
 		log.Fatal(err)
@@ -86,7 +100,6 @@ func main() {
 }
 
 func mainHandeler(w http.ResponseWriter, r *http.Request) {
-
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "sorry someting went wrong", http.StatusBadRequest)
 		return
@@ -95,6 +108,11 @@ func mainHandeler(w http.ResponseWriter, r *http.Request) {
 	// useing ?query=string to avoid making more handelers
 	if res := r.FormValue("res"); res != "" {
 		serveResource(w, res)
+		return
+	}
+
+	if res := r.FormValue("upload"); res != "" {
+		serverUploadPage(w, r)
 		return
 	}
 
