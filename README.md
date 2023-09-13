@@ -9,6 +9,7 @@ It consumes minimal resources, making it the perfect choice for running on a hom
 ## About
 
 - Only standard library used
+- Upload files to the server.
 - Password protection
 - Zip directories
 - Super-fast transfers
@@ -32,9 +33,9 @@ goshare -h
 ## Or get binnary from releases
 
 ```bash
-wget 'https://github.com/wizsk/goshare/releases/latest/download/goshare_linux64.tar.gz'
+wget 'https://github.com/wizsk/goshare/releases/latest/download/goshare_Linux_static.tar.gz'
 # see realse page for windows
-tar xvf 'goshare_linux64.tar.gz'
+tar xvf 'goshare_Linux_static.tar.gz'
 sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
 ```
 
@@ -49,7 +50,10 @@ Usage of goshare:
   -port string
         port number (default "8001")
   -s    silence print informating about requests
+  -u string
+        upload directory (default "uploads")
   -v    prints current version
+
 ```
 
 ## Screenshots
