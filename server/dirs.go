@@ -1,8 +1,11 @@
 package reader
 
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
-func ReadDir(name string) (*Dir, error) {
+func readDir(name string) (*Dir, error) {
 	items, err := os.ReadDir(name)
 	if err != nil {
 		return nil, err
@@ -10,12 +13,12 @@ func ReadDir(name string) (*Dir, error) {
 
 	var dir Dir
 	for _, item := range items {
-		stat, err := os.Stat(item.Name())
+		stat, err := os.Stat(filepath.Join(name, item.Name()))
 		if err != nil {
 			return nil, err
 		}
 
-		dir = append(dir, Item{
+		dir.Items = append(dir.Items, Item{
 			Name:         item.Name(),
 			LastModified: stat.ModTime(),
 			IsDir:        stat.IsDir(),
@@ -25,7 +28,7 @@ func ReadDir(name string) (*Dir, error) {
 	return &dir, nil
 }
 
-func IsDir(name string) (bool, error) {
+func isDir(name string) (bool, error) {
 	stat, err := os.Stat(name)
 	if err != nil {
 		return false, err

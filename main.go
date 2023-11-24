@@ -1,12 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var rootDir, port string
@@ -15,16 +16,24 @@ func flagParse() {
 	flag.StringVar(&rootDir, "d", ".", "the directory for sharing")
 	flag.StringVar(&port, "p", "8001", "port number")
 	flag.Parse()
+
+	if port == "" {
+		log.Fatal("prot number can't be empty")
+	}
+
+	if rootDir == "" {
+		log.Fatal("directory name can't be empty")
+	}
 }
 
 func main() {
 	flagParse()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/browse", http.StatusMovedPermanently)
+		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
 	})
 
-	http.HandleFunc("/browse", browse)
+	http.HandleFunc("/browse/", browse)
 
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
 
@@ -32,16 +41,32 @@ func main() {
 		fmt.Printf("\nwhile serving err: %v\n", err)
 		os.Exit(1)
 	}
-
 }
 
 func browse(w http.ResponseWriter, r *http.Request) {
-	buff := new(bytes.Buffer)
+	// example.com/fo/bar/bazz -> ["/fo/", "/fo/bar", "/fo/bar/bazz"]
+	var raw []string
+	for _, itm := range strings.Split(r.URL.EscapedPath(), "/") {
+		if len(itm) == 0 {
+			continue
+		}
 
-	http.Redirect(rootDir)
+		if len(raw) == 0 {
+			raw = append(raw, "/"+itm)
+		} else {
+			raw = append(raw, raw[len(raw)-1]+"/"+itm)
+		}
+	}
 
-	w.Write([]byte("hi"))
-	// fo
+	fmt.Println(raw)
+	// fileName := filepath.Join(rootDir, strings.TrimPrefix(r.URL.Path, "/browse"))
+	// if stat, err := os.Stat(file); err != nil {
+	// 	log.Println(err)
+	// 	return
+	// } else if !stat.IsDir() {
+	// 	http.ServeFile(w, r, file)
+	// 	return
+	// }
 }
 
 func localIp() string {
