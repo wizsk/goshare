@@ -1,10 +1,28 @@
-package reader
+package server
 
 import (
 	"bytes"
 	"fmt"
+	"html/template"
+	"log"
+	"path/filepath"
 	"time"
 )
+
+type Server struct {
+	root, tmp string
+	tmpl      *template.Template
+}
+
+func NewServer(r, t, templateDir string) *Server {
+	sv := Server{root: r, tmp: t}
+	var err error
+	sv.tmpl, err = template.ParseGlob(filepath.Join(templateDir, "*.html"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
 
 type Dir struct {
 	Items []Item
@@ -13,6 +31,7 @@ type Dir struct {
 type Item struct {
 	Name         string
 	LastModified time.Time
+	Size         string
 	IsDir        bool
 }
 

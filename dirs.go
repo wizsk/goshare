@@ -1,32 +1,49 @@
-package server
+package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"time"
 )
 
-func readDir(name string) (Dir, error) {
-	items, err := os.ReadDir(name)
+type Item struct {
+	Name         string
+	LastModified time.Time
+	Size         string
+	IsDir        bool
+}
+
+func (i Item) String() string {
+	buff := new(bytes.Buffer)
+
+	fmt.Fprintf(buff, "%s", i.Name)
+
+	return buff.String()
+}
+
+func readDir(name string) ([]Item, error) {
+	entries, err := os.ReadDir(name)
 	if err != nil {
-		return Dir{}, err
+		return nil, err
 	}
 
-	var dir Dir
-	for _, item := range items {
-		stat, err := item.Info()
+	var items []Item
+	for _, entry := range entries {
+		stat, err := entry.Info()
 		if err != nil {
-			return Dir{}, err
+			return nil, err
 		}
 
-		dir.Items = append(dir.Items, Item{
-			Name:         item.Name(),
+		items = append(items, Item{
+			Name:         entry.Name(),
 			LastModified: stat.ModTime(),
 			Size:         prettySize(stat),
 			IsDir:        stat.IsDir(),
 		})
 	}
 
-	return dir, nil
+	return items, nil
 }
 
 func prettySize(f os.FileInfo) string {
