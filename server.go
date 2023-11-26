@@ -16,24 +16,17 @@ type server struct {
 }
 
 type svData struct {
-	Dir []Item
-	Od  string // working directory
+	Dir  []Item
+	Od   string // working directory
+	Umap []Umap
+}
+
+type Umap struct {
+	Name, Url string
 }
 
 func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 	// example.com/fo/bar/bazz -> ["/fo/", "/fo/bar", "/fo/bar/bazz"]
-	var raw []string
-	for _, itm := range strings.Split(r.URL.EscapedPath(), "/") {
-		if len(itm) == 0 {
-			continue
-		}
-
-		if len(raw) == 0 {
-			raw = append(raw, "/"+itm)
-		} else {
-			raw = append(raw, raw[len(raw)-1]+"/"+itm)
-		}
-	}
 
 	fileName := filepath.Join(s.root, strings.TrimPrefix(r.URL.Path, "/browse"))
 
@@ -47,11 +40,17 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	indexPage, err := template.ParseGlob("frontend/*.html")
+	indexPage := template.New("fo").Funcs(template.FuncMap{
+		// "pathJoin": func(s, y string) string {
+		// 	return filepath.Join(s, y)
+		// },
+		"pathJoin": filepath.Join,
+	})
+
+	indexPage, err := indexPage.ParseGlob("frontend/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	svd := svData{Od: r.URL.Path}
 
 	svd.Dir, err = readDir(fileName)
@@ -60,7 +59,21 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = indexPage.Execute(w, &svd)
+	for _, itm := range strings.Split(r.URL.EscapedPath(), "/") {
+		if len(itm) == 0 {
+			continue
+		}
+
+		if len(svd.Umap) == 0 {
+			svd.Umap = append(svd.Umap, Umap{itm, "/" + itm})
+		} else {
+			svd.Umap = append(svd.Umap, Umap{itm, svd.Umap[len(svd.Umap)-1].Url + "/" + itm})
+		}
+
+	}
+	fmt.Println(svd.Umap)
+
+	err = indexPage.ExecuteTemplate(w, "index.html", &svd)
 	if err != nil {
 		log.Println(err)
 		return

@@ -10,9 +10,17 @@
 <body>
     <div>
         <div>
+            {{range .Umap}}
+                <a href="{{.Url}}">{{.Name}}</a>
+            {{end}}
+            <br />
+            <br />
+            <br />
+        </div>
+        <div>
             {{range .Dir}}
                 <div>
-                    <a href="{{$.Od}}{{.Name}}">{{.Name}} {{ if not .IsDir}}[Download]{{end}}</a>
+                    <a href="{{pathJoin $.Od .Name}}">{{.Name}} {{ if not .IsDir}}[Download]{{end}}</a>
                 </div>
             {{end}}
         </div>
