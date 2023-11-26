@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -35,6 +36,9 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fileName := filepath.Join(s.root, strings.TrimPrefix(r.URL.Path, "/browse"))
+
+	fmt.Println("filename:", fileName)
+
 	if stat, err := os.Stat(fileName); err != nil {
 		log.Println(err)
 		return
@@ -50,7 +54,7 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 
 	svd := svData{Od: r.URL.Path}
 
-	svd.Dir, err = readDir(filepath.Join(s.root, fileName))
+	svd.Dir, err = readDir(fileName)
 	if err != nil {
 		log.Println(err)
 		return

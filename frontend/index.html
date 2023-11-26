@@ -12,7 +12,7 @@
         <div>
             {{range .Dir}}
                 <div>
-                    <a href="{{$.Od}}{{.Name}}">{{.Name}}</a>
+                    <a href="{{$.Od}}{{.Name}}">{{.Name}} {{ if not .IsDir}}[Download]{{end}}</a>
                 </div>
             {{end}}
         </div>
