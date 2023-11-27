@@ -11,20 +11,81 @@
     <div>
         <div>
             {{range .Umap}}
-                <a href="{{.Url}}">{{.Name}}</a>
+            <a href="{{.Url}}">{{.Name}}/</a>
             {{end}}
-            <br />
-            <br />
-            <br />
         </div>
+
+        <br />
+        <br />
+
         <div>
-            {{range .Dir}}
-                <div>
-                    <a href="{{pathJoin $.Od .Name}}">{{.Name}} {{ if not .IsDir}}[Download]{{end}}</a>
-                </div>
-            {{end}}
+            <div style="display: none;" id="zip-download">[Download]</div>
+            <table>
+                <tr>
+                    <td id="clear-selection">
+                        [c]
+                    </td>
+
+                    <td>
+                        Name
+                    </td>
+
+                    <td>
+                        Type
+                    </td>
+                </tr>
+                {{range .Dir}}
+                {{$path := pathJoin $.Od .Name}}
+                <tr>
+                    <td>
+                        <input type="checkbox" data-zip-select="{{$path}}" checked="false">
+                    </td>
+                    <td>
+                        <a href="{{$path}}">{{.Name}}</a>
+                    </td>
+                    <td>
+                        {{ if not .IsDir}}[File]{{else}}[Dir]{{end}}
+                    </td>
+                </tr>
+                {{end}}
+            </table>
         </div>
     </div>
+    <script>
+        const dataZipSelect = "data-zip-select";
+
+        document.getElementById("clear-selection").addEventListener("click", () => {
+            document.querySelectorAll(`[${dataZipSelect}]`).forEach((itm) => {
+                itm.checked = false;
+            });
+        });
+
+        const dataZipDown = "zip-download";
+        let filesToZipCount = 0;
+        document.querySelectorAll(`[${dataZipSelect}]`).forEach((itm) => {
+            itm.addEventListener("click", (ev) => {
+                if (itm.checked) {
+                    filesToZipCount++;
+                } else {
+                    filesToZipCount--;
+                }
+                if (filesToZipCount > 0) {
+                    dataZipDown.style.dispaly = "block";
+                } else {
+                    dataZipDown.style.dispaly = "none";
+                }
+                // console.log(itm);
+                // filesToZip.push(itm.getAttribute("data-zip-select"));
+                // filesToZip.
+                // const txt = itm.innerHTML;
+                // if (txt.trim() === "[x]") {
+                //     itm.innerHTML = "[ ]"
+                // } else {
+                //     itm.innerHTML = "[x]"
+                // }
+            });
+        });
+    </script>
 </body>
 
 </html>

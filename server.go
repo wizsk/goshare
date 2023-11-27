@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -30,7 +29,7 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 
 	fileName := filepath.Join(s.root, strings.TrimPrefix(r.URL.Path, "/browse"))
 
-	fmt.Println("filename:", fileName)
+	// fmt.Println("filename:", fileName)
 
 	if stat, err := os.Stat(fileName); err != nil {
 		log.Println(err)
@@ -71,7 +70,6 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	fmt.Println(svd.Umap)
 
 	err = indexPage.ExecuteTemplate(w, "index.html", &svd)
 	if err != nil {
