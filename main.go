@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var rootDir, port string
@@ -51,6 +52,19 @@ func main() {
 	})
 
 	http.HandleFunc("/browse/", sv.browse)
+
+	http.HandleFunc("/zip/", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+
+		fmt.Println()
+		fmt.Println(r.Form["files"])
+		for _, v := range r.Form["files"] {
+			fmt.Println("\t", v, strings.Contains(v, ".."))
+		}
+
+		fmt.Println(r.FormValue("files"))
+		fmt.Println()
+	})
 
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
 

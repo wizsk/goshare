@@ -8,6 +8,7 @@
 </head>
 
 <body>
+    <div id="zip-download">[Download]</div>
     <div>
         <div>
             {{range .Umap}}
@@ -19,11 +20,10 @@
         <br />
 
         <div>
-            <div style="display: none;" id="zip-download">[Download]</div>
             <table>
                 <tr>
                     <td id="clear-selection">
-                        [c]
+                        <button>Clear</button>
                     </td>
 
                     <td>
@@ -51,29 +51,53 @@
             </table>
         </div>
     </div>
-    <script>
-        const dataZipSelect = "data-zip-select";
 
-        document.getElementById("clear-selection").addEventListener("click", () => {
-            document.querySelectorAll(`[${dataZipSelect}]`).forEach((itm) => {
-                itm.checked = false;
-            });
+    <script>
+        function showNotShowZipDown() {
+            if (filesToZipCount > 0) {
+                dataZipDown.style.display = "block";
+                console.log("zip down showing:", filesToZipCount);
+            } else {
+                dataZipDown.style.display = "none";
+                console.log("zip down not showing:", filesToZipCount);
+            }
+        }
+
+
+        const dataZipSelect = "data-zip-select";
+        const items = document.querySelectorAll(`[${dataZipSelect}]`);
+        const dataZipDown = document.getElementById("zip-download");
+        let filesToZipCount = 0;
+
+        items.forEach((itm) => {
+            if (itm.checked) filesToZipCount++;
         });
 
-        const dataZipDown = "zip-download";
-        let filesToZipCount = 0;
-        document.querySelectorAll(`[${dataZipSelect}]`).forEach((itm) => {
+        showNotShowZipDown();
+
+
+        document.getElementById("clear-selection").addEventListener("click", () => {
+            items.forEach((itm) => {
+                if (itm.checked) {
+                    filesToZipCount--;
+                    itm.checked = false;
+                }
+            });
+
+            showNotShowZipDown();
+        });
+
+
+        items.forEach((itm) => {
             itm.addEventListener("click", (ev) => {
                 if (itm.checked) {
                     filesToZipCount++;
                 } else {
                     filesToZipCount--;
                 }
-                if (filesToZipCount > 0) {
-                    dataZipDown.style.dispaly = "block";
-                } else {
-                    dataZipDown.style.dispaly = "none";
-                }
+
+                showNotShowZipDown();
+
                 // console.log(itm);
                 // filesToZip.push(itm.getAttribute("data-zip-select"));
                 // filesToZip.
@@ -85,7 +109,22 @@
                 // }
             });
         });
+
+        document.getElementById("zip-download").addEventListener("click", () => {
+            const url = [];
+            items.forEach((itm) => {
+                if (itm.checked) {
+                    url.push(itm.getAttribute(dataZipSelect));
+                }
+            });
+
+            const strr = url.map(itm => `files=${encodeURIComponent(itm)}`).join("&");
+            const fo = `/zip/?${strr}&files=${encodeURIComponent("/../../../")}`;
+            console.log("req", fo);
+            fetch(fo);
+        });
     </script>
+
 </body>
 
 </html>
