@@ -26,7 +26,6 @@ type Umap struct {
 
 func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 	// example.com/fo/bar/bazz -> ["/fo/", "/fo/bar", "/fo/bar/bazz"]
-
 	fileName := filepath.Join(s.root, strings.TrimPrefix(r.URL.Path, "/browse"))
 
 	// fmt.Println("filename:", fileName)
@@ -46,7 +45,7 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		"pathJoin": filepath.Join,
 	})
 
-	indexPage, err := indexPage.ParseGlob("frontend/*.html")
+	indexPage, err := indexPage.ParseGlob("frontend/src/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
