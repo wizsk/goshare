@@ -53,17 +53,21 @@ func main() {
 
 	http.HandleFunc("/browse/", sv.browse)
 
-	http.HandleFunc("/zip/", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
-
-		fmt.Println()
-		fmt.Println(r.Form["files"])
-		for _, v := range r.Form["files"] {
-			fmt.Println("\t", v, strings.Contains(v, ".."))
+	http.HandleFunc("/zip", func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Println(err)
 		}
 
-		fmt.Println(r.FormValue("files"))
 		fmt.Println()
+		res := []string{}
+		if val, ok := r.Form["files"]; ok {
+			for _, v := range val {
+				v = strings.TrimPrefix(v, "/browse/")
+				res = append(res, v)
+			}
+		}
+		sv.zipDirs(res...)
 	})
 
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
