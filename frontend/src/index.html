@@ -119,7 +119,7 @@
             });
 
             const strr = url.map(itm => `files=${encodeURIComponent(itm)}`).join("&");
-            const fo = `/zip/?${strr}`; //&files=${encodeURIComponent("/../../../")}`;
+            const fo = `/zip?${strr}`; //&files=${encodeURIComponent("/../../../")}`;
             console.log("req", fo);
             fetch(fo);
         });

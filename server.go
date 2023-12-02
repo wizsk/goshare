@@ -10,7 +10,8 @@ import (
 )
 
 type server struct {
-	root, tmp string
+	root, tmp, zipSavePath string
+
 	// tmpl      *template.Template
 }
 

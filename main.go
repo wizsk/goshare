@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 )
 
 var rootDir, port string
@@ -45,7 +44,13 @@ func localIp() string {
 func main() {
 	flagParse()
 
-	sv := server{rootDir, os.TempDir()}
+	// var zipD = filepath.Join(os.TempDir(), "goshra_zip")
+	zipD, err := os.MkdirTemp(os.TempDir(), "goshare_zip")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sv := server{rootDir, os.TempDir(), zipD}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
@@ -53,23 +58,7 @@ func main() {
 
 	http.HandleFunc("/browse/", sv.browse)
 
-	http.HandleFunc("/zip", func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseForm()
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Println()
-		res := []string{}
-		if val, ok := r.Form["files"]; ok {
-			for _, v := range val {
-				v = strings.TrimPrefix(v, "/browse/")
-				res = append(res, v)
-			}
-		}
-		sv.zipDirs(res...)
-	})
-
+	http.HandleFunc("/zip", sv.zip)
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
