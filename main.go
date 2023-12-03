@@ -45,10 +45,13 @@ func main() {
 	flagParse()
 
 	// var zipD = filepath.Join(os.TempDir(), "goshra_zip")
-	zipD, err := os.MkdirTemp(os.TempDir(), "goshare_zip")
+	zipD, err := os.MkdirTemp(os.TempDir(), "goshare_zip_")
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer func() {
+		os.RemoveAll(zipD)
+	}()
 
 	sv := server{rootDir, os.TempDir(), zipD}
 

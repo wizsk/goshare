@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,10 +16,6 @@ import (
 var zipFileNameCahce map[string]string = make(map[string]string)
 
 func walkDirTree(n string) ([]string, error) {
-	n, err := filepath.EvalSymlinks(n)
-	if err != nil {
-		log.Fatal(err)
-	}
 	if stat, err := os.Stat(n); err != nil {
 		return nil, err
 	} else if !stat.IsDir() {
@@ -81,7 +76,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		if v = strings.TrimPrefix(strings.TrimSpace(v), "/browse/"); v == "" {
 			continue
 		}
-		// NOTE: i don't know if it's a possibility
+		// NOTE: i don't know if it's a possibility for abbitray data access. so just incase.
 		if strings.HasSuffix(v, "/..") && strings.HasPrefix(v, "../") && !strings.Contains(v, "/../") {
 			http.Error(w, "Bad actor '..'", http.StatusBadRequest)
 			return
@@ -91,23 +86,47 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 
 	progress := make(chan int)
 	var path string
-	ctx, _ := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel() // cancle will be called automatically
 
 	go func() {
 		path, err = zipDirs(ctx, s.zipSavePath, progress, res...)
 	}()
 
+	// Set the response header for SSE
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	// Flush the response to ensure the message is sent immediately
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
+		return
+	}
+	flusher.Flush()
+
 	for e := range progress {
-		fmt.Println(e)
+		_, err := fmt.Fprintf(w, "event: onProgress\ndata: {\"status\": %d}\n\n", e)
+		if err != nil {
+			return
+		}
+		flusher.Flush()
 	}
 
 	if err != nil {
+		fmt.Fprintf(w, "event: errror\n")
+		fmt.Fprintf(w, "data: {}\n\n")
 		fmt.Println(err)
+		flusher.Flush()
 		return
 	}
 
 	zipFileNameCahce[reqFileNames.String()] = path
-	fmt.Fprintf(w, "%q is writen", path)
+
+	fmt.Fprintf(w, "event: done\n")
+	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNames.String())
+	flusher.Flush()
+	// fmt.Fprintf(w, "%q is writen", path)
 }
 
 func zipDirs(ctx context.Context, sDir string, progress chan<- int, dirs ...string) (string, error) {
