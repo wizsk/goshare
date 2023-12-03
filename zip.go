@@ -15,6 +15,94 @@ import (
 
 var zipFileNameCahce map[string]string = make(map[string]string)
 
+func (s *server) zip(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	val, ok := r.Form["files"]
+	if !ok {
+		http.Error(w, "no files proved", http.StatusBadRequest)
+		return
+	}
+
+	// Set the response header for SSE
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	// Flush the response to ensure the message is sent immediately
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
+		return
+	}
+	flusher.Flush()
+
+	sort.Slice(val, func(i, j int) bool {
+		return val[i] < val[j]
+	})
+
+	var reqFileNames strings.Builder
+	for _, v := range val {
+		reqFileNames.WriteByte(';')
+		reqFileNames.WriteString(v)
+	}
+
+	if path, ok := zipFileNameCahce[reqFileNames.String()]; ok {
+		fmt.Fprintf(w, "event: done\n")
+		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNames.String())
+		flusher.Flush()
+		return
+	}
+
+	res := []string{}
+	for _, v := range val {
+		if v = strings.TrimPrefix(strings.TrimSpace(v), "/browse/"); v == "" {
+			continue
+		}
+		// NOTE: i don't know if it's a possibility for abbitray data access. so just incase.
+		if strings.HasSuffix(v, "/..") && strings.HasPrefix(v, "../") && !strings.Contains(v, "/../") {
+			http.Error(w, "Bad actor '..'", http.StatusBadRequest)
+			return
+		}
+		res = append(res, filepath.Join(s.root, v))
+	}
+
+	progress := make(chan int)
+	var path string
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel() // cancle will be called automatically
+
+	go func() {
+		path, err = zipDirs(ctx, s.zipSavePath, progress, res...)
+	}()
+
+	for e := range progress {
+		_, err := fmt.Fprintf(w, "event: onProgress\ndata: {\"status\": %d}\n\n", e)
+		if err != nil {
+			return
+		}
+		flusher.Flush()
+	}
+
+	if err != nil {
+		fmt.Fprintf(w, "event: errror\n")
+		fmt.Fprintf(w, "data: {}\n\n")
+		fmt.Println(err)
+		flusher.Flush()
+		return
+	}
+
+	zipFileNameCahce[reqFileNames.String()] = path
+
+	fmt.Fprintf(w, "event: done\n")
+	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNames.String())
+	flusher.Flush()
+	// fmt.Fprintf(w, "%q is writen", path)
+}
+
 func walkDirTree(n string) ([]string, error) {
 	if stat, err := os.Stat(n); err != nil {
 		return nil, err
@@ -42,91 +130,6 @@ func walkDirTree(n string) ([]string, error) {
 	}
 
 	return paths, nil
-}
-
-func (s *server) zip(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	val, ok := r.Form["files"]
-	if !ok {
-		http.Error(w, "no files proved", http.StatusBadRequest)
-		return
-	}
-
-	sort.Slice(val, func(i, j int) bool {
-		return val[i] < val[j]
-	})
-
-	var reqFileNames strings.Builder
-	for _, v := range val {
-		reqFileNames.WriteByte(';')
-		reqFileNames.WriteString(v)
-	}
-
-	if name, ok := zipFileNameCahce[reqFileNames.String()]; ok {
-		fmt.Fprintf(w, "%q is file cache", name)
-		return
-	}
-
-	res := []string{}
-	for _, v := range val {
-		if v = strings.TrimPrefix(strings.TrimSpace(v), "/browse/"); v == "" {
-			continue
-		}
-		// NOTE: i don't know if it's a possibility for abbitray data access. so just incase.
-		if strings.HasSuffix(v, "/..") && strings.HasPrefix(v, "../") && !strings.Contains(v, "/../") {
-			http.Error(w, "Bad actor '..'", http.StatusBadRequest)
-			return
-		}
-		res = append(res, filepath.Join(s.root, v))
-	}
-
-	progress := make(chan int)
-	var path string
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel() // cancle will be called automatically
-
-	go func() {
-		path, err = zipDirs(ctx, s.zipSavePath, progress, res...)
-	}()
-
-	// Set the response header for SSE
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	// Flush the response to ensure the message is sent immediately
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
-		return
-	}
-	flusher.Flush()
-
-	for e := range progress {
-		_, err := fmt.Fprintf(w, "event: onProgress\ndata: {\"status\": %d}\n\n", e)
-		if err != nil {
-			return
-		}
-		flusher.Flush()
-	}
-
-	if err != nil {
-		fmt.Fprintf(w, "event: errror\n")
-		fmt.Fprintf(w, "data: {}\n\n")
-		fmt.Println(err)
-		flusher.Flush()
-		return
-	}
-
-	zipFileNameCahce[reqFileNames.String()] = path
-
-	fmt.Fprintf(w, "event: done\n")
-	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNames.String())
-	flusher.Flush()
-	// fmt.Fprintf(w, "%q is writen", path)
 }
 
 func zipDirs(ctx context.Context, sDir string, progress chan<- int, dirs ...string) (string, error) {

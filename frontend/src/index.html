@@ -8,7 +8,11 @@
 </head>
 
 <body>
-    <div id="zip-download">[Download]</div>
+    <div>
+        <button id="zip-download">
+            [Download]
+        </button>
+    </div>
     <div>
         <div>
             {{range .Umap}}
@@ -53,76 +57,8 @@
     </div>
 
     <script>
-        function showNotShowZipDown() {
-            if (filesToZipCount > 0) {
-                dataZipDown.style.display = "block";
-                console.log("zip down showing:", filesToZipCount);
-            } else {
-                dataZipDown.style.display = "none";
-                console.log("zip down not showing:", filesToZipCount);
-            }
-        }
-
-
-        const dataZipSelect = "data-zip-select";
-        const items = document.querySelectorAll(`[${dataZipSelect}]`);
-        const dataZipDown = document.getElementById("zip-download");
-        let filesToZipCount = 0;
-
-        items.forEach((itm) => {
-            if (itm.checked) filesToZipCount++;
-        });
-
-        showNotShowZipDown();
-
-
-        document.getElementById("clear-selection").addEventListener("click", () => {
-            items.forEach((itm) => {
-                if (itm.checked) {
-                    filesToZipCount--;
-                    itm.checked = false;
-                }
-            });
-
-            showNotShowZipDown();
-        });
-
-
-        items.forEach((itm) => {
-            itm.addEventListener("click", (ev) => {
-                if (itm.checked) {
-                    filesToZipCount++;
-                } else {
-                    filesToZipCount--;
-                }
-
-                showNotShowZipDown();
-
-                // console.log(itm);
-                // filesToZip.push(itm.getAttribute("data-zip-select"));
-                // filesToZip.
-                // const txt = itm.innerHTML;
-                // if (txt.trim() === "[x]") {
-                //     itm.innerHTML = "[ ]"
-                // } else {
-                //     itm.innerHTML = "[x]"
-                // }
-            });
-        });
-
-        document.getElementById("zip-download").addEventListener("click", () => {
-            const url = [];
-            items.forEach((itm) => {
-                if (itm.checked) {
-                    url.push(itm.getAttribute(dataZipSelect));
-                }
-            });
-
-            const strr = url.map(itm => `files=${encodeURIComponent(itm)}`).join("&");
-            const fo = `/zip?${strr}`; //&files=${encodeURIComponent("/../../../")}`;
-            console.log("req", fo);
-            fetch(fo);
-        });
+        // {{ template "main.js"}}
+        // {{ template "zip.js"}}
     </script>
 
 </body>

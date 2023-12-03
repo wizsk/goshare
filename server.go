@@ -11,7 +11,6 @@ import (
 
 type server struct {
 	root, tmp, zipSavePath string
-
 	// tmpl      *template.Template
 }
 
@@ -46,7 +45,7 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		"pathJoin": filepath.Join,
 	})
 
-	indexPage, err := indexPage.ParseGlob("frontend/src/*.html")
+	indexPage, err := indexPage.ParseGlob("frontend/src/*")
 	if err != nil {
 		log.Fatal(err)
 	}
