@@ -17,7 +17,7 @@ zipDownBtn.addEventListener("click", () => {
     });
 
     const strr = url.map(itm => `files=${encodeURIComponent(itm)}`).join("&");
-    const path = `/zip?${strr}`; //&files=${encodeURIComponent("/../../../")}`;
+    const path = `/zip?${strr}&cwd=${encodeURIComponent(window.location.pathname)}`; //&files=${encodeURIComponent("/../../../")}`;
 
     console.log("SSE reqest to:", path);
     const sse = new EventSource(path);

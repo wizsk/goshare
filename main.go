@@ -7,9 +7,10 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
-const debug = false
+const debug = !false
 
 var rootDir, port string
 
@@ -46,14 +47,28 @@ func localIp() string {
 func main() {
 	flagParse()
 
+	var zipD string
+	var err error
 	// var zipD = filepath.Join(os.TempDir(), "goshra_zip")
-	zipD, err := os.MkdirTemp(os.TempDir(), "goshare_zip_")
+
+	if debug {
+		zipD = filepath.Join(os.TempDir(), "goshare_zip")
+		err = os.Mkdir(zipD, 0700)
+		if os.IsExist(err) {
+			err = nil
+		}
+	} else {
+		zipD, err = os.MkdirTemp(os.TempDir(), "goshare_zip_")
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() {
-		os.RemoveAll(zipD)
-	}()
+
+	if !debug {
+		defer func() {
+			os.RemoveAll(zipD)
+		}()
+	}
 
 	sv := server{rootDir, os.TempDir(), zipD}
 

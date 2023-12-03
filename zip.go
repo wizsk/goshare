@@ -16,15 +16,22 @@ import (
 var zipFileNameCahce map[string]string = make(map[string]string)
 
 func (s *server) zip(w http.ResponseWriter, r *http.Request) {
-
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	cwd := strings.TrimPrefix(r.FormValue("cwd"), "/browse")
+	if cwd == "" {
+		http.Error(w, "cwd not proved", http.StatusBadRequest)
+		return
+	}
+	cwd = filepath.Join(s.root, cwd, "/")
+
 	val, ok := r.Form["files"]
 	if !ok {
-		http.Error(w, "no files proved", http.StatusBadRequest)
+		http.Error(w, "no files for zipping proved", http.StatusBadRequest)
 		return
 	}
 
@@ -76,7 +83,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	defer cancel() // cancle will be called automatically
 
 	go func() {
-		path, err = zipDirs(ctx, s.zipSavePath, progress, res...)
+		path, err = zipDirs(ctx, s.zipSavePath, cwd, progress, res...)
 	}()
 
 	for e := range progress {
@@ -132,8 +139,12 @@ func walkDirTree(n string) ([]string, error) {
 	return paths, nil
 }
 
-func zipDirs(ctx context.Context, sDir string, progress chan<- int, dirs ...string) (string, error) {
+func zipDirs(ctx context.Context, sDir, prefix string, progress chan<- int, dirs ...string) (string, error) {
 	defer close(progress)
+
+	if len(prefix) > 0 && prefix[len(prefix)-1] != '/' {
+		prefix += "/"
+	}
 	var files []string
 	for _, dir := range dirs {
 		f, err := walkDirTree(dir)
@@ -166,7 +177,7 @@ func zipDirs(ctx context.Context, sDir string, progress chan<- int, dirs ...stri
 			return "", err
 		}
 
-		w, err := arc.Create(f)
+		w, err := arc.Create(strings.TrimPrefix(f, prefix))
 		if err != nil {
 			return "", err
 		}
