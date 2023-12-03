@@ -20,6 +20,7 @@ type server struct {
 
 type svData struct {
 	Dir  []Item
+	Cd   string // current direcoty
 	Od   string // working directory
 	Umap []Umap
 }
@@ -34,12 +35,19 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Println("filename:", fileName)
 
+	currentDirName := ""
 	if stat, err := os.Stat(fileName); err != nil {
 		log.Println(err)
 		return
 	} else if !stat.IsDir() {
 		http.ServeFile(w, r, fileName)
 		return
+	} else {
+		if r.URL.Path == "/browse/" {
+			currentDirName = "/"
+		} else {
+			currentDirName = stat.Name()
+		}
 	}
 
 	indexPage := template.New("fo").Funcs(template.FuncMap{
@@ -57,7 +65,7 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		log.Panicln(err)
 	}
 
-	svd := svData{Od: r.URL.Path}
+	svd := svData{Od: r.URL.Path, Cd: currentDirName}
 
 	svd.Dir, err = readDir(fileName)
 	if err != nil {
