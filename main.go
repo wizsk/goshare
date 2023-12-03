@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+const debug = false
+
 var rootDir, port string
 
 func flagParse() {
@@ -59,9 +61,10 @@ func main() {
 		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
 	})
 
+	// don't chage the /browse/ ok it will break suff
 	http.HandleFunc("/browse/", sv.browse)
-
 	http.HandleFunc("/zip", sv.zip)
+
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {

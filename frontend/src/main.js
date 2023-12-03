@@ -16,7 +16,8 @@ const dataZipDown = document.getElementById("zip-download");
 let filesToZipCount = 0;
 
 items.forEach((itm) => {
-    if (itm.checked) filesToZipCount++;
+    // if (itm.checked) filesToZipCount++;
+    itm.checked = false;
 });
 
 showNotShowZipDown();

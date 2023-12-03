@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"html/template"
 	"log"
 	"net/http"
@@ -8,6 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 )
+
+//go:embed frontend/src/*
+var templateFiles embed.FS
 
 type server struct {
 	root, tmp, zipSavePath string
@@ -39,16 +43,20 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	indexPage := template.New("fo").Funcs(template.FuncMap{
-		// "pathJoin": func(s, y string) string {
-		// 	return filepath.Join(s, y)
-		// },
 		"pathJoin": filepath.Join,
 	})
 
-	indexPage, err := indexPage.ParseGlob("frontend/src/*")
-	if err != nil {
-		log.Fatal(err)
+	var err error
+	if debug {
+		indexPage, err = indexPage.ParseGlob("frontend/src/*")
+	} else {
+		indexPage, err = indexPage.ParseFS(templateFiles, "frontend/src/*")
 	}
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
 	svd := svData{Od: r.URL.Path}
 
 	svd.Dir, err = readDir(fileName)
