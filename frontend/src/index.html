@@ -15,6 +15,13 @@
         </button>
     </div>
     <div>
+        <h1>Upload files</h1>
+        <input type="file" id="fileInput" multiple>
+        <button id="fileSubmit">Upload</button>
+        <div id="progress">send: --</div>
+        <div id="progress-send">send: --</div>
+    </div>
+    <div>
         <div>
             {{range .Umap}}
             <a href="{{.Url}}">{{.Name}}/</a>
@@ -60,6 +67,7 @@
     <script>
         // {{ template "main.js"}}
         // {{ template "zip.js"}}
+        // {{ template "up.js"}}
     </script>
 
 </body>

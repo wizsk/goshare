@@ -79,6 +79,7 @@ func main() {
 	// don't chage the /browse/ ok it will break suff
 	http.HandleFunc("/browse/", sv.browse)
 	http.HandleFunc("/zip", sv.zip)
+	http.HandleFunc("/upload", sv.upload)
 
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
 
