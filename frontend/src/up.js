@@ -6,6 +6,7 @@ const UPLOAD_URL = "/upload"
 
 const fileInput = document.getElementById("fileInput");
 const fileSubmit = document.getElementById("fileSubmit");
+const fileCheckSum = document.getElementById("fileCheckSum");
 const fileProgress = document.getElementById("progress");
 const fileProgressSend = document.getElementById("progress-send");
 
@@ -31,17 +32,15 @@ async function uploadFile() {
     fileProgressSend.innerText = `send 0/${fileInput.files.length}`
     for (let i = 0; i < fileInput.files.length; i++) {
         let file = fileInput.files[i];
-        let fileURL = `${UPLOAD_URL}/${file.name}`
         const uuid = generateUUID();
-        await upload(file, fileURL, uuid);
+        await upload(file, uuid);
         fileProgressSend.innerText = `send ${i + 1}/${fileInput.files.length}`;
         console.log("done", file.name);
     }
     isUploading = false;
 }
 
-async function upload(file, fileURL, uuid) {
-    console.log(file)
+async function upload(file, uuid) {
     try {
         await fetch(`${UPLOAD_URL}?cwd=${encodeURIComponent(window.location.pathname)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=0`, {
             method: 'POST',
@@ -84,7 +83,12 @@ async function upload(file, fileURL, uuid) {
     // last request
     // rename the file
     try {
-        await fetch(`${UPLOAD_URL}?cwd=${encodeURIComponent(window.location.pathname)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=${file.size}&sha256=${""}`, {
+        let sum = "";
+        if (fileCheckSum.checked) {
+            console.log("calcualing checksum of:", file.name);
+            sum = await calculateHashofFile(file);
+        }
+        await fetch(`${UPLOAD_URL}?cwd=${encodeURIComponent(window.location.pathname)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=${file.size}&sha256=${sum}`, {
             method: 'PUT',
         })
     } catch (err) {
@@ -101,11 +105,12 @@ function generateUUID() {
         // Use a cryptographically strong random number generator if available
         const buffer = new Uint16Array(8);
         cryptoObj.getRandomValues(buffer);
-        return `${toHex(buffer[0], 4)}${toHex(buffer[1], 4)}${toHex(buffer[2], 4)}${toHex(buffer[3], 4)}${toHex(buffer[4], 4)}${toHex(buffer[5], 4)}${toHex(buffer[6], 4)}${toHex(buffer[7], 4)}`;
+        return `${toHex(buffer[0], 4)
+            }${toHex(buffer[1], 4)}${toHex(buffer[2], 4)}${toHex(buffer[3], 4)}${toHex(buffer[4], 4)}${toHex(buffer[5], 4)}${toHex(buffer[6], 4)}${toHex(buffer[7], 4)} `;
         // }
     } else {
         // Fallback to a less secure method
-        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);

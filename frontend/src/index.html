@@ -14,13 +14,16 @@
             [Download]
         </button>
     </div>
+
     <div>
         <h1>Upload files</h1>
         <input type="file" id="fileInput" multiple>
+        <input id="fileCheckSum" type="checkbox" />
         <button id="fileSubmit">Upload</button>
         <div id="progress">send: --</div>
         <div id="progress-send">send: --</div>
     </div>
+
     <div>
         <div>
             {{range .Umap}}
@@ -50,7 +53,7 @@
                 {{$path := pathJoin $.Od .Name}}
                 <tr>
                     <td>
-                        <input type="checkbox" data-zip-select="{{$path}}" checked="false">
+                        <input type="checkbox" data-zip-select="{{$path}}" />
                     </td>
                     <td>
                         <a href="{{$path}}">{{.Name}}</a>
@@ -66,6 +69,7 @@
 
     <script>
         // {{ template "main.js"}}
+        // {{ template "sum256.js"}}
         // {{ template "zip.js"}}
         // {{ template "up.js"}}
     </script>

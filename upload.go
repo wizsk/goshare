@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
@@ -46,7 +48,7 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "no uuid provided", http.StatusBadRequest)
 		return
 	}
-	fileUUID := filepath.Join(cwd, fileName+"_"+uuid)
+	fileWithUUID := filepath.Join(cwd, fileName+"_"+uuid)
 
 	// size, err := strconv.Atoi(r.FormValue("size"))
 	// if err != nil {
@@ -64,7 +66,7 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 
 	// no proxy or anything will be used so headers will be used to communicate aobut files
 	if r.Method == http.MethodPost {
-		file, err := os.Create(fileUUID)
+		file, err := os.Create(fileWithUUID)
 		if err != nil {
 			http.Error(w, "could not create file", http.StatusInternalServerError)
 			return
@@ -73,7 +75,7 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 
 	} else if r.Method == http.MethodPatch {
-		file, err := os.OpenFile(fileUUID, os.O_APPEND|os.O_WRONLY, permFile)
+		file, err := os.OpenFile(fileWithUUID, os.O_APPEND|os.O_WRONLY, permFile)
 		if err != nil {
 			http.Error(w, "could not open file", http.StatusBadRequest)
 			return
@@ -86,26 +88,38 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println("file size", offset, fileStat.Size())
 		if offset != int(fileStat.Size()) {
 			http.Error(w, "file corrupted", http.StatusInternalServerError)
 			return
 		}
 
-		var written int64
-		if written, err = io.Copy(file, r.Body); err != nil {
+		if _, err = io.Copy(file, r.Body); err != nil {
 			http.Error(w, "couldn't write file", http.StatusInternalServerError)
 			return
 		}
 		r.Body.Close()
-		fmt.Println("wrritten", written)
 		// this was already checked
 	} else {
 		sum := r.FormValue("sha256")
-		_ = sum
-		if err != nil {
-			http.Error(w, "offset err", http.StatusBadRequest)
-			return
+		if sum != "" {
+			file, err := os.Open(fileWithUUID)
+			if err != nil {
+				http.Error(w, "something went wrong [0]", http.StatusBadRequest)
+				return
+			}
+			defer file.Close()
+
+			hasher := sha256.New()
+			if _, err := io.Copy(hasher, file); err != nil {
+				http.Error(w, "something went wrong [2]", http.StatusBadRequest)
+				return
+			}
+
+			if gotSum := hex.EncodeToString(hasher.Sum(nil)); gotSum != sum {
+				fmt.Println(fileName, sum, gotSum)
+				http.Error(w, "sum don't match", http.StatusBadRequest)
+				return
+			}
 		}
 		// put
 		rawFileName := filepath.Join(cwd, fileName)
@@ -116,7 +130,7 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 			}
 			add = "." + strconv.Itoa(i)
 		}
-		if err := os.Rename(fileUUID, rawFileName+add); err != nil {
+		if err := os.Rename(fileWithUUID, rawFileName+add); err != nil {
 			http.Error(w, "something went wrong", http.StatusInternalServerError)
 			log.Println(err)
 			return
