@@ -37,6 +37,7 @@ async function uploadFile() {
         fileProgressSend.innerText = `send ${i + 1}/${fileInput.files.length}`;
         console.log("done", file.name);
     }
+    fileProgress.innerHTML = `current: done uploading files`;
     isUploading = false;
 }
 
@@ -74,10 +75,9 @@ async function upload(file, uuid) {
             return
         }
 
-        const msg = `send ${null}/${fileInput.files.length} <br>curret: ${Math.round((chuckId / chuckCount) * 100)}% ${file.name}`;
+        const msg = `curret: ${Math.round((chuckId / chuckCount) * 100)}% ${file.name}`;
         fileProgress.innerHTML = msg;
-        console.log(msg.replace("<br>", "\n"));
-
+        console.log(msg);
     }
 
     // last request
@@ -86,6 +86,7 @@ async function upload(file, uuid) {
         let sum = "";
         if (fileCheckSum.checked) {
             console.log("calcualing checksum of:", file.name);
+            fileProgress.innerHTML = `current: cheching 256sum ${file.name}`;
             sum = await calculateHashofFile(file);
         }
         await fetch(`${UPLOAD_URL}?cwd=${encodeURIComponent(window.location.pathname)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=${file.size}&sha256=${sum}`, {
@@ -110,7 +111,7 @@ function generateUUID() {
         // }
     } else {
         // Fallback to a less secure method
-        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
