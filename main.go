@@ -52,6 +52,7 @@ func main() {
 	// var zipD = filepath.Join(os.TempDir(), "goshra_zip")
 
 	if debug {
+		fmt.Println("running in debug mode")
 		zipD = filepath.Join(os.TempDir(), "goshare_zip")
 		err = os.Mkdir(zipD, 0700)
 		if os.IsExist(err) {

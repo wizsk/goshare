@@ -68,6 +68,7 @@ async function upload(file, fileURL, uuid) {
                 method: 'PATCH',
                 body: data,
             });
+
         } catch (err) {
             console.error("while uploading file", file.name, err);
             fileProgress.innerText = err;
