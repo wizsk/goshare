@@ -81,6 +81,7 @@ func main() {
 	http.HandleFunc("/browse/", sv.browse)
 	http.HandleFunc("/zip", sv.zip)
 	http.HandleFunc("/upload", sv.upload)
+	http.HandleFunc("/mkdir", sv.mkdir)
 
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
 

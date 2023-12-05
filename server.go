@@ -2,11 +2,13 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -91,4 +93,46 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+}
+
+var validFilenameRegex *regexp.Regexp = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
+
+func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	cwd := r.FormValue("cwd")
+	if cwd == "" {
+		http.Error(w, "cwd not provided", http.StatusBadRequest)
+		return
+	}
+
+	parent := filepath.Join(s.root, strings.TrimPrefix(cwd, "/browse"))
+
+	if pStat, err := os.Stat(parent); err != nil {
+		http.Error(w, "could not resolve parent direcoty", http.StatusBadRequest)
+		return
+	} else if !pStat.IsDir() {
+		http.Error(w, "paren is not a drectory", http.StatusBadRequest)
+		return
+	}
+
+	dirName := r.FormValue("name")
+
+	if dirName == "" {
+		http.Error(w, "no directory name provided", http.StatusBadRequest)
+		return
+	} else if !validFilenameRegex.MatchString(dirName) {
+		http.Error(w, "directory name contains illigal chars", http.StatusBadRequest)
+		return
+	}
+
+	err := os.Mkdir(filepath.Join(parent, dirName), permDir)
+	if err != nil && !os.IsExist(err) {
+		http.Error(w, fmt.Sprintf("cludld not create %q", dirName), http.StatusBadRequest)
+		return
+	}
+
+	http.Redirect(w, r, filepath.Join(cwd, dirName), http.StatusMovedPermanently)
 }
