@@ -37,8 +37,9 @@ async function uploadFile() {
         fileProgressSend.innerText = `send ${i + 1}/${fileInput.files.length}`;
         console.log("done", file.name);
     }
-    fileProgress.innerHTML = `current: done uploading files`;
+    fileProgress.innerHTML = `current: done uploading files. RELOAD the page to show the content <button onclick="window.location.reload()">RELOAD NOW</button>`;
     isUploading = false;
+    // window.location.reload();
 }
 
 async function upload(file, uuid) {

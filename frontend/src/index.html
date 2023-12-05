@@ -16,6 +16,19 @@
     </div>
 
     <div>
+        <h1>Create a directory</h1>
+        <form id="mkdir-form">
+            <label for="mkdir-input">mkdir:</label>
+            <input type="text" id="mkdir-input" name="mkdir-input" placeholder="input a name to create dir"
+                pattern="^[a-zA-Z0-9_-]+$" required />
+            <button>Submit</button>
+        </form>
+    </div>
+
+
+    <br>
+
+    <div>
         <h1>Upload files</h1>
         <input type="file" id="fileInput" multiple>
 
@@ -45,8 +58,9 @@
         <div>
             <table>
                 <tr>
-                    <td id="clear-selection">
-                        <button>Clear</button>
+                    <td>
+                        <button id="select-all" onclick="selectAll()">SelectAll</button>
+                        <button id="clear-selection">Clear</button>
                     </td>
 
                     <td>
@@ -80,6 +94,7 @@
         // {{ template "sum256.js"}}
         // {{ template "zip.js"}}
         // {{ template "up.js"}}
+        // {{ template "mkdir.js"}}
     </script>
 
 </body>

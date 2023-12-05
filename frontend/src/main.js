@@ -15,6 +15,14 @@ const items = document.querySelectorAll(`[${dataZipSelect}]`);
 const dataZipDown = document.getElementById("zip-download");
 let filesToZipCount = 0;
 
+function selectAll() {
+    items.forEach((itm) => {
+        itm.checked = true;
+        filesToZipCount = items.length;
+        showNotShowZipDown();
+    });
+}
+
 items.forEach((itm) => {
     // if (itm.checked) filesToZipCount++;
     itm.checked = false;
