@@ -2,10 +2,14 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -15,6 +19,31 @@ import (
 
 var zipFileNameCahce map[string]string = make(map[string]string)
 
+func zipStr(val []string) string {
+	sort.Slice(val, func(i, j int) bool {
+		return val[i] < val[j]
+	})
+
+	reqFileNames := new(bytes.Buffer)
+	for _, v := range val {
+		reqFileNames.WriteByte(';')
+		reqFileNames.WriteString(v)
+	}
+
+	sum := sha256.Sum256(reqFileNames.Bytes())
+	return hex.EncodeToString(sum[:])
+}
+
+func (s *server) downZip(w http.ResponseWriter, r *http.Request) {
+	if fileHash := strings.TrimPrefix(r.URL.Path, "/downzip/"); fileHash != "" {
+		path, ok := zipFileNameCahce[fileHash]
+		if !ok {
+			http.Error(w, "could not find zip file", http.StatusBadRequest)
+			return
+		}
+		http.ServeFile(w, r, path)
+	}
+}
 func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -47,19 +76,27 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	}
 	flusher.Flush()
 
-	sort.Slice(val, func(i, j int) bool {
-		return val[i] < val[j]
-	})
-
-	var reqFileNames strings.Builder
-	for _, v := range val {
-		reqFileNames.WriteByte(';')
-		reqFileNames.WriteString(v)
+	reqFileNamesHash := ""
+	if len(val) == 1 {
+		names := strings.Split(val[0], "/")
+		nm := ""
+		for i := len(names) - 1; i >= 0; i-- {
+			if names[i] != "" {
+				nm = names[i]
+				break
+			}
+		}
+		if nm == "browse" {
+			nm = "root"
+		}
+		reqFileNamesHash = nm + ".zip"
+	} else {
+		reqFileNamesHash = zipStr(val) + ".zip"
 	}
 
-	if path, ok := zipFileNameCahce[reqFileNames.String()]; ok {
+	if path, ok := zipFileNameCahce[reqFileNamesHash]; ok {
 		fmt.Fprintf(w, "event: done\n")
-		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNames.String())
+		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNamesHash)
 		flusher.Flush()
 		return
 	}
@@ -102,10 +139,10 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	zipFileNameCahce[reqFileNames.String()] = path
+	zipFileNameCahce[reqFileNamesHash] = path
 
 	fmt.Fprintf(w, "event: done\n")
-	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNames.String())
+	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, "/downzip/"+url.PathEscape(reqFileNamesHash))
 	flusher.Flush()
 	// fmt.Fprintf(w, "%q is writen", path)
 }

@@ -80,6 +80,7 @@ func main() {
 	// don't chage the /browse/ ok it will break suff
 	http.HandleFunc("/browse/", sv.browse)
 	http.HandleFunc("/zip", sv.zip)
+	http.HandleFunc("/downzip/", sv.downZip)
 	http.HandleFunc("/upload", sv.upload)
 	http.HandleFunc("/mkdir", sv.mkdir)
 

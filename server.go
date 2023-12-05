@@ -17,6 +17,7 @@ var templateFiles embed.FS
 
 type server struct {
 	root, tmp, zipSavePath string
+	// zipped                 map[string]string
 	// tmpl      *template.Template
 }
 
