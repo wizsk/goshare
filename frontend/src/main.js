@@ -1,4 +1,19 @@
 // main.js
+
+window.onload = () => {
+    // runs every time to clear the selections
+    items.forEach((itm) => {
+        filesToZipCount = 0;
+        itm.checked = false;
+    });
+    showNotShowZipDown();
+}
+
+const dataZipSelect = "data-zip-select";
+const items = document.querySelectorAll(`[${dataZipSelect}]`);
+const dataZipDown = document.getElementById("zip-download");
+let filesToZipCount = 0;
+
 function showNotShowZipDown() {
     if (filesToZipCount > 0) {
         dataZipDown.style.display = "block";
@@ -10,47 +25,31 @@ function showNotShowZipDown() {
 }
 
 
-const dataZipSelect = "data-zip-select";
-const items = document.querySelectorAll(`[${dataZipSelect}]`);
-const dataZipDown = document.getElementById("zip-download");
-let filesToZipCount = 0;
 
 function selectAll() {
     items.forEach((itm) => {
         itm.checked = true;
-        filesToZipCount = items.length;
-        showNotShowZipDown();
     });
+    filesToZipCount = items.length;
+    showNotShowZipDown();
 }
 
-items.forEach((itm) => {
-    // if (itm.checked) filesToZipCount++;
-    itm.checked = false;
-});
 
-showNotShowZipDown();
-
-
-document.getElementById("clear-selection").addEventListener("click", () => {
+function clearSelections() {
     items.forEach((itm) => {
-        if (itm.checked) {
-            filesToZipCount--;
-            itm.checked = false;
-        }
+        itm.checked = false;
     });
 
+    filesToZipCount = 0;
     showNotShowZipDown();
-});
+}
 
 
-items.forEach((itm) => {
-    itm.addEventListener("click", (ev) => {
-        if (itm.checked) {
-            filesToZipCount++;
-        } else {
-            filesToZipCount--;
-        }
-
-        showNotShowZipDown();
-    });
-});
+function markUnmark(itm) {
+    if (itm.checked) {
+        filesToZipCount++;
+    } else {
+        filesToZipCount--;
+    }
+    showNotShowZipDown();
+}

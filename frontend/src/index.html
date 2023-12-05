@@ -9,11 +9,6 @@
 </head>
 
 <body>
-    <div>
-        <button id="zip-download">
-            [Download]
-        </button>
-    </div>
 
     <div>
         <h1>Create a directory</h1>
@@ -59,8 +54,9 @@
             <table>
                 <tr>
                     <td>
-                        <button id="select-all" onclick="selectAll()">SelectAll</button>
-                        <button id="clear-selection">Clear</button>
+                        <button id="zip-download">Download</button>
+                        <button onclick="selectAll()">SelectAll</button>
+                        <button onclick="clearSelections()">Clear All</button>
                     </td>
 
                     <td>
@@ -75,7 +71,7 @@
                 {{$path := pathJoin $.Od .Name}}
                 <tr>
                     <td>
-                        <input type="checkbox" data-zip-select="{{$path}}" />
+                        <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
                     </td>
                     <td>
                         <a href="{{$path}}">{{.Name}}</a>
