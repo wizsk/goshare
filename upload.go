@@ -97,9 +97,10 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "couldn't write file", http.StatusInternalServerError)
 			return
 		}
-		r.Body.Close()
+		defer r.Body.Close()
 		// this was already checked
 	} else {
+		// put method
 		sum := r.FormValue("sha256")
 		if sum != "" {
 			file, err := os.Open(fileWithUUID)
@@ -121,16 +122,18 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		// put
-		rawFileName := filepath.Join(cwd, fileName)
+
+		ext := filepath.Ext(fileName)
+		rawFileName := filepath.Join(cwd, strings.TrimSuffix(fileName, ext))
 		add := ""
+
 		for i := 1; i < 100; i++ {
-			if _, err := os.Stat(rawFileName + add); os.IsNotExist(err) {
+			if _, err := os.Stat(rawFileName + add + ext); os.IsNotExist(err) {
 				break
 			}
-			add = "." + strconv.Itoa(i)
+			add = "-" + strconv.Itoa(i)
 		}
-		if err := os.Rename(fileWithUUID, rawFileName+add); err != nil {
+		if err := os.Rename(fileWithUUID, rawFileName+add+ext); err != nil {
 			http.Error(w, "something went wrong", http.StatusInternalServerError)
 			log.Println(err)
 			return
