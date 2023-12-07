@@ -26,6 +26,7 @@ function showNotShowZipDown() {
 
 
 
+/** selectAll function selets all the file in current direcotr for zipping */
 function selectAll() {
     items.forEach((itm) => {
         itm.checked = true;
@@ -35,6 +36,7 @@ function selectAll() {
 }
 
 
+/** clearSelections function deselets all the file in current direcotr for zipping */
 function clearSelections() {
     items.forEach((itm) => {
         itm.checked = false;
@@ -45,6 +47,9 @@ function clearSelections() {
 }
 
 
+/**
+ * @param {HTMLInputElement} itm - htmlInputElelemt type checkBox
+ */
 function markUnmark(itm) {
     if (itm.checked) {
         filesToZipCount++;

@@ -23,11 +23,11 @@ fileSubmit.addEventListener("click", async () => {
         return
     }
 
-    await uploadFile();
+    await uploadFiles();
 })
 
 
-async function uploadFile() {
+async function uploadFiles() {
     isUploading = true;
     fileProgressSend.innerText = `send 0/${fileInput.files.length}`
     for (let i = 0; i < fileInput.files.length; i++) {
@@ -42,6 +42,15 @@ async function uploadFile() {
     // window.location.reload();
 }
 
+
+
+
+/**
+ * 
+ * @param {File} file 
+ * @param {string} uuid 
+ * @returns {Promise<void>}
+ */
 async function upload(file, uuid) {
     try {
         await fetch(`${UPLOAD_URL}?cwd=${encodeURIComponent(window.location.pathname)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=0`, {
@@ -100,7 +109,7 @@ async function upload(file, uuid) {
     }
 }
 
-// Generate a random UUID
+/** Generate a random UUID */
 function generateUUID() {
     const cryptoObj = window.crypto || window.msCrypto; // For cross-browser compatibility
     if (cryptoObj && cryptoObj.getRandomValues) {
@@ -123,8 +132,4 @@ function generateUUID() {
 function toHex(value, width) {
     const hex = value.toString(16);
     return '0'.repeat(width - hex.length) + hex;
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }

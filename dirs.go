@@ -16,8 +16,7 @@ type Item struct {
 
 func (i Item) String() string {
 	buff := new(bytes.Buffer)
-
-	fmt.Fprintf(buff, "%s", i.Name)
+	fmt.Fprintf(buff, "%s ", i.Name)
 
 	return buff.String()
 }

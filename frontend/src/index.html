@@ -64,17 +64,32 @@
                     </td>
 
                     <td>
+                        Size
+                    </td>
+
+                    <td>
                         Type
                     </td>
                 </tr>
                 {{range .Dir}}
                 {{$path := pathJoin $.Od .Name}}
+                <!--
+                    type Item struct {
+                    Name         string
+                    LastModified time.Time
+                    Size         string
+                    IsDir        bool
+                    }
+                -->
                 <tr>
                     <td>
                         <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
                     </td>
                     <td>
                         <a href="{{$path}}">{{.Name}}</a>
+                    </td>
+                    <td>
+                        {{.Size}}
                     </td>
                     <td>
                         {{ if not .IsDir}}[File]{{else}}[Dir]{{end}}
