@@ -12,11 +12,12 @@ import (
 
 const debug = !false
 
-var rootDir, port string
+var rootDir, port, password string
 
 func flagParse() {
 	flag.StringVar(&rootDir, "d", ".", "the directory for sharing")
-	flag.StringVar(&port, "p", "8001", "port number")
+	flag.StringVar(&port, "port", "8001", "port number")
+	flag.StringVar(&password, "p", "", "password")
 	flag.Parse()
 
 	if port == "" {
@@ -78,11 +79,12 @@ func main() {
 	})
 
 	// don't chage the /browse/ ok it will break suff
-	http.HandleFunc("/browse/", sv.browse)
-	http.HandleFunc("/zip", sv.zip)
-	http.HandleFunc("/downzip/", sv.downZip)
-	http.HandleFunc("/upload", sv.upload)
-	http.HandleFunc("/mkdir", sv.mkdir)
+	http.HandleFunc("/auth", sv.aunth)
+	http.HandleFunc("/browse/", sv.authBrowse)
+	http.HandleFunc("/zip", sv.authZip)
+	http.HandleFunc("/downzip/", sv.authDownZip)
+	http.HandleFunc("/upload", sv.authUpload)
+	http.HandleFunc("/mkdir", sv.authMkdir)
 
 	fmt.Printf("serving at http://%s:%s\n", localIp(), port)
 
