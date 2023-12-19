@@ -2,9 +2,10 @@
 
 ## functins
 
+- [ ] work on the frontend styles
 - [x] browse files.
 - [x] upload files where you currently is
 - [x] zip dir && download
-- [ ] name zip files properly
-- [ ] work on the frontend styles
-- [ ] temp dir?
+- [x] name zip files properly
+- [x] temp dir
+- [x] auth

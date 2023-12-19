@@ -106,7 +106,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		if v = strings.TrimPrefix(strings.TrimSpace(v), "/browse/"); v == "" {
 			continue
 		}
-		// NOTE: i don't know if it's a possibility for abbitray data access. so just incase.
+		// NOTE: I don't know if it's a possibility for abbitray data access. so just incase.
 		if strings.HasSuffix(v, "/..") && strings.HasPrefix(v, "../") && !strings.Contains(v, "/../") {
 			http.Error(w, "Bad actor '..'", http.StatusBadRequest)
 			return
@@ -142,9 +142,9 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	zipFileNameCahce[reqFileNamesHash] = path
 
 	fmt.Fprintf(w, "event: done\n")
-	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, "/downzip/"+url.PathEscape(reqFileNamesHash))
+	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n",
+		reqFileNamesHash, "/downzip/"+url.PathEscape(reqFileNamesHash))
 	flusher.Flush()
-	// fmt.Fprintf(w, "%q is writen", path)
 }
 
 func walkDirTree(n string) ([]string, error) {

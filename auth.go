@@ -25,6 +25,11 @@ func (s *server) authZip(w http.ResponseWriter, r *http.Request)     { auth(w, r
 
 // for "/auth" route
 func (s *server) aunth(w http.ResponseWriter, r *http.Request) {
+	if password == "" {
+		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		//	indexPage := template.New("fo").Funcs(template.FuncMap{ "pathJoin": filepath.Join, })
 		w.Write([]byte(`<!DOCTYPE html> <html lang="en"><head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Password Form</title> </head> <body> <form action="/auth" method="post"> <label for="password">Password:</label> <input type="password" id="password" name="password" required> <br> <input type="submit" value="Submit"> </form> </body> </html> `))

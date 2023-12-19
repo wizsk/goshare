@@ -41,7 +41,6 @@ func localIp() string {
 			return ipNet.IP.String()
 		}
 	}
-
 	return "localhost"
 }
 
