@@ -76,6 +76,14 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// sort.Slice(svd.Dir, func(i, j int) bool {
+	// 	return svd.Dir[i].Name < svd.Dir[j].Name
+	// })
+	//
+	// sort.Slice(svd.Dir, func(i, j int) bool {
+	// 	return svd.Dir[i].IsDir || svd.Dir[j].IsDir
+	// })
+
 	for _, itm := range strings.Split(r.URL.EscapedPath(), "/") {
 		if len(itm) == 0 {
 			continue

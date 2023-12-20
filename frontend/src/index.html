@@ -76,7 +76,7 @@
                         <span>|</span>
                     </td>
                 </tr> -->
-                {{range .Dir}}
+
                 <!--
                     type Item struct {
                     Name         string
@@ -85,6 +85,8 @@
                     IsDir        bool
                     }
                 -->
+                {{range .Dir}}
+                {{if .IsDir}}
                 {{$path := pathJoin $.Od .Name}}
                 <tr>
                     <td>
@@ -98,6 +100,25 @@
                         <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
                     </td>
                 </tr>
+                {{end}}
+                {{end}}
+
+                {{range .Dir}}
+                {{if not .IsDir}}
+                {{$path := pathJoin $.Od .Name}}
+                <tr>
+                    <td>
+                        {{ if not .IsDir}}[File]{{else}}[Dir]{{end}}
+                    </td>
+                    <td>
+                        <a href="{{$path}}">{{.Name}}</a>
+                        {{if not .IsDir}}{{.Size}}{{end}}
+                    </td>
+                    <td>
+                        <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
+                    </td>
+                </tr>
+                {{end}}
                 {{end}}
             </table>
         </div>
