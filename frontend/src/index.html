@@ -5,17 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <title>- Dir name -</title> -->
+    {{template "output.tcss"}}
     <title>{{.Cd}}</title>
 </head>
 
 <body>
-
+    <!--
     <div>
         <h1>Create a directory</h1>
         <form id="mkdir-form">
             <label for="mkdir-input">mkdir:</label>
-            <input type="text" id="mkdir-input" name="mkdir-input" placeholder="input a name to create dir"
-                pattern="^[a-zA-Z0-9_-]+$" required />
+            <input type="text" id="mkdir-input" name="mkdir-input" placeholder="input a name to create dir" required />
             <button>Submit</button>
         </form>
     </div>
@@ -39,40 +39,44 @@
 
         <br><br>
     </div>
-
+  -->
     <div>
-        <div>
-            {{range .Umap}}
-            <a href="{{.Url}}">{{.Name}}/</a>
-            {{end}}
+        <div class="max-w-[95%] flex">
+            <span class="mr-auto">
+                {{range .Umap}}
+                <a href="{{.Url}}">{{.Name}}/</a>
+                {{end}}
+            </span>
+            <span>
+                <button onclick="showHideZipOptions()">ZZ</button>
+                <div class="hidden" id="zip-options">
+                    <button id="zip-download">Download</button>
+                    <button onclick="selectAll()" id="selectAll-button">SelectAll</button>
+                    <button onclick="clearSelections()" id="clearSelections-button">Clear All</button>
+                </div>
+            </span>
+
         </div>
 
-        <br />
-        <br />
 
         <div>
             <table>
-                <tr>
-                    <td>
-                        <button id="zip-download">Download</button>
-                        <button onclick="selectAll()">SelectAll</button>
-                        <button onclick="clearSelections()">Clear All</button>
-                    </td>
-
-                    <td>
-                        Name
-                    </td>
-
-                    <td>
-                        Size
-                    </td>
+                <!-- <tr>
 
                     <td>
                         Type
                     </td>
-                </tr>
+                    <td>
+                        Name
+                    </td>
+                    <td>
+                        Size
+                    </td>
+                    <td>
+                        <span>|</span>
+                    </td>
+                </tr> -->
                 {{range .Dir}}
-                {{$path := pathJoin $.Od .Name}}
                 <!--
                     type Item struct {
                     Name         string
@@ -81,18 +85,17 @@
                     IsDir        bool
                     }
                 -->
+                {{$path := pathJoin $.Od .Name}}
                 <tr>
                     <td>
-                        <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
+                        {{ if not .IsDir}}[File]{{else}}[Dir]{{end}}
                     </td>
                     <td>
                         <a href="{{$path}}">{{.Name}}</a>
+                        {{if not .IsDir}}{{.Size}}{{end}}
                     </td>
                     <td>
-                        {{.Size}}
-                    </td>
-                    <td>
-                        {{ if not .IsDir}}[File]{{else}}[Dir]{{end}}
+                        <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
                     </td>
                 </tr>
                 {{end}}
@@ -101,12 +104,12 @@
     </div>
 
     <script>
-        // {{ template "main.js"}}
-        // {{ template "sum256.js"}}
         // {{ template "zip.js"}}
-        // {{ template "up.js"}}
-        // {{ template "mkdir.js"}}
+        // {{ template "zip_ssr.js"}}
+        // {{ template "sum256.js"}}
     </script>
+    <!-- // {{ template "up.js"}}
+        // {{ template "mkdir.js"}} -->
 
 </body>
 
