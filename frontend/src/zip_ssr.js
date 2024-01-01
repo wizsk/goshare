@@ -1,11 +1,12 @@
-
 // zip.js
 
+const zipDownProgress = document.getElementById("zip-down-progress");
 const zipDownBtn = document.getElementById("zip-download");
 let isZippin = false;
 
 zipDownBtn.addEventListener("click", () => {
     if (isZippin) return;
+    showHideZipOptions();
     zipDownBtn.disabled = true;
     isZippin = true;
 
@@ -40,10 +41,12 @@ zipDownBtn.addEventListener("click", () => {
         zipDownBtn.disabled = false;
         isZippin = false;
         console.log("sse done:", e.data);
+        zipDownProgress.innerText = e.data;
         sse.close();
     });
 
     sse.addEventListener("onProgress", async (e) => {
+        zipDownProgress.innerText = e.data;
         console.log("sse onPgoress", e.data);
     });
 

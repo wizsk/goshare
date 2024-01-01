@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 //go:embed frontend/src/*
@@ -55,6 +56,9 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 
 	indexPage := template.New("fo").Funcs(template.FuncMap{
 		"pathJoin": filepath.Join,
+		"timeFmt": func(t time.Time) string {
+			return t.Format("01/02/2006 03:04 PM")
+		},
 	})
 
 	var err error

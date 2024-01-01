@@ -29,9 +29,37 @@ function showNotShowZipDown() {
     }
 }
 
+/**
+ * zipOptionsSH is the html btn for 
+ * @type {HTMLElement}
+ */
+const zipOptionsSH = document.getElementById("zip-options");
+
+/**
+ * @type {HTMLElement}
+ */
+const optionsBackdrop = document.getElementById("opt-backdrop");
+
 function showHideZipOptions() {
-    document.getElementById("zip-options").classList.toggle("hidden");
+    if (!document.getElementById("zip-options").classList.toggle("hidden")) {
+        optionsBackdrop.classList.remove("hidden");
+    } else {
+        optionsBackdrop.classList.add("hidden");
+    }
 }
+
+optionsBackdrop.addEventListener("click", () => {
+    zipOptionsSH.classList.add("hidden")
+    optionsBackdrop.classList.add("hidden")
+});
+
+
+// document.addEventListener("click", () => {
+//     if (!zipOptionsSH.classList.contains("hidden")) {
+//         zipOptionsSH.classList.add("hidden");
+//         return;
+//     }
+// })
 
 
 /** selectAll function selets all the file in current direcotr for zipping */
@@ -49,9 +77,9 @@ function clearSelections() {
     items.forEach((itm) => {
         itm.checked = false;
     });
-
     filesToZipCount = 0;
     showNotShowZipDown();
+    showHideZipOptions();
 }
 
 

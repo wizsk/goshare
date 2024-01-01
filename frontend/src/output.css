@@ -540,12 +540,41 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
-.ml-auto {
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.left-0 {
+  left: 0px;
+}
+
+.right-0 {
+  right: 0px;
+}
+
+.top-0 {
+  top: 0px;
+}
+
+.mx-auto {
   margin-left: auto;
+  margin-right: auto;
 }
 
 .mr-auto {
   margin-right: auto;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
 }
 
 .block {
@@ -564,14 +593,164 @@ video {
   display: none;
 }
 
-.max-w-\[\] {
-  max-width: ;
+.h-6 {
+  height: 1.5rem;
 }
 
-.max-w-\[95\] {
-  max-width: 95;
+.h-\[100vh\] {
+  height: 100vh;
+}
+
+.h-28 {
+  height: 7rem;
+}
+
+.h-8 {
+  height: 2rem;
+}
+
+.w-6 {
+  width: 1.5rem;
+}
+
+.w-\[100vw\] {
+  width: 100vw;
+}
+
+.w-10 {
+  width: 2.5rem;
+}
+
+.w-2 {
+  width: 0.5rem;
+}
+
+.w-28 {
+  width: 7rem;
+}
+
+.w-\[\] {
+  width: ;
+}
+
+.w-\[60\] {
+  width: 60;
+}
+
+.w-\[60\%\] {
+  width: 60%;
+}
+
+.w-\[50\%\] {
+  width: 50%;
+}
+
+.w-\[60vw\] {
+  width: 60vw;
+}
+
+.w-\[70vw\] {
+  width: 70vw;
 }
 
 .max-w-\[95\%\] {
   max-width: 95%;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overflow-ellipsis {
+  text-overflow: ellipsis;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.border-2 {
+  border-width: 2px;
+}
+
+.bg-\[\#00000024\] {
+  background-color: #00000024;
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-slate-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
+}
+
+.fill-yellow-400 {
+  fill: #facc15;
+}
+
+.fill-yellow-900 {
+  fill: #713f12;
+}
+
+.fill-yellow-700 {
+  fill: #a16207;
+}
+
+.fill-yellow-500 {
+  fill: #eab308;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.pr-2 {
+  padding-right: 0.5rem;
+}
+
+.pl-2 {
+  padding-left: 0.5rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.drop-shadow-2xl {
+  --tw-drop-shadow: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
