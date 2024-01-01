@@ -10,7 +10,6 @@
 </head>
 
 <body>
-
     <!-- 
     <div>
         <h1>Create a directory</h1>
@@ -48,20 +47,21 @@
                 <a href="{{.Url}}">{{.Name}}/</a>
                 {{end}}
             </span>
-            <span >
+            <span>
                 <div id="opt-backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
                 <div class="relative">
-                    <button onclick="showHideZipOptions()">
+                    <button onclick="showHideZipOptions()" class="md:hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="w-6 h-6" viewBox="0 0 16 16">
                             <path
                                 d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
                         </svg>
                     </button>
-                    <div class="hidden absolute right-0 drop-shadow-2xl border-2 px-2 py-1 bg-white" id="zip-options">
+                    <div class="hidden md:flex md:flex-row md:gap-4 absolute right-0  px-2 py-1 bg-inherit"
+                        id="zip-options">
                         <button id="zip-download">Download</button>
                         <button onclick="selectAll()" id="selectAll-button">SelectAll</button>
-                        <button onclick="clearSelections()" id="clearSelections-button">Clear All</button>
+                        <button onclick="clearSelections()" id="clearSelections-button">ClearAll</button>
                     </div>
                 </div>
             </span>
@@ -72,7 +72,7 @@
         </div>
 
 
-        <div>
+        <div class="mt-4">
             <table class="mx-auto">
                 <!-- <tr>
 

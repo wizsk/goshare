@@ -6,7 +6,6 @@ let isZippin = false;
 
 zipDownBtn.addEventListener("click", () => {
     if (isZippin) return;
-    showHideZipOptions();
     zipDownBtn.disabled = true;
     isZippin = true;
 

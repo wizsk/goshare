@@ -79,7 +79,7 @@ function clearSelections() {
     });
     filesToZipCount = 0;
     showNotShowZipDown();
-    showHideZipOptions();
+    // showHideZipOptions();
 }
 
 
