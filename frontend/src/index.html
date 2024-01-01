@@ -10,7 +10,8 @@
 </head>
 
 <body>
-    <!--
+
+    <!-- 
     <div>
         <h1>Create a directory</h1>
         <form id="mkdir-form">
@@ -39,15 +40,15 @@
 
         <br><br>
     </div>
-  -->
+     -->
     <div>
-        <div class="mx-auto mt-4 max-w-[95%] flex text-xl">
+        <div class="mx-auto mt-4 w-[97%] flex text-xl">
             <span class="mr-auto">
                 {{range .Umap}}
                 <a href="{{.Url}}">{{.Name}}/</a>
                 {{end}}
             </span>
-            <span>
+            <span >
                 <div id="opt-backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
                 <div class="relative">
                     <button onclick="showHideZipOptions()">
@@ -129,8 +130,8 @@
                 {{$path := pathJoin $.Od .Name}}
                 <tr class="h-8">
                     <td class="pr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-6 h-6"
-                            viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="w-6 h-6" viewBox="0 0 16 16">
                             <path
                                 d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
                         </svg>
@@ -161,9 +162,9 @@
         // {{ template "zip.js"}}
         // {{ template "zip_ssr.js"}}
         // {{ template "sum256.js"}}
+        // {{ template "up.js"}}
+        // {{ template "mkdir.js"}} 
     </script>
-    <!-- // {{ template "up.js"}}
-        // {{ template "mkdir.js"}} -->
 
 </body>
 

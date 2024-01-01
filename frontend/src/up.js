@@ -22,7 +22,7 @@ fileSubmit.addEventListener("click", async () => {
         console.log("select a file");
         return
     }
-
+    console.log("uploading starting");
     await uploadFiles();
 })
 

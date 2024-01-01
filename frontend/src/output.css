@@ -540,6 +540,10 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
+.static {
+  position: static;
+}
+
 .absolute {
   position: absolute;
 }
@@ -653,8 +657,20 @@ video {
   width: 70vw;
 }
 
+.w-\[99\%\] {
+  width: 99%;
+}
+
+.w-\[97\%\] {
+  width: 97%;
+}
+
 .max-w-\[95\%\] {
   max-width: 95%;
+}
+
+.max-w-\[99\%\] {
+  max-width: 99%;
 }
 
 .flex-col {
@@ -753,4 +769,16 @@ video {
 .drop-shadow-2xl {
   --tw-drop-shadow: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+@media (min-width: 768px) {
+  .md\:hidden {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:hidden {
+    display: none;
+  }
 }
