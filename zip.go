@@ -96,7 +96,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 
 	if path, ok := zipFileNameCahce[reqFileNamesHash]; ok {
 		fmt.Fprintf(w, "event: done\n")
-		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", path, reqFileNamesHash)
+		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", reqFileNamesHash, path)
 		flusher.Flush()
 		return
 	}
