@@ -41,6 +41,9 @@ const zipOptionsSH = document.getElementById("zip-options");
 const optionsBackdrop = document.getElementById("opt-backdrop");
 
 function showHideZipOptions() {
+    if (window.screen.width > 768) return;
+    
+
     if (!document.getElementById("zip-options").classList.toggle("hidden")) {
         optionsBackdrop.classList.remove("hidden");
     } else {
@@ -79,7 +82,7 @@ function clearSelections() {
     });
     filesToZipCount = 0;
     showNotShowZipDown();
-    // showHideZipOptions();
+    showHideZipOptions();
 }
 
 

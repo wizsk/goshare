@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <div id="opt-backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
     <!-- 
     <div>
         <h1>Create a directory</h1>
@@ -48,7 +49,6 @@
                 {{end}}
             </span>
             <span>
-                <div id="opt-backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
                 <div class="relative">
                     <button onclick="showHideZipOptions()" class="md:hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -102,21 +102,23 @@
                 {{range .Dir}}
                 {{if .IsDir}}
                 {{$path := pathJoin $.Od .Name}}
-                <tr class="h-8">
+                <tr class="h-8 hover:bg-slate-500">
                     <td class="pr-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="w-6 h-6 fill-yellow-500" viewBox="0 0 16 16">
+                            class="w-8 h-8 fill-yellow-500" viewBox="0 0 16 16">
                             <path
                                 d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
                         </svg>
                     </td>
                     <td class="flex flex-col w-[70vw] overflow-hidden">
-                        <a class="w-[50%] overflow-hidden overflow-ellipsis" href="{{$path}}">{{.Name}}</a>
-                        <span class="text-gray-500 text-sm">
-                            <span>
-                                {{.LastModified | timeFmt}}
+                        <a class="w-[50%] flex flex-col" href="{{$path}}">
+                            <span class="overflow-hidden overflow-ellipsis ">{{.Name}}</span>
+                            <span class="text-gray-500 text-sm">
+                                <span>
+                                    {{.LastModified | timeFmt}}
+                                </span>
                             </span>
-                        </span>
+                        </a>
                     </td>
                     <td class="pl-2">
                         <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
@@ -131,22 +133,24 @@
                 <tr class="h-8">
                     <td class="pr-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="w-6 h-6" viewBox="0 0 16 16">
+                            class="w-8 h-8" viewBox="0 0 16 16">
                             <path
                                 d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
                         </svg>
                     </td>
-                    <td class="flex flex-col w-[70vw] overflow-hidden">
-                        <a class="truncate " href="{{$path}}">{{.Name}}</a>
-                        <span class="text-gray-500 text-sm">
-                            <span>
-                                {{.Size}}
+                    <td class="flex flex-col w-[70vw] overflow-hidden py-2">
+                        <a class="w-[50%] flex flex-col" href="{{$path}}">
+                            <span class="overflow-hidden overflow-ellipsis ">{{.Name}}</span>
+                            <span class="text-gray-500 text-sm">
+                                <span>
+                                    {{.Size}}
+                                </span>
+                                <span>|</span>
+                                <span>
+                                    {{.LastModified | timeFmt}}
+                                </span>
                             </span>
-                            <span>|</span>
-                            <span>
-                                {{.LastModified | timeFmt}}
-                            </span>
-                        </span>
+                        </a>
                     </td>
                     <td class="pl-2">
                         <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />

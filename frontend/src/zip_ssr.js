@@ -6,6 +6,7 @@ let isZippin = false;
 
 zipDownBtn.addEventListener("click", () => {
     if (isZippin) return;
+    showHideZipOptions();
     zipDownBtn.disabled = true;
     isZippin = true;
 
@@ -40,6 +41,13 @@ zipDownBtn.addEventListener("click", () => {
         zipDownBtn.disabled = false;
         isZippin = false;
         console.log("sse done:", e.data);
+        const data = JSON.parse(e.data);
+        const a = document.createElement("a");
+        a.href = data.url;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
         zipDownProgress.innerText = e.data;
         sse.close();
     });
