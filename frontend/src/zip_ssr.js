@@ -4,9 +4,11 @@ const zipDownProgress = document.getElementById("zip-down-progress");
 const zipDownBtn = document.getElementById("zip-download");
 let isZippin = false;
 
-zipDownBtn.addEventListener("click", () => {
-    if (isZippin) return;
-    showHideZipOptions();
+function downloadAsZip() {
+    if (isZippin) {
+        alert("Already zipping");
+        return
+    }
     zipDownBtn.disabled = true;
     isZippin = true;
 
@@ -16,6 +18,11 @@ zipDownBtn.addEventListener("click", () => {
             url.push(itm.getAttribute(dataZipSelect));
         }
     });
+
+    if (url.length === 0) {
+        alert("Please select some files");
+        return;
+    }
 
     const strr = url.map(itm => `files=${encodeURIComponent(itm)}`).join("&");
     const path = `/zip?${strr}&cwd=${encodeURIComponent(window.location.pathname)}`; //&files=${encodeURIComponent("/../../../")}`;
@@ -64,4 +71,4 @@ zipDownBtn.addEventListener("click", () => {
     };
 
     // fetch(fo);
-});
+}

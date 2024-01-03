@@ -42,37 +42,35 @@
     </div>
      -->
     <div>
-        <div class="mx-auto mt-4 w-[97%] flex text-xl">
-            <span class="mr-auto">
+        <div class="w-screen px-2 py-4 fixed bg-white flex flex-row justify-between text-xl">
+            <div class="w-[85vw] overflow-scroll whitespace-nowrap">
                 {{range .Umap}}
                 <a href="{{.Url}}">{{.Name}}/</a>
                 {{end}}
-            </span>
-            <span>
-                <div class="relative">
-                    <button onclick="showHideZipOptions()" class="md:hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="w-6 h-6" viewBox="0 0 16 16">
-                            <path
-                                d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                        </svg>
-                    </button>
-                    <div class="hidden md:flex md:flex-row md:gap-4 absolute right-0  px-2 py-1 bg-inherit"
-                        id="zip-options">
-                        <button id="zip-download">Download</button>
-                        <button onclick="selectAll()" id="selectAll-button">SelectAll</button>
-                        <button onclick="clearSelections()" id="clearSelections-button">ClearAll</button>
-                    </div>
+            </div>
+            <div class="relative md:static w-fit">
+                <button onclick="showHideZipOptions()" class="md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-6 h-6"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                    </svg>
+                </button>
+                <div class="hidden md:flex md:flex-row md:gap-4 absolute md:static right-4 px-2 py-1 bg-white md:bg-inherit"
+                    id="zip-options">
+                    <button id="zip-download" onclick="downloadAsZip()">DownloadZips</button>
+                    <button onclick="selectAll()" id="selectAll-button">SelectAll</button>
+                    <button onclick="clearSelections()" id="clearSelections-button">ClearAll</button>
                 </div>
-            </span>
-
+            </div>
         </div>
+        <div class="py-8"></div>
 
         <div id="zip-down-progress">
         </div>
 
 
-        <div class="mt-4">
+        <div class="">
             <table class="mx-auto">
                 <!-- <tr>
 
@@ -96,26 +94,30 @@
                     LastModified time.Time
                     Size         string
                     IsDir        bool
-                    }
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="w-8 h-8" viewBox="0 0 16 16">
+                                <path
+                                    d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
+                            </svg>}
                 -->
                 <!-- lith the dirs then list the files -->
                 {{range .Dir}}
                 {{if .IsDir}}
                 {{$path := pathJoin $.Od .Name}}
-                <tr class="h-8 hover:bg-slate-500">
-                    <td class="pr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="w-8 h-8 fill-yellow-500" viewBox="0 0 16 16">
-                            <path
-                                d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
-                        </svg>
-                    </td>
-                    <td class="flex flex-col w-[70vw] overflow-hidden">
-                        <a class="w-[50%] flex flex-col" href="{{$path}}">
-                            <span class="overflow-hidden overflow-ellipsis ">{{.Name}}</span>
-                            <span class="text-gray-500 text-sm">
-                                <span>
-                                    {{.LastModified | timeFmt}}
+                <tr class="h-8">
+                    <td class="flex flex-col w-[90vw] overflow-hidden">
+                        <a class="flex flex-row gap-2 items-center" href="{{$path}}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="w-8 h-8 fill-yellow-500" viewBox="0 0 16 16">
+                                <path
+                                    d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
+                            </svg>
+                            <span class="flex flex-col">
+                                <span class="text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
+                                <span class="text-gray-500 text-sm">
+                                    <span>
+                                        {{.LastModified | timeFmt}}
+                                    </span>
                                 </span>
                             </span>
                         </a>
@@ -131,23 +133,23 @@
                 {{if not .IsDir}}
                 {{$path := pathJoin $.Od .Name}}
                 <tr class="h-8">
-                    <td class="pr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="w-8 h-8" viewBox="0 0 16 16">
-                            <path
-                                d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
-                        </svg>
-                    </td>
-                    <td class="flex flex-col w-[70vw] overflow-hidden py-2">
-                        <a class="w-[50%] flex flex-col" href="{{$path}}">
-                            <span class="overflow-hidden overflow-ellipsis ">{{.Name}}</span>
-                            <span class="text-gray-500 text-sm">
-                                <span>
-                                    {{.Size}}
-                                </span>
-                                <span>|</span>
-                                <span>
-                                    {{.LastModified | timeFmt}}
+                    <td class="flex flex-col w-[90vw] overflow-hidden">
+                        <a class="flex flex-row gap-2 items-center" href="{{$path}}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="w-8 h-8" viewBox="0 0 16 16">
+                                <path
+                                    d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
+                            </svg>
+                            <span class="flex flex-col">
+                                <span class="text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
+                                <span class="text-gray-500 text-sm">
+                                    <span>
+                                        {{.Size}}
+                                    </span>
+                                    <span>|</span>
+                                    <span>
+                                        {{.LastModified | timeFmt}}
+                                    </span>
                                 </span>
                             </span>
                         </a>

@@ -18,15 +18,15 @@ let filesToZipCount = 0;
 
 /** shows or hides downzip button, zipClearSelections buttton */
 function showNotShowZipDown() {
-    if (filesToZipCount > 0) {
-        dataZipDown.style.display = "block";
-        zipClearSelectionBtn.style.display = "block";
-        console.log("zip down showing:", filesToZipCount);
-    } else {
-        dataZipDown.style.display = "none";
-        zipClearSelectionBtn.style.display = "none";
-        console.log("zip down not showing:", filesToZipCount);
-    }
+    // if (filesToZipCount > 0) {
+    //     dataZipDown.style.display = "block";
+    //     zipClearSelectionBtn.style.display = "block";
+    //     console.log("zip down showing:", filesToZipCount);
+    // } else {
+    //     dataZipDown.style.display = "none";
+    //     zipClearSelectionBtn.style.display = "none";
+    //     console.log("zip down not showing:", filesToZipCount);
+    // }
 }
 
 /**
@@ -41,8 +41,8 @@ const zipOptionsSH = document.getElementById("zip-options");
 const optionsBackdrop = document.getElementById("opt-backdrop");
 
 function showHideZipOptions() {
-    if (window.screen.width > 768) return;
-    
+    if (window.screen.width > 768) return;// md: 768px
+
 
     if (!document.getElementById("zip-options").classList.toggle("hidden")) {
         optionsBackdrop.classList.remove("hidden");
