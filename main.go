@@ -12,12 +12,17 @@ import (
 
 const debug = !false
 
-var rootDir, port, password string
+var (
+	rootDir, port, password string
+
+	showStat bool
+)
 
 func flagParse() {
 	flag.StringVar(&rootDir, "d", ".", "the directory for sharing")
 	flag.StringVar(&port, "port", "8001", "port number")
 	flag.StringVar(&password, "p", "", "password")
+	flag.BoolVar(&showStat, "s", false, "don't show request information. aka silent")
 	flag.Parse()
 
 	if port == "" {
@@ -71,7 +76,7 @@ func main() {
 		}()
 	}
 
-	sv := server{rootDir, os.TempDir(), zipD}
+	sv := server{rootDir, os.TempDir(), zipD, !showStat}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)

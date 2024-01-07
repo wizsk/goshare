@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/wizsk/goshare/cookie"
 )
@@ -16,12 +19,46 @@ func auth(w http.ResponseWriter, r *http.Request, handler func(w http.ResponseWr
 	handler(w, r)
 }
 
-// funcs for authenticated usrs
-func (s *server) authBrowse(w http.ResponseWriter, r *http.Request)  { auth(w, r, s.browse) }
-func (s *server) authDownZip(w http.ResponseWriter, r *http.Request) { auth(w, r, s.downZip) }
-func (s *server) authMkdir(w http.ResponseWriter, r *http.Request)   { auth(w, r, s.mkdir) }
-func (s *server) authUpload(w http.ResponseWriter, r *http.Request)  { auth(w, r, s.upload) }
-func (s *server) authZip(w http.ResponseWriter, r *http.Request)     { auth(w, r, s.zip) }
+// depends on a global var const
+func (s *server) printStat(r *http.Request) {
+	if s.showStat {
+		rAddr := r.RemoteAddr
+		if idx := strings.LastIndexByte(r.RemoteAddr, ':'); idx > 0 {
+			rAddr = r.RemoteAddr[0:idx]
+		}
+		fmt.Printf("[REQ] %s | %15s | %s | %q\n",
+			time.Now().Format("2006/01/02 - 03:04:05 PM"),
+			rAddr,
+			r.Method,
+			r.URL.Path,
+		)
+	}
+}
+
+func (s *server) authBrowse(w http.ResponseWriter, r *http.Request) {
+	s.printStat(r)
+	auth(w, r, s.browse)
+}
+
+func (s *server) authDownZip(w http.ResponseWriter, r *http.Request) {
+	s.printStat(r)
+	auth(w, r, s.downZip)
+}
+
+func (s *server) authMkdir(w http.ResponseWriter, r *http.Request) {
+	s.printStat(r)
+	auth(w, r, s.mkdir)
+}
+
+func (s *server) authUpload(w http.ResponseWriter, r *http.Request) {
+	s.printStat(r)
+	auth(w, r, s.upload)
+}
+
+func (s *server) authZip(w http.ResponseWriter, r *http.Request) {
+	s.printStat(r)
+	auth(w, r, s.zip)
+}
 
 // for "/auth" route
 func (s *server) aunth(w http.ResponseWriter, r *http.Request) {
