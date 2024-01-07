@@ -12,19 +12,7 @@ const fileProgressSend = document.getElementById("progress-send");
 
 let isUploading = false;
 
-fileSubmit.addEventListener("click", async () => {
-    if (isUploading) {
-        console.log("already uploaing")
-        return
-    }
-
-    if (fileInput.files.length < 1) {
-        console.log("select a file");
-        return
-    }
-    console.log("uploading starting");
-    await uploadFiles();
-})
+/ })
 
 
 async function uploadFiles() {

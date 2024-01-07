@@ -5,13 +5,6 @@ const zipDownBtn = document.getElementById("zip-download");
 let isZippin = false;
 
 function downloadAsZip() {
-    if (isZippin) {
-        alert("Already zipping");
-        return
-    }
-    zipDownBtn.disabled = true;
-    isZippin = true;
-
     const url = [];
     items.forEach((itm) => {
         if (itm.checked) {
@@ -23,6 +16,14 @@ function downloadAsZip() {
         alert("Please select some files");
         return;
     }
+
+    if (isZippin) {
+        alert("Already zipping");
+        return
+    }
+    zipDownBtn.disabled = true;
+    isZippin = true;
+
 
     const strr = url.map(itm => `files=${encodeURIComponent(itm)}`).join("&");
     const path = `/zip?${strr}&cwd=${encodeURIComponent(window.location.pathname)}`; //&files=${encodeURIComponent("/../../../")}`;
