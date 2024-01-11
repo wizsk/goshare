@@ -3,7 +3,6 @@ package main
 import (
 	"archive/zip"
 	"bytes"
-	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -34,6 +33,7 @@ func zipStr(val []string) string {
 	return hex.EncodeToString(sum[:])
 }
 
+// download the zip of the given file
 func (s *server) downZip(w http.ResponseWriter, r *http.Request) {
 	if fileHash := strings.TrimPrefix(r.URL.Path, "/downzip/"); fileHash != "" {
 		path, ok := zipFileNameCahce[fileHash]
@@ -44,6 +44,8 @@ func (s *server) downZip(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, path)
 	}
 }
+
+// zip the files
 func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -114,27 +116,18 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		res = append(res, filepath.Join(s.root, v))
 	}
 
-	progress := make(chan int)
-	var path string
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel() // cancle will be called automatically
-
-	go func() {
-		path, err = zipDirs(ctx, s.zipSavePath, cwd, progress, res...)
-	}()
-
-	for e := range progress {
-		_, err := fmt.Fprintf(w, "event: onProgress\ndata: {\"status\": %d}\n\n", e)
+	callback := func(p int) error {
+		_, err := fmt.Fprintf(w, "event: onProgress\ndata: {\"status\": %d}\n\n", p)
 		if err != nil {
-			return
+			return err
 		}
 		flusher.Flush()
+		return nil
 	}
 
+	path, err := zipDirs(callback, s.zipSavePath, cwd, res...)
 	if err != nil {
-		fmt.Fprintf(w, "event: errror\n")
-		fmt.Fprintf(w, "data: {}\n\n")
-		fmt.Println(err)
+		fmt.Fprintf(w, "event: errror\ndata: {}\n\n")
 		flusher.Flush()
 		return
 	}
@@ -145,6 +138,52 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n",
 		reqFileNamesHash, "/downzip/"+url.PathEscape(reqFileNamesHash))
 	flusher.Flush()
+}
+
+func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...string) (string, error) {
+	if len(prefix) > 0 && prefix[len(prefix)-1] != '/' {
+		prefix += "/"
+	}
+	var files []string
+	for _, dir := range dirs {
+		f, err := walkDirTree(dir)
+		if err != nil {
+			return "", err
+		}
+		files = append(files, f...)
+	}
+
+	r, err := os.Create(filepath.Join(sDir, fmt.Sprintf("%v.zip", time.Now().UnixMilli())))
+	if err != nil {
+		return "", err
+	}
+	defer r.Close()
+
+	arc := zip.NewWriter(r)
+	defer arc.Close()
+
+	for i, f := range files {
+		if err := callback(i * 100 / len(files)); err != nil {
+			return "", err
+		}
+
+		r, err := os.Open(f)
+		if err != nil {
+			return "", err
+		}
+
+		w, err := arc.Create(strings.TrimPrefix(f, prefix))
+		if err != nil {
+			return "", err
+		}
+		_, err = io.Copy(w, r)
+		if err != nil {
+			return "", err
+		}
+		r.Close()
+	}
+
+	return r.Name(), nil
 }
 
 func walkDirTree(n string) ([]string, error) {
@@ -174,56 +213,4 @@ func walkDirTree(n string) ([]string, error) {
 	}
 
 	return paths, nil
-}
-
-func zipDirs(ctx context.Context, sDir, prefix string, progress chan<- int, dirs ...string) (string, error) {
-	defer close(progress)
-
-	if len(prefix) > 0 && prefix[len(prefix)-1] != '/' {
-		prefix += "/"
-	}
-	var files []string
-	for _, dir := range dirs {
-		f, err := walkDirTree(dir)
-		if err != nil {
-			return "", err
-		}
-		files = append(files, f...)
-	}
-
-	r, err := os.Create(filepath.Join(sDir, fmt.Sprintf("%v.zip", time.Now().UnixMilli())))
-	if err != nil {
-		return "", err
-	}
-	defer r.Close()
-
-	arc := zip.NewWriter(r)
-	defer arc.Close()
-
-	for i, f := range files {
-		select {
-		case <-ctx.Done():
-			return "", fmt.Errorf("canceled")
-		default:
-		}
-
-		progress <- i * 100 / len(files)
-
-		r, err := os.Open(f)
-		if err != nil {
-			return "", err
-		}
-
-		w, err := arc.Create(strings.TrimPrefix(f, prefix))
-		if err != nil {
-			return "", err
-		}
-		_, err = io.Copy(w, r)
-		if err != nil {
-			return "", err
-		}
-		r.Close()
-	}
-
-	return r.Name(), nil
 }

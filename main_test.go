@@ -1,10 +1,6 @@
 package main
 
-import (
-	"os"
-	"testing"
-)
-
+/*
 func xTestFooo(t *testing.T) {
 	s, err := os.Stat("frontend/node_modules/.pnpm/@jridgewell+gen-mapping@0.3.3/node_modules/@jridgewell/set-array")
 	if err != nil {
@@ -23,3 +19,5 @@ func TestFooo(t *testing.T) {
 	}
 	t.Log(name)
 }
+
+*/
