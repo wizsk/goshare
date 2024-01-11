@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -94,6 +95,10 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
+		if i, err := url.QueryUnescape(itm); err == nil {
+			itm = i
+		}
+
 		if len(svd.Umap) == 0 {
 			svd.Umap = append(svd.Umap, Umap{itm, "/" + itm})
 		} else {
@@ -109,7 +114,7 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var validFilenameRegex *regexp.Regexp = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
+var validFilenameRegex *regexp.Regexp = regexp.MustCompile(`^[a-zA-Z0-9_\- .()+]+$`)
 
 func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
