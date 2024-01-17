@@ -27,7 +27,7 @@ func (s *server) printStat(r *http.Request) {
 			rAddr = r.RemoteAddr[0:idx]
 		}
 		fmt.Printf("[REQ] %s | %15s | %6s | %q\n",
-			time.Now().Format("2006/01/02 - 03:04:05 PM"),
+			time.Now().Format(" 02/01/2006 - 03:04:05 PM"),
 			rAddr,
 			r.Method,
 			r.URL.Path,
