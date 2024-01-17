@@ -1,17 +1,33 @@
 // up.js
 
-const CHUNK_SiZE = 1024 * 1024 * 5; // 5MB
+// const CHUNK_SiZE = 1024 * 1024 * 5; // 5MB
+const CHUNK_SiZE = 1024 * 1024 * 1; // 1MB
 
 const UPLOAD_URL = "/upload";
 
+/**
+ * @type {HTMLInputElement}
+ */
 const fileInput = document.getElementById("fileInput");
-const fileSubmit = document.getElementById("fileSubmit");
+const fileInputBtn = document.getElementById("fileInputBtn");
+const fileInputLabel = document.getElementById("fileInputLabel");
+// const fileSubmit = document.getElementById("fileSubmit");
 const fileCheckSum = document.getElementById("fileCheckSum");
 const fileProgress = document.getElementById("progress");
 const fileProgressSend = document.getElementById("progress-send");
 
 let isUploading = false;
 
+fileInputBtn.onclick = () => {
+    fileInput.click();
+}
+
+fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+        const nm = fileInput.files.length > 1 ? `${fileInput.files.length} files` : `${fileInput.files[0].name}`;
+        fileInputLabel.innerText = "Selected: " + nm;
+    }
+});
 
 /** current working direcotry */
 const cwd = getCWD();
@@ -36,9 +52,15 @@ async function uploadFiles() {
     for (let i = 0; i < fileInput.files.length; i++) {
         let file = fileInput.files[i];
         const uuid = generateUUID();
-        await upload(file, uuid);
+        try {
+            await upload(file, uuid);
+        } catch {
+            fileProgress.innerText = `current: could not upload file${fileInput.files.length > 1 ? "s" : ""}`;
+            isUploading = false;
+            return;
+        }
         fileProgressSend.innerText = `send ${i + 1}/${fileInput.files.length}`;
-        console.log("done", file.name);
+        console.log("done | see the abobe err", file.name);
     }
     fileProgress.innerHTML = `current: done uploading files.<br>GO the page to see the contents <button onclick="window.location.href = cwd">Go To directoy</button>`;
     isUploading = false;
@@ -59,6 +81,7 @@ async function upload(file, uuid) {
     } catch (err) {
         console.error("while uploading file", file.name, err)
         fileProgress.innerText = err;
+        throw err;
         return
     }
 
@@ -81,7 +104,7 @@ async function upload(file, uuid) {
         } catch (err) {
             console.error("while uploading file", file.name, err);
             fileProgress.innerText = err;
-            return
+            throw err;
         }
 
         const msg = `curret: ${Math.round((chuckId / chuckCount) * 100)}% ${file.name}`;
@@ -104,7 +127,7 @@ async function upload(file, uuid) {
     } catch (err) {
         console.error("while uploading file", file.name, err)
         fileProgress.innerText = err;
-        return
+        throw err;
     }
 }
 
