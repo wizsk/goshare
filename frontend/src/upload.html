@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+</head>
+
+<body>
+
+   <h1>upload Suff</h1> 
+   <h2>CWD: <span id="cwd">..</span><button>+</button></h2>
+    <div class="hidden">
+        <h1>Upload files</h1>
+        <input type="file" id="fileInput" multiple>
+
+        <br>
+        <label for="fileCheckSum">Validate:</label>
+        <input name="fileCheckSum" id="fileCheckSum" type="checkbox" />
+
+        <br>
+        <button id="fileSubmit" onclick="uploadFiles()">Upload</button>
+        <br>
+        <div id="progress-send">send: --</div>
+        <div id="progress">current: --</div>
+
+        <br><br>
+    </div>
+
+
+
+    <div>
+        <h1>
+            mkdir
+            <button onclick="mkdir()">MKDIR</button>
+        </h1>
+    </div>
+
+    <script>
+        // {{ template "mkdir.js"}}
+        // {{ template "sum256.js"}}
+        // {{ template "up.js"}}
+    </script>
+</body>
+
+</html>

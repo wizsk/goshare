@@ -26,7 +26,7 @@ func (s *server) printStat(r *http.Request) {
 		if idx := strings.LastIndexByte(r.RemoteAddr, ':'); idx > 0 {
 			rAddr = r.RemoteAddr[0:idx]
 		}
-		fmt.Printf("[REQ] %s | %15s | %s | %q\n",
+		fmt.Printf("[REQ] %s | %15s | %6s | %q\n",
 			time.Now().Format("2006/01/02 - 03:04:05 PM"),
 			rAddr,
 			r.Method,

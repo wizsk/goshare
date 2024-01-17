@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div id="opt-backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
+    <div id="backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
     <!-- 
     <div>
         <h1>Create a directory</h1>
@@ -20,26 +20,7 @@
             <button>Submit</button>
         </form>
     </div>
-
-
     <br>
-
-    <div>
-        <h1>Upload files</h1>
-        <input type="file" id="fileInput" multiple>
-
-        <br>
-        <label for="fileCheckSum">Validate:</label>
-        <input name="fileCheckSum" id="fileCheckSum" type="checkbox" />
-
-        <br>
-        <button id="fileSubmit">Upload</button>
-        <br>
-        <div id="progress-send">send: --</div>
-        <div id="progress">current: --</div>
-
-        <br><br>
-    </div>
      -->
     <div>
         <div class="w-screen px-2 py-4 fixed bg-white flex flex-row justify-between text-xl">
@@ -64,41 +45,25 @@
                 </div>
             </div>
         </div>
+
+
         <div class="py-8"></div>
 
-        <div id="zip-down-progress">
+        <div id="zip-down-progress"></div>
+
+        <div>UPLOD <button onclick="gotoUploadPage()">uppp -></button>
         </div>
 
 
         <div class="">
             <table class="mx-auto">
-                <!-- <tr>
-
-                    <td>
-                        Type
-                    </td>
-                    <td>
-                        Name
-                    </td>
-                    <td>
-                        Size
-                    </td>
-                    <td>
-                        <span>|</span>
-                    </td>
-                </tr> -->
-
                 <!--
                     type Item struct {
                     Name         string
                     LastModified time.Time
                     Size         string
                     IsDir        bool
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="w-8 h-8" viewBox="0 0 16 16">
-                                <path
-                                    d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
-                            </svg>}
+                }
                 -->
                 <!-- lith the dirs then list the files -->
                 {{range .Dir}}
@@ -168,9 +133,12 @@
         // {{ template "zip.js"}}
         // {{ template "zip_ssr.js"}}
     </script>
-    <!-- // {{ template "sum256.js"}}
+    <!--
         // {{ template "up.js"}}
-        // {{ template "mkdir.js"}}  -->
+        // {{ template "mkdir.js"}}
+        // {{ template "sum256.js"}}
+        // {{ template "up.js"}}
+       -->
 
 </body>
 

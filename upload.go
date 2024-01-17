@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -22,7 +24,28 @@ const (
 
 func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost && r.Method != http.MethodPatch && r.Method != http.MethodPut {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		indexPage := template.New("_base").Funcs(template.FuncMap{
+			"pathJoin": filepath.Join,
+			"timeFmt": func(t time.Time) string {
+				return t.Format("01/02/2006 03:04 PM")
+			},
+		})
+
+		var err error
+		if debug {
+			indexPage, err = indexPage.ParseGlob("frontend/src/*")
+		} else {
+			indexPage, err = indexPage.ParseFS(templateFiles, "frontend/src/*")
+		}
+
+		if err != nil {
+			log.Panicln(err)
+		}
+
+		if err = indexPage.ExecuteTemplate(w, "upload.html", nil); err != nil {
+			log.Println(err)
+		}
+
 		return
 	}
 

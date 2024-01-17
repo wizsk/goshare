@@ -38,7 +38,7 @@ const zipOptionsSH = document.getElementById("zip-options");
 /**
  * @type {HTMLElement}
  */
-const optionsBackdrop = document.getElementById("opt-backdrop");
+const optionsBackdrop = document.getElementById("backdrop");
 
 function showHideZipOptions() {
     if (window.screen.width > 768) return;// md: 768px
@@ -96,4 +96,8 @@ function markUnmark(itm) {
         filesToZipCount--;
     }
     showNotShowZipDown();
+}
+
+function gotoUploadPage() {
+    window.location.href = `/upload?cwd=${encodeURIComponent(window.location.pathname)}`
 }
