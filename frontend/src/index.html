@@ -11,17 +11,6 @@
 
 <body>
     <div id="backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
-    <!-- 
-    <div>
-        <h1>Create a directory</h1>
-        <form id="mkdir-form">
-            <label for="mkdir-input">mkdir:</label>
-            <input type="text" id="mkdir-input" name="mkdir-input" placeholder="input a name to create dir" required />
-            <button>Submit</button>
-        </form>
-    </div>
-    <br>
-     -->
     <div>
         <div class="w-screen px-2 py-4 fixed bg-white flex flex-row justify-between text-xl">
             <div class="w-[85vw] overflow-scroll whitespace-nowrap">
@@ -78,7 +67,7 @@
                                     d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
                             </svg>
                             <span class="flex flex-col">
-                                <span class="text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
+                                <span class="w-[75vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
                                 <span class="text-gray-500 text-sm">
                                     <span>
                                         {{.LastModified | timeFmt}}
@@ -106,7 +95,7 @@
                                     d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
                             </svg>
                             <span class="flex flex-col">
-                                <span class="text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
+                                <span class="w-[75vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
                                 <span class="text-gray-500 text-sm">
                                     <span>
                                         {{.Size}}
@@ -133,13 +122,6 @@
         // {{ template "zip.js"}}
         // {{ template "zip_ssr.js"}}
     </script>
-    <!--
-        // {{ template "up.js"}}
-        // {{ template "mkdir.js"}}
-        // {{ template "sum256.js"}}
-        // {{ template "up.js"}}
-       -->
-
 </body>
 
 </html>

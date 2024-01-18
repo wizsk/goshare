@@ -1,6 +1,9 @@
 // mkdir.js
 
-/** it is dependent on the 'const cwd' which is in the 'up.js' file so import this after importing up.js */
+/** 
+ * makdir function is dependent on the 'const cwd',
+ * which is in the 'up.js' file so use this after importing 'up.js'
+ */
 async function mkdir() {
     let input = prompt("Enter the name for the new directory");
     if (!input) {
@@ -14,8 +17,8 @@ async function mkdir() {
         method: 'POST',
     });
 
-    if (res.ok && res.redirected) {
-        window.location.href = `/upload?cwd=${encodeURIComponent(cwd[cwd.length - 1] === "/" ? cwd : cwd + "/" + input)}`;
+    if (res.ok) {
+        window.location.href = `/upload?cwd=${encodeURIComponent(cwd[cwd.length - 1] === "/" ? cwd +input: cwd + "/" + input)}`;
         return;
     }
     alert("Please input a valid fileName");
