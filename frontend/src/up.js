@@ -9,6 +9,7 @@ const UPLOAD_URL = "/upload";
  * @type {HTMLInputElement}
  */
 const fileInput = document.getElementById("fileInput");
+
 const fileInputBtn = document.getElementById("fileInputBtn");
 const fileInputLabel = document.getElementById("fileInputLabel");
 // const fileSubmit = document.getElementById("fileSubmit");

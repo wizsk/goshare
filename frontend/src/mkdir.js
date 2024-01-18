@@ -4,6 +4,7 @@
 async function mkdir() {
     let input = prompt("Enter the name for the new directory");
     if (!input) {
+        alert("No name provided");
         return;
     }
 
