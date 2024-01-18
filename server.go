@@ -25,7 +25,7 @@ type server struct {
 }
 
 type svData struct {
-	Dir  []Item
+	Dir  []Item // Directory
 	Cd   string // current direcoty
 	Od   string // working directory
 	Umap []Umap

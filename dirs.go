@@ -21,6 +21,9 @@ func (i Item) String() string {
 	return buff.String()
 }
 
+// readDir
+//
+// return the [dir, dir, dir, file, file, file]
 func readDir(name string) ([]Item, error) {
 	entries, err := os.ReadDir(name)
 	if err != nil {
@@ -42,7 +45,21 @@ func readDir(name string) ([]Item, error) {
 		})
 	}
 
-	return items, nil
+	res := make([]Item, 0, len(items))
+
+	for _, val := range items {
+		if val.IsDir {
+			res = append(res, val)
+		}
+	}
+
+	for _, val := range items {
+		if !val.IsDir {
+			res = append(res, val)
+		}
+	}
+
+	return res, nil
 }
 
 func prettySize(f os.FileInfo) string {

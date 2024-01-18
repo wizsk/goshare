@@ -626,6 +626,10 @@ video {
   width: 70vw;
 }
 
+.w-\[75vw\] {
+  width: 75vw;
+}
+
 .w-\[85vw\] {
   width: 85vw;
 }
@@ -641,34 +645,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-\[\] {
-  width: ;
-}
-
-.w-\[60vh\] {
-  width: 60vh;
-}
-
-.w-\[60vw\] {
-  width: 60vw;
-}
-
-.w-\[80vw\] {
-  width: 80vw;
-}
-
-.w-\[vw\] {
-  width: vw;
-}
-
-.w-\[7vw\] {
-  width: 7vw;
-}
-
-.w-\[75vw\] {
-  width: 75vw;
 }
 
 .flex-row {

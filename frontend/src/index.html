@@ -55,55 +55,33 @@
                 }
                 -->
                 <!-- lith the dirs then list the files -->
-                {{range .Dir}}
-                {{if .IsDir}}
+                {{range $.Dir}}
                 {{$path := pathJoin $.Od .Name}}
                 <tr class="h-8">
                     <td class="flex flex-col w-[90vw] overflow-hidden">
                         <a class="flex flex-row gap-2 items-center" href="{{$path}}">
+                            {{if .IsDir}}
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="w-8 h-8 fill-yellow-500" viewBox="0 0 16 16">
                                 <path
                                     d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
                             </svg>
-                            <span class="flex flex-col">
-                                <span class="w-[75vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
-                                <span class="text-gray-500 text-sm">
-                                    <span>
-                                        {{.LastModified | timeFmt}}
-                                    </span>
-                                </span>
-                            </span>
-                        </a>
-                    </td>
-                    <td class="pl-2">
-                        <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
-                    </td>
-                </tr>
-                {{end}}
-                {{end}}
-
-                {{range .Dir}}
-                {{if not .IsDir}}
-                {{$path := pathJoin $.Od .Name}}
-                <tr class="h-8">
-                    <td class="flex flex-col w-[90vw] overflow-hidden">
-                        <a class="flex flex-row gap-2 items-center" href="{{$path}}">
+                            {{else}}
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="w-8 h-8" viewBox="0 0 16 16">
                                 <path
                                     d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
                             </svg>
+                            {{end}}
                             <span class="flex flex-col">
                                 <span class="w-[75vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
                                 <span class="text-gray-500 text-sm">
-                                    <span>
-                                        {{.Size}}
-                                    </span>
+                                    <span>{{.LastModified | timeFmt}}</span>
+                                    {{if not .IsDir}}
+                                    <span>{{.Size}}</span>
                                     <span>|</span>
-                                    <span>
-                                        {{.LastModified | timeFmt}}
-                                    </span>
+                                    <span>{{.LastModified | timeFmt}}</span>
+                                    {{end}}
                                 </span>
                             </span>
                         </a>
@@ -112,7 +90,6 @@
                         <input type="checkbox" data-zip-select="{{$path}}" onclick="markUnmark(this)" />
                     </td>
                 </tr>
-                {{end}}
                 {{end}}
             </table>
         </div>
