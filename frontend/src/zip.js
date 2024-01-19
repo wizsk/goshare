@@ -45,9 +45,11 @@ function showHideZipOptions() {
 
 
     if (!document.getElementById("zip-options").classList.toggle("hidden")) {
+        document.body.style.overflow = "hidden";
         optionsBackdrop.classList.remove("hidden");
     } else {
         optionsBackdrop.classList.add("hidden");
+        document.body.style.overflow = "";
     }
 }
 

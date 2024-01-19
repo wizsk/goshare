@@ -9,13 +9,13 @@
     <title>{{.Cd}}</title>
 </head>
 
-<body>
+<body class="">
     <div id="backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
     <div>
         <div class="w-screen px-2 py-4 fixed bg-white flex flex-row justify-between text-xl">
-            <div class="w-[85vw] overflow-scroll whitespace-nowrap">
+            <div class="w-[88vw] md:w-[75vw] overflow-scroll whitespace-nowrap">
                 {{range .Umap}}
-                <a href="{{.Url}}">{{.Name}}/</a>
+                <a class="hover:bg-slate-500" href="{{.Url}}">{{.Name}}/</a>
                 {{end}}
             </div>
             <div class="relative md:static w-fit">
@@ -26,11 +26,42 @@
                             d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
                     </svg>
                 </button>
-                <div class="hidden md:flex md:flex-row md:gap-4 absolute md:static right-4 px-2 py-1 bg-white md:bg-inherit"
+                <div class="hidden md:flex md:flex-row md:gap-4 absolute md:static top-14 right-2 px-2 py-1 bg-white md:bg-inherit"
                     id="zip-options">
-                    <button id="zip-download" onclick="downloadAsZip()">DownloadZips</button>
-                    <button onclick="selectAll()" id="selectAll-button">SelectAll</button>
-                    <button onclick="clearSelections()" id="clearSelections-button">ClearAll</button>
+                    <button
+                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        id="zip-download" onclick="downloadAsZip()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-arrow-down-square" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm8.5 2.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293z" />
+                        </svg>
+                        <span class="whitespace-nowrap">Download zips</span>
+                    </button>
+                    <button
+                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        onclick="selectAll()" id="selectAll-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-check2-square" viewBox="0 0 16 16">
+                            <path
+                                d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z" />
+                            <path
+                                d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0" />
+                        </svg>
+                        <span> SelectAll</span>
+                    </button>
+                    <button
+                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        onclick="clearSelections()" id="clearSelections-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-x-square" viewBox="0 0 16 16">
+                            <path
+                                d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                            <path
+                                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                        </svg>
+                        <span> ClearAll</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -40,8 +71,8 @@
 
         <div id="zip-down-progress"></div>
 
-        <div>UPLOD <button onclick="gotoUploadPage()">uppp -></button>
-        </div>
+        <!-- <div>UPLOD <button onclick="gotoUploadPage()">uppp -></button>
+        </div> -->
 
 
         <div class="">

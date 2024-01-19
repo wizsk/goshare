@@ -38,7 +38,7 @@ document.getElementById("cwd").innerHTML = `<a href="${cwd}">${cwd}</a>`;
 /** gets the current working directory and encodes it */
 function getCWD() {
     const qr = new URLSearchParams(window.location.search);
-    const cwd = qr.get("cwd");
+    let cwd = qr.get("cwd");
 
     if (!cwd) {
         cwd = "/browse/"
@@ -143,8 +143,7 @@ function generateUUID() {
         // Use a cryptographically strong random number generator if available
         const buffer = new Uint16Array(8);
         cryptoObj.getRandomValues(buffer);
-        return `${toHex(buffer[0], 4)
-            }${toHex(buffer[1], 4)}${toHex(buffer[2], 4)}${toHex(buffer[3], 4)}${toHex(buffer[4], 4)}${toHex(buffer[5], 4)}${toHex(buffer[6], 4)}${toHex(buffer[7], 4)} `;
+        return `${toHex(buffer[0], 4)}${toHex(buffer[1], 4)}${toHex(buffer[2], 4)}${toHex(buffer[3], 4)}${toHex(buffer[4], 4)}${toHex(buffer[5], 4)}${toHex(buffer[6], 4)}${toHex(buffer[7], 4)}`;
         // }
     } else {
         // Fallback to a less secure method
