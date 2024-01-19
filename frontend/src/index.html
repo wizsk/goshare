@@ -12,10 +12,10 @@
 <body class="">
     <div id="backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
     <div>
-        <div class="w-screen px-2 py-4 fixed bg-white flex flex-row justify-between text-xl">
+        <div class="w-screen px-2 py-4 md:py-2 fixed bg-blue-50 flex flex-row justify-between items-center text-xl">
             <div class="w-[88vw] md:w-[75vw] overflow-scroll whitespace-nowrap">
                 {{range .Umap}}
-                <a class="hover:bg-slate-500" href="{{.Url}}">{{.Name}}/</a>
+                <a class="hover:underline md:ease-in md:duration-100" href="{{.Url}}">{{.Name}}/</a>
                 {{end}}
             </div>
             <div class="relative md:static w-fit">
@@ -51,7 +51,7 @@
                         <span> SelectAll</span>
                     </button>
                     <button
-                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-100 ease-in duration-150 rounded-md"
                         onclick="clearSelections()" id="clearSelections-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-x-square" viewBox="0 0 16 16">
@@ -67,16 +67,17 @@
         </div>
 
 
-        <div class="py-8"></div>
+        <div class="py-10"></div>
 
-        <div id="zip-down-progress"></div>
+        <div id="zip-down-progress" class="hidden fixed bottom-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-md">
+        </div>
 
         <!-- <div>UPLOD <button onclick="gotoUploadPage()">uppp -></button>
         </div> -->
 
 
         <div class="">
-            <table class="mx-auto">
+            <table class="mx-auto divide-y divide-slate-700">
                 <!--
                     type Item struct {
                     Name         string
@@ -85,27 +86,30 @@
                     IsDir        bool
                 }
                 -->
-                <!-- lith the dirs then list the files -->
                 {{range $.Dir}}
                 {{$path := pathJoin $.Od .Name}}
-                <tr class="h-8">
-                    <td class="flex flex-col w-[90vw] overflow-hidden">
-                        <a class="flex flex-row gap-2 items-center" href="{{$path}}">
-                            {{if .IsDir}}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="w-8 h-8 fill-yellow-500" viewBox="0 0 16 16">
-                                <path
-                                    d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
-                            </svg>
-                            {{else}}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="w-8 h-8" viewBox="0 0 16 16">
-                                <path
-                                    d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
-                            </svg>
-                            {{end}}
+                <tr class="h-12">
+                    <td class="flex flex-col w-[85vw] md:w-[60vw] overflow-hidden">
+                        <a class="flex flex-row gap-2 items-center hover:bg-blue-100 ease-in duration-100"
+                            href="{{$path}}">
+                            <span class="pl-2">
+                                {{if .IsDir}}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="w-8 h-8 fill-yellow-500" viewBox="0 0 16 16">
+                                    <path
+                                        d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
+                                </svg>
+                                {{else}}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="w-8 h-8" viewBox="0 0 16 16">
+                                    <path
+                                        d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
+                                </svg>
+                                {{end}}
+                            </span>
                             <span class="flex flex-col">
-                                <span class="w-[75vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
+                                <span
+                                    class="w-[75vw] md:w-[45vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
                                 <span class="text-gray-500 text-sm">
                                     {{if .IsDir}}
                                     <span>{{.LastModified | timeFmt}}</span>

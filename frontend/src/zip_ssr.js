@@ -61,8 +61,11 @@ function downloadAsZip() {
     });
 
     sse.addEventListener("onProgress", async (e) => {
+        zipDownBtn.classList.remove("hidden");
         zipDownProgress.innerText = e.data;
+        const data = JSON.parse(e.data);
         console.log("sse onPgoress", e.data);
+        zipDownBtn.innerText = `Zipping: ${data.status}%`;
     });
 
     sse.onclose = () => {
