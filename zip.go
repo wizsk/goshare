@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -105,7 +106,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 
 	res := []string{}
 	for _, v := range val {
-		if v = strings.TrimPrefix(strings.TrimSpace(v), "/browse/"); v == "" {
+		if v = strings.TrimPrefix(v, "/browse/"); v == "" {
 			continue
 		}
 		// NOTE: I don't know if it's a possibility for abbitray data access. so just incase.
@@ -127,6 +128,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 
 	path, err := zipDirs(callback, s.zipSavePath, cwd, res...)
 	if err != nil {
+		log.Println("err while zipping:", err)
 		fmt.Fprintf(w, "event: errror\ndata: {}\n\n")
 		flusher.Flush()
 		return
