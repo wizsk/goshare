@@ -33,6 +33,7 @@ function downloadAsZip() {
 
     sse.onopen = () => {
         zipDownBtn.disabled = true;
+        zipDownProgress.classList.remove("hidden");
         isZippin = true;
         console.log("sse opended");
     }
@@ -51,12 +52,16 @@ function downloadAsZip() {
         console.log("sse done:", e.data);
         const data = JSON.parse(e.data);
         const a = document.createElement("a");
+
+        a.innerText = `Download: ${data.name}`;
+        a.download = data.name;
         a.href = data.url;
-        a.style.display = 'none';
-        document.body.appendChild(a);
+        a.classList.add("hover:underline")
+
         a.click();
-        document.body.removeChild(a);
-        zipDownProgress.innerText = e.data;
+
+        zipDownProgress.innerText = "";
+        zipDownProgress.appendChild(a);
         sse.close();
     });
 

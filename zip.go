@@ -17,7 +17,12 @@ import (
 	"time"
 )
 
-var zipFileNameCahce map[string]string = make(map[string]string)
+var zipFileNameAndPathCahce map[string]zipFileNP = make(map[string]zipFileNP)
+
+// zipFileNM aka zip file Name and path
+type zipFileNP struct {
+	name, path string
+}
 
 func zipStr(val []string) string {
 	sort.Slice(val, func(i, j int) bool {
@@ -37,12 +42,12 @@ func zipStr(val []string) string {
 // download the zip of the given file
 func (s *server) downZip(w http.ResponseWriter, r *http.Request) {
 	if fileHash := strings.TrimPrefix(r.URL.Path, "/downzip/"); fileHash != "" {
-		path, ok := zipFileNameCahce[fileHash]
+		zNP, ok := zipFileNameAndPathCahce[fileHash]
 		if !ok {
 			http.Error(w, "could not find zip file", http.StatusBadRequest)
 			return
 		}
-		http.ServeFile(w, r, path)
+		http.ServeFile(w, r, zNP.path)
 	}
 }
 
@@ -97,9 +102,9 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		reqFileNamesHash = zipStr(val) + ".zip"
 	}
 
-	if path, ok := zipFileNameCahce[reqFileNamesHash]; ok {
+	if _, ok := zipFileNameAndPathCahce[reqFileNamesHash]; ok {
 		fmt.Fprintf(w, "event: done\n")
-		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", reqFileNamesHash, path)
+		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", reqFileNamesHash, "/downzip/"+url.PathEscape(reqFileNamesHash))
 		flusher.Flush()
 		return
 	}
@@ -126,7 +131,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		return nil
 	}
 
-	path, err := zipDirs(callback, s.zipSavePath, cwd, res...)
+	zNP, err := zipDirs(callback, s.zipSavePath, cwd, res...)
 	if err != nil {
 		log.Println("err while zipping:", err)
 		fmt.Fprintf(w, "event: errror\ndata: {}\n\n")
@@ -134,7 +139,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	zipFileNameCahce[reqFileNamesHash] = path
+	zipFileNameAndPathCahce[reqFileNamesHash] = zNP
 
 	fmt.Fprintf(w, "event: done\n")
 	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n",
@@ -142,7 +147,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	flusher.Flush()
 }
 
-func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...string) (string, error) {
+func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...string) (zipFileNP, error) {
 	if len(prefix) > 0 && prefix[len(prefix)-1] != '/' {
 		prefix += "/"
 	}
@@ -150,14 +155,15 @@ func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...str
 	for _, dir := range dirs {
 		f, err := walkDirTree(dir)
 		if err != nil {
-			return "", err
+			return zipFileNP{}, err
 		}
 		files = append(files, f...)
 	}
 
-	r, err := os.Create(filepath.Join(sDir, fmt.Sprintf("%v.zip", time.Now().UnixMilli())))
+	fileName := time.Now().Format("2006-01-02_03_04_05.999_PM") + ".zip"
+	r, err := os.Create(filepath.Join(sDir, fileName))
 	if err != nil {
-		return "", err
+		return zipFileNP{}, err
 	}
 	defer r.Close()
 
@@ -166,26 +172,26 @@ func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...str
 
 	for i, f := range files {
 		if err := callback(i * 100 / len(files)); err != nil {
-			return "", err
+			return zipFileNP{}, err
 		}
 
 		r, err := os.Open(f)
 		if err != nil {
-			return "", err
+			return zipFileNP{}, err
 		}
 
 		w, err := arc.Create(strings.TrimPrefix(f, prefix))
 		if err != nil {
-			return "", err
+			return zipFileNP{}, err
 		}
 		_, err = io.Copy(w, r)
 		if err != nil {
-			return "", err
+			return zipFileNP{}, err
 		}
 		r.Close()
 	}
 
-	return r.Name(), nil
+	return zipFileNP{name: fileName, path: r.Name()}, nil
 }
 
 func walkDirTree(n string) ([]string, error) {
