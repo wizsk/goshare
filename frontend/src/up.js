@@ -10,18 +10,12 @@ const UPLOAD_URL = "/upload";
  */
 const fileInput = document.getElementById("fileInput");
 
-const fileInputBtn = document.getElementById("fileInputBtn");
 const fileInputLabel = document.getElementById("fileInputLabel");
-// const fileSubmit = document.getElementById("fileSubmit");
 const fileCheckSum = document.getElementById("fileCheckSum");
 const fileProgress = document.getElementById("progress");
 const fileProgressSend = document.getElementById("progress-send");
 
 let isUploading = false;
-
-fileInputBtn.onclick = () => {
-    fileInput.click();
-}
 
 fileInput.addEventListener("change", () => {
     if (fileInput.files.length > 0) {
@@ -32,8 +26,14 @@ fileInput.addEventListener("change", () => {
 
 /** current working direcotry */
 const cwd = getCWD();
+showCWD();
 
-document.getElementById("cwd").innerHTML = `<a href="${cwd}">${cwd}</a>`;
+
+function showCWD() {
+    const c = document.getElementById("cwd");
+    c.innerText = cwd;
+    c.href = cwd;
+}
 
 /** gets the current working directory and encodes it */
 function getCWD() {
@@ -48,22 +48,30 @@ function getCWD() {
 }
 
 async function uploadFiles() {
+    if (isUploading) {
+        alert("Already uploading file please wait");
+        return;
+    }
+    if (fileInput.files.length === 0) {
+        alert("No file selected");
+        return;
+    }
+
     isUploading = true;
-    fileProgressSend.innerText = `send 0/${fileInput.files.length}`
+    fileProgressSend.innerText = `0/${fileInput.files.length}`
     for (let i = 0; i < fileInput.files.length; i++) {
         let file = fileInput.files[i];
         const uuid = generateUUID();
         try {
             await upload(file, uuid);
         } catch {
-            fileProgress.innerText = `current: could not upload file${fileInput.files.length > 1 ? "s" : ""}`;
+            fileProgress.innerText = `Could not upload file${fileInput.files.length > 1 ? "s" : ""}`;
             isUploading = false;
             return;
         }
-        fileProgressSend.innerText = `send ${i + 1}/${fileInput.files.length}`;
-        console.log("done | see the abobe err", file.name);
+        fileProgressSend.innerText = `${i + 1}/${fileInput.files.length}`;
     }
-    fileProgress.innerHTML = `current: done uploading files.<br>GO the page to see the contents <button onclick="window.location.href = cwd">Go To directoy</button>`;
+    fileProgress.innerHTML = `Uploading finished <button class="px-4 py-2 rounded bg-blue-100 hover:bg-blue-200 ease-in duration-100" onclick="window.location.href = cwd">Go-to directoy</button>`;
     isUploading = false;
 }
 
