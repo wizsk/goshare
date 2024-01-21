@@ -584,6 +584,46 @@ video {
   top: 3.5rem;
 }
 
+.top-\[-10\] {
+  top: -10;
+}
+
+.bottom-1 {
+  bottom: 0.25rem;
+}
+
+.bottom-14 {
+  bottom: 3.5rem;
+}
+
+.right-10 {
+  right: 2.5rem;
+}
+
+.left-10 {
+  left: 2.5rem;
+}
+
+.left-6 {
+  left: 1.5rem;
+}
+
+.left-8 {
+  left: 2rem;
+}
+
+.right-6 {
+  right: 1.5rem;
+}
+
+.right-4 {
+  right: 1rem;
+}
+
+.bottom-16 {
+  bottom: 4rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -597,6 +637,10 @@ video {
 .my-2 {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.mb-52 {
+  margin-bottom: 13rem;
 }
 
 .flex {
