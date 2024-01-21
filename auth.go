@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -12,6 +13,7 @@ import (
 func auth(w http.ResponseWriter, r *http.Request, handler func(w http.ResponseWriter, r *http.Request)) {
 	if password != "" {
 		if err := cookie.ReadCookie(r, cookie.CookieName); err != nil {
+			log.Println(r.URL, err)
 			http.Redirect(w, r, "/auth", http.StatusMovedPermanently)
 			return
 		}
@@ -27,7 +29,7 @@ func (s *server) printStat(r *http.Request) {
 			rAddr = r.RemoteAddr[0:idx]
 		}
 		fmt.Printf("[REQ] %s | %15s | %6s | %q\n",
-			time.Now().Format(" 02/01/2006 - 03:04:05 PM"),
+			time.Now().Format("02/01/2006 - 03:04:05 PM"),
 			rAddr,
 			r.Method,
 			r.URL.Path,

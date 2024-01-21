@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Styles for smaller screens */
+@media (max-width: 767px) {
+    .nav-bottom {
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}

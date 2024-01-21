@@ -1,33 +1,7 @@
 // main.js
 
-window.onload = () => {
-    // runs every time to clear the selections
-    items.forEach((itm) => {
-        itm.checked = false;
-    });
-    filesToZipCount = 0;
-    showNotShowZipDown();
-}
-
 const dataZipSelect = "data-zip-select";
 const items = document.querySelectorAll(`[${dataZipSelect}]`);
-const dataZipDown = document.getElementById("zip-download");
-// const zipSelectAllBtn = document.getElementById("selectAll-button");
-const zipClearSelectionBtn = document.getElementById("clearSelections-button");
-let filesToZipCount = 0;
-
-/** shows or hides downzip button, zipClearSelections buttton */
-function showNotShowZipDown() {
-    // if (filesToZipCount > 0) {
-    //     dataZipDown.style.display = "block";
-    //     zipClearSelectionBtn.style.display = "block";
-    //     console.log("zip down showing:", filesToZipCount);
-    // } else {
-    //     dataZipDown.style.display = "none";
-    //     zipClearSelectionBtn.style.display = "none";
-    //     console.log("zip down not showing:", filesToZipCount);
-    // }
-}
 
 /**
  * zipOptionsSH is the html btn for 
@@ -38,33 +12,25 @@ const zipOptionsSH = document.getElementById("zip-options");
 /**
  * @type {HTMLElement}
  */
-const optionsBackdrop = document.getElementById("backdrop");
+const backdrop = document.getElementById("backdrop");
 
 function showHideZipOptions() {
     if (window.screen.width > 768) return;// md: 768px
 
-
     if (!document.getElementById("zip-options").classList.toggle("hidden")) {
         document.body.style.overflow = "hidden";
-        optionsBackdrop.classList.remove("hidden");
+        backdrop.classList.remove("hidden");
     } else {
-        optionsBackdrop.classList.add("hidden");
+        backdrop.classList.add("hidden");
         document.body.style.overflow = "";
     }
 }
 
-optionsBackdrop.addEventListener("click", () => {
+backdrop.addEventListener("click", () => {
     zipOptionsSH.classList.add("hidden")
-    optionsBackdrop.classList.add("hidden")
+    backdrop.classList.add("hidden")
+    document.body.style.overflow = "";
 });
-
-
-// document.addEventListener("click", () => {
-//     if (!zipOptionsSH.classList.contains("hidden")) {
-//         zipOptionsSH.classList.add("hidden");
-//         return;
-//     }
-// })
 
 
 /** selectAll function selets all the file in current direcotr for zipping */
@@ -72,8 +38,6 @@ function selectAll() {
     items.forEach((itm) => {
         itm.checked = true;
     });
-    filesToZipCount = items.length;
-    showNotShowZipDown();
 }
 
 
@@ -82,25 +46,91 @@ function clearSelections() {
     items.forEach((itm) => {
         itm.checked = false;
     });
-    filesToZipCount = 0;
-    showNotShowZipDown();
     showHideZipOptions();
 }
 
 
-/**
- * @param {HTMLInputElement} itm - htmlInputElelemt type checkBox
- */
-function markUnmark(itm) {
-    if (itm.checked) {
-        filesToZipCount++;
-    } else {
-        filesToZipCount--;
+//////////////////
+// zip ssr
+//////////////////
+
+const zipDownProgress = document.getElementById("zip-down-progress");
+const zipDownBtn = document.getElementById("zip-download");
+let isZippin = false;
+
+function downloadAsZip() {
+    const url = [];
+    items.forEach((itm) => {
+        if (itm.checked) {
+            url.push(itm.getAttribute(dataZipSelect));
+        }
+    });
+
+    if (url.length === 0) {
+        alert("Please select some files");
+        return;
     }
-    showNotShowZipDown();
-}
+    showHideZipOptions();
+
+    if (isZippin) {
+        alert("Already zipping");
+        return
+    }
+    zipDownBtn.disabled = true;
+    isZippin = true;
 
 
-function gotoUploadPage() {
-    window.location.href = `/upload?cwd=${encodeURIComponent(window.location.pathname)}`
+    const strr = url.map(itm => `files=${encodeURIComponent(itm)}`).join("&");
+    const path = `/zip?${strr}&cwd=${encodeURIComponent(window.location.pathname)}`; //&files=${encodeURIComponent("/../../../")}`;
+
+    console.log("SSE reqest to:", path);
+    const sse = new EventSource(path);
+
+    sse.onopen = () => {
+        zipDownBtn.disabled = true;
+        zipDownProgress.classList.remove("hidden");
+        isZippin = true;
+        console.log("sse opended");
+    }
+
+    sse.onerror = (err) => {
+        zipDownBtn.disabled = false;
+        isZippin = false;
+        console.error(err);
+        sse.close();
+    }
+
+    // done event
+    sse.addEventListener("done", async (e) => {
+        zipDownBtn.disabled = false;
+        isZippin = false;
+        console.log("sse done:", e.data);
+        const data = JSON.parse(e.data);
+        const a = document.createElement("a");
+
+        a.innerText = `Download: ${data.name}`;
+        a.download = data.name;
+        a.href = data.url;
+        a.classList.add("hover:underline")
+
+        a.click();
+
+        zipDownProgress.innerText = "";
+        zipDownProgress.appendChild(a);
+        sse.close();
+    });
+
+    sse.addEventListener("onProgress", async (e) => {
+        zipDownBtn.classList.remove("hidden");
+        zipDownProgress.innerText = e.data;
+        const data = JSON.parse(e.data);
+        console.log("sse onPgoress", e.data);
+        zipDownBtn.innerText = `Zipping: ${data.status}%`;
+    });
+
+    sse.onclose = () => {
+        zipDownBtn.disabled = false;
+        isZippin = false;
+        console.log("SSE connection closed.");
+    };
 }

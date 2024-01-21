@@ -11,7 +11,8 @@
 <body class="">
     <div id="backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0"></div>
     <div>
-        <div class="w-screen px-2 py-4 md:py-2 fixed bg-blue-50 flex flex-row justify-between items-center text-xl">
+        <div
+            class="w-screen px-2 py-4 md:py-2 fixed nav-bottom md:top-0 md:left-0 bg-blue-50 flex flex-row justify-between items-center text-xl">
             <div class="w-[88vw] md:w-[75vw] overflow-hidden hover:overflow-x-scroll whitespace-nowrap">
                 {{range .Umap}}
                 <a class="hover:underline md:ease-in md:duration-100" href="{{.Url}}">{{.Name}}/</a>
@@ -27,8 +28,10 @@
                 </button>
                 <div class="hidden md:flex md:flex-row md:gap-2 absolute md:static top-14 right-2 px-2 py-1 bg-white md:bg-inherit"
                     id="zip-options">
-                    <a href="/upload" title="Upload files to current directory"
-                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md">
+                    <button
+                        onclick="window.location.href = `/upload?cwd=${encodeURIComponent(window.location.pathname)}`"
+                        title="Upload files to current directory"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-cloud-upload" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
@@ -37,9 +40,9 @@
                                 d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708z" />
                         </svg>
                         <span>Upload</span>
-                    </a>
+                    </button>
                     <button title="Start zipping selected files"
-                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md"
                         id="zip-download" onclick="downloadAsZip()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-arrow-down-square" viewBox="0 0 16 16">
@@ -49,7 +52,7 @@
                         <span class="whitespace-nowrap">Start zipping</span>
                     </button>
                     <button title="Select all files and directories for zipping"
-                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md"
                         onclick="selectAll()" id="selectAll-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-check2-square" viewBox="0 0 16 16">
@@ -61,7 +64,7 @@
                         <span class="whitespace-nowrap">Select all</span>
                     </button>
                     <button title="Deselect all files and directories for zipping"
-                        class="px-4 py-2 flex flex-row items-center gap-2 hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md"
                         onclick="clearSelections()" id="clearSelections-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-square" viewBox="0 0 16 16">
@@ -77,7 +80,8 @@
         </div>
 
 
-        <div class="py-10"></div>
+        <!-- this is because of the nab bar -->
+        <div class="py-10 hidden md:block"></div>
 
         <div id="zip-down-progress" class="fixed hidden bottom-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-md">
         </div>
@@ -86,7 +90,7 @@
         </div> -->
 
 
-        <div class="">
+        <div class="py-2 md:p-0">
             <table class="mx-auto divide-y divide-slate-700">
                 <!--
                     type Item struct {
@@ -119,7 +123,7 @@
                             </span>
                             <span class="flex flex-col">
                                 <span
-                                    class="w-[75vw] md:w-[45vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
+                                    class="w-[70vw] md:w-[45vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
                                 <span class="text-gray-500 text-sm">
                                     {{if .IsDir}}
                                     <span>{{.LastModified | timeFmt}}</span>
@@ -141,6 +145,7 @@
             </table>
         </div>
     </div>
+    <div class="py-12 md:hidden"></div>
 
     <script>
         // {{ template "zip.js"}}

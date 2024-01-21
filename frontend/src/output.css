@@ -556,6 +556,10 @@ video {
   position: relative;
 }
 
+.bottom-0 {
+  bottom: 0px;
+}
+
 .bottom-4 {
   bottom: 1rem;
 }
@@ -590,8 +594,9 @@ video {
   margin-bottom: 10vh;
 }
 
-.block {
-  display: block;
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .flex {
@@ -733,11 +738,6 @@ video {
   background-color: rgb(248 113 113 / var(--tw-bg-opacity));
 }
 
-.bg-red-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(220 38 38 / var(--tw-bg-opacity));
-}
-
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
@@ -782,6 +782,11 @@ video {
   padding-bottom: 1rem;
 }
 
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
 .pl-2 {
   padding-left: 0.5rem;
 }
@@ -818,6 +823,16 @@ video {
   transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 
+/* Styles for smaller screens */
+
+@media (max-width: 767px) {
+  .nav-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
 .hover\:cursor-pointer:hover {
   cursor: pointer;
 }
@@ -831,11 +846,6 @@ video {
   background-color: rgb(219 234 254 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-blue-200:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(191 219 254 / var(--tw-bg-opacity));
-}
-
 .hover\:underline:hover {
   text-decoration-line: underline;
 }
@@ -843,6 +853,18 @@ video {
 @media (min-width: 768px) {
   .md\:static {
     position: static;
+  }
+
+  .md\:top-0 {
+    top: 0px;
+  }
+
+  .md\:left-0 {
+    left: 0px;
+  }
+
+  .md\:block {
+    display: block;
   }
 
   .md\:flex {
@@ -865,6 +887,26 @@ video {
     width: 75vw;
   }
 
+  .md\:w-\[43vw\] {
+    width: 43vw;
+  }
+
+  .md\:w-\[41vw\] {
+    width: 41vw;
+  }
+
+  .md\:w-\[40vw\] {
+    width: 40vw;
+  }
+
+  .md\:w-\[\] {
+    width: ;
+  }
+
+  .md\:w-\[30vw\] {
+    width: 30vw;
+  }
+
   .md\:flex-row {
     flex-direction: row;
   }
@@ -875,6 +917,10 @@ video {
 
   .md\:bg-inherit {
     background-color: inherit;
+  }
+
+  .md\:p-0 {
+    padding: 0px;
   }
 
   .md\:py-2 {
@@ -888,5 +934,10 @@ video {
 
   .md\:ease-in {
     transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  .md\:hover\:bg-blue-200:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(191 219 254 / var(--tw-bg-opacity));
   }
 }
