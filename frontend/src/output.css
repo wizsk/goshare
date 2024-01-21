@@ -640,6 +640,10 @@ video {
   bottom: 5rem;
 }
 
+.right-0 {
+  right: 0px;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
