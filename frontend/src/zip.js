@@ -100,6 +100,7 @@ function markUnmark(itm) {
     showNotShowZipDown();
 }
 
+
 function gotoUploadPage() {
     window.location.href = `/upload?cwd=${encodeURIComponent(window.location.pathname)}`
 }
