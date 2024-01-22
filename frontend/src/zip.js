@@ -97,6 +97,8 @@ function downloadAsZip() {
         console.error(err);
         zipDownProgress.innerText = "Something went wrong";
         sse.close();
+        zipDownBtn.disabled = false;
+        isZippin = false;
     }
 
     // done event
@@ -108,21 +110,23 @@ function downloadAsZip() {
         a.innerText = `Download: ${data.name}`;
         a.download = data.name;
         a.href = data.url;
+
         a.classList.add("hover:underline")
 
         a.click();
 
         zipDownProgress.innerText = "";
         zipDownProgress.appendChild(a);
+
+        zipDownBtn.disabled = false;
+        isZippin = false;
         sse.close();
     });
 
     sse.addEventListener("onProgress", async (e) => {
-        zipDownBtn.classList.remove("hidden");
-        zipDownProgress.innerText = e.data;
         const data = JSON.parse(e.data);
         console.log("sse onPgoress", e.data.status);
-        zipDownBtn.innerText = `Zipping: ${data.status}%`;
+        zipDownProgress.innerText = `Zipping: ${data.status}%`;
     });
 
     sse.onclose = () => {
