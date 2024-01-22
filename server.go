@@ -34,7 +34,11 @@ func newServer() server {
 	}
 
 	tmpl := template.New("_base").Funcs(template.FuncMap{
-		"pathJoin": filepath.Join,
+		// "pathJoin": filepath.Join,
+		"pathJoin": func(base string, elem ...string) string {
+			val, _ := url.JoinPath(base, elem...)
+			return val
+		},
 		"timeFmt": func(t time.Time) string {
 			return t.Format("01/02/2006 03:04 PM")
 		},
@@ -171,5 +175,6 @@ func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, filepath.Join(cwd, dirName), http.StatusMovedPermanently)
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("file creaded successfully"))
 }

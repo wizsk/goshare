@@ -13,7 +13,7 @@
     <div>
         <div
             class="w-screen px-2 py-2 md:py-2 fixed nav-bottom md:top-0 md:left-0 bg-blue-50 flex flex-row justify-between items-center text-xl">
-            <div class="w-[88vw] md:w-[75vw] overflow-hidden hover:overflow-x-scroll whitespace-nowrap flex flex-row items-center">
+            <div class="w-[88vw] md:w-[75vw] whitespace-nowrap overflow-x-scroll md:overflow-hidden md:hover:overflow-x-scroll flex flex-row items-center">
                 {{range .Umap}}
                 <a class="block hover:underline md:ease-in md:duration-100 py-2" href="{{.Url}}">{{.Name}}/</a>
                 {{end}}
