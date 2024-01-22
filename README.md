@@ -2,6 +2,12 @@
 
 ## TODOS
 
+- [ ] don't allow uploads `--noup`
+- [ ] show no files found page
+- [ ] do more testings
+
+## DONE
+
 - [x] work on the frontend styles
     - [x] `/browse/` page
     - [x] `/upload` page
