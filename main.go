@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
 const debug = !false
@@ -52,31 +51,7 @@ func localIp() string {
 func main() {
 	flagParse()
 
-	var zipD string
-	var err error
-	// var zipD = filepath.Join(os.TempDir(), "goshra_zip")
-
-	if debug {
-		fmt.Println("running in debug mode")
-		zipD = filepath.Join(os.TempDir(), "goshare_zip")
-		err = os.Mkdir(zipD, 0700)
-		if os.IsExist(err) {
-			err = nil
-		}
-	} else {
-		zipD, err = os.MkdirTemp(os.TempDir(), "goshare_zip_")
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if !debug {
-		defer func() {
-			os.RemoveAll(zipD)
-		}()
-	}
-
-	sv := server{rootDir, os.TempDir(), zipD, !showStat}
+	sv := newServer()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)

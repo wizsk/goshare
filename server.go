@@ -18,10 +18,42 @@ import (
 var templateFiles embed.FS
 
 type server struct {
-	root, tmp, zipSavePath string
-	showStat               bool
-	// zipped                 map[string]string
-	// tmpl      *template.Template
+	root     string
+	tmp      string // tmp is the path where the zip files are stored
+	showStat bool
+	tmpl     *template.Template
+	// zipped    map[string]string
+}
+
+func newServer() server {
+	tmpDirPath, err := os.MkdirTemp(os.TempDir(), "goshare_zip_")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tmpl := template.New("_base").Funcs(template.FuncMap{
+		"pathJoin": filepath.Join,
+		"timeFmt": func(t time.Time) string {
+			return t.Format("01/02/2006 03:04 PM")
+		},
+	})
+
+	if debug {
+		tmpl, err = tmpl.ParseGlob("frontend/src/*")
+	} else {
+		tmpl, err = tmpl.ParseFS(templateFiles, "frontend/src/*")
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return server{
+		tmp:      tmpDirPath,
+		root:     rootDir,
+		showStat: true,
+		tmpl:     tmpl,
+	}
 }
 
 type svData struct {
@@ -56,39 +88,14 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	indexPage := template.New("_base").Funcs(template.FuncMap{
-		"pathJoin": filepath.Join,
-		"timeFmt": func(t time.Time) string {
-			return t.Format("01/02/2006 03:04 PM")
-		},
-	})
-
-	var err error
-	if debug {
-		indexPage, err = indexPage.ParseGlob("frontend/src/*")
-	} else {
-		indexPage, err = indexPage.ParseFS(templateFiles, "frontend/src/*")
-	}
-
-	if err != nil {
-		log.Panicln(err)
-	}
-
 	svd := svData{Od: r.URL.Path, Cd: currentDirName}
 
+	var err error
 	svd.Dir, err = readDir(fileName)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
-	// sort.Slice(svd.Dir, func(i, j int) bool {
-	// 	return svd.Dir[i].Name < svd.Dir[j].Name
-	// })
-	//
-	// sort.Slice(svd.Dir, func(i, j int) bool {
-	// 	return svd.Dir[i].IsDir || svd.Dir[j].IsDir
-	// })
 
 	for _, itm := range strings.Split(r.URL.EscapedPath(), "/") {
 		if len(itm) == 0 {
@@ -107,8 +114,7 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	err = indexPage.ExecuteTemplate(w, "index.html", &svd)
-	if err != nil {
+	if err = s.tmpl.ExecuteTemplate(w, "index.html", &svd); err != nil {
 		log.Println(err)
 		return
 	}

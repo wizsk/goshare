@@ -14,17 +14,47 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 )
 
-var zipFileNameAndPathCahce map[string]zipFileNP = make(map[string]zipFileNP)
-
-// zipFileNM aka zip file Name and path
-type zipFileNP struct {
-	name, path string
+type zipHash struct {
+	m   map[string]string
+	mtx sync.RWMutex
 }
 
-func zipStr(val []string) string {
+var (
+	// key would be the name and path will be the value or
+	//
+	// key would be the Hasedname and name will be the value
+	//
+	// don't write directly use the helperfunctions
+	zipFileCahce zipHash = zipHash{m: make(map[string]string), mtx: sync.RWMutex{}}
+)
+
+func (z *zipHash) write(k, v string) bool {
+	if k == "" || v == "" {
+		return false
+	}
+
+	z.mtx.Lock()
+	defer z.mtx.Unlock()
+
+	z.m[k] = v
+	return true
+}
+
+func (z *zipHash) read(k string) (string, bool) {
+	z.mtx.RLock()
+	defer z.mtx.RUnlock()
+
+	v, ok := z.m[k]
+	return v, ok
+}
+
+// if there are multiple files and then this function takes the name
+// hashes the combiend names
+func zipFilesNameHash(val []string) string {
 	sort.Slice(val, func(i, j int) bool {
 		return val[i] < val[j]
 	})
@@ -41,13 +71,13 @@ func zipStr(val []string) string {
 
 // download the zip of the given file
 func (s *server) downZip(w http.ResponseWriter, r *http.Request) {
-	if fileHash := strings.TrimPrefix(r.URL.Path, "/downzip/"); fileHash != "" {
-		zNP, ok := zipFileNameAndPathCahce[fileHash]
+	if fileName := strings.TrimPrefix(r.URL.Path, "/downzip/"); fileName != "" {
+		filePath, ok := zipFileCahce.read(fileName)
 		if !ok {
 			http.Error(w, "could not find zip file", http.StatusBadRequest)
 			return
 		}
-		http.ServeFile(w, r, zNP.path)
+		http.ServeFile(w, r, filePath)
 	}
 }
 
@@ -85,6 +115,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	flusher.Flush()
 
 	reqFileNamesHash := ""
+	fileName := ""
 	if len(val) == 1 {
 		names := strings.Split(val[0], "/")
 		nm := ""
@@ -97,14 +128,16 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		if nm == "browse" {
 			nm = "root"
 		}
+		fileName = nm + ".zip"
 		reqFileNamesHash = nm + ".zip"
 	} else {
-		reqFileNamesHash = zipStr(val) + ".zip"
+		fileName = time.Now().Format("2006-01-02_03_04_05.999_PM") + ".zip"
+		reqFileNamesHash = zipFilesNameHash(val) + ".zip"
 	}
 
-	if _, ok := zipFileNameAndPathCahce[reqFileNamesHash]; ok {
+	if name, ok := zipFileCahce.read(reqFileNamesHash); ok {
 		fmt.Fprintf(w, "event: done\n")
-		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", reqFileNamesHash, "/downzip/"+url.PathEscape(reqFileNamesHash))
+		fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n", name, "/downzip/"+url.PathEscape(name))
 		flusher.Flush()
 		return
 	}
@@ -131,23 +164,24 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		return nil
 	}
 
-	zNP, err := zipDirs(callback, s.zipSavePath, cwd, res...)
-	if err != nil {
+	filePath := filepath.Join(s.tmp, fileName)
+	if err = zipDirs(callback, filePath, cwd, res...); err != nil {
 		log.Println("err while zipping:", err)
 		fmt.Fprintf(w, "event: errror\ndata: {}\n\n")
 		flusher.Flush()
 		return
 	}
 
-	zipFileNameAndPathCahce[reqFileNamesHash] = zNP
+	zipFileCahce.write(reqFileNamesHash, fileName)
+	zipFileCahce.write(fileName, filePath)
 
 	fmt.Fprintf(w, "event: done\n")
 	fmt.Fprintf(w, "data: "+`{"name": %q, "url": %q}`+"\n\n",
-		reqFileNamesHash, "/downzip/"+url.PathEscape(reqFileNamesHash))
+		fileName, "/downzip/"+url.PathEscape(fileName))
 	flusher.Flush()
 }
 
-func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...string) (zipFileNP, error) {
+func zipDirs(callback func(progress int) error, filePath, prefix string, dirs ...string) error {
 	if len(prefix) > 0 && prefix[len(prefix)-1] != '/' {
 		prefix += "/"
 	}
@@ -155,15 +189,14 @@ func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...str
 	for _, dir := range dirs {
 		f, err := walkDirTree(dir)
 		if err != nil {
-			return zipFileNP{}, err
+			return err
 		}
 		files = append(files, f...)
 	}
 
-	fileName := time.Now().Format("2006-01-02_03_04_05.999_PM") + ".zip"
-	r, err := os.Create(filepath.Join(sDir, fileName))
+	r, err := os.Create(filePath)
 	if err != nil {
-		return zipFileNP{}, err
+		return err
 	}
 	defer r.Close()
 
@@ -172,26 +205,26 @@ func zipDirs(callback func(progress int) error, sDir, prefix string, dirs ...str
 
 	for i, f := range files {
 		if err := callback(i * 100 / len(files)); err != nil {
-			return zipFileNP{}, err
+			return err
 		}
 
 		r, err := os.Open(f)
 		if err != nil {
-			return zipFileNP{}, err
+			return err
 		}
 
 		w, err := arc.Create(strings.TrimPrefix(f, prefix))
 		if err != nil {
-			return zipFileNP{}, err
+			return err
 		}
 		_, err = io.Copy(w, r)
 		if err != nil {
-			return zipFileNP{}, err
+			return err
 		}
 		r.Close()
 	}
 
-	return zipFileNP{name: fileName, path: r.Name()}, nil
+	return nil
 }
 
 func walkDirTree(n string) ([]string, error) {
