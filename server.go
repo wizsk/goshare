@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -54,6 +56,16 @@ func newServer() server {
 		showStat: true,
 		tmpl:     tmpl,
 	}
+}
+
+func (s *server) cleanup() {
+	sighalChannel := make(chan os.Signal, 1)
+	signal.Notify(sighalChannel, os.Interrupt, syscall.SIGTERM)
+	<-sighalChannel
+
+	fmt.Println("Cleaning up cache files")
+	os.RemoveAll(s.tmp)
+	os.Exit(0)
 }
 
 type svData struct {

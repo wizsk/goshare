@@ -35,7 +35,7 @@ var (
 func (z *zipHash) write(k, v string) bool {
 	if k == "" || v == "" {
 		return false
-	}
+	 }
 
 	z.mtx.Lock()
 	defer z.mtx.Unlock()

@@ -19,7 +19,7 @@ const (
 	permFile = 0664
 	permDir  = 0755
 
-	upDefaultExt = ".part"
+	// upDefaultExt = ".part"
 )
 
 func (s *server) upload(w http.ResponseWriter, r *http.Request) {

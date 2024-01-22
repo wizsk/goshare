@@ -11,7 +11,7 @@ import (
 )
 
 var cUsers = map[string]bool{}
-var CookieName = "_cookie"
+var CookieName = "__cokief_gf"
 var cMutes sync.Mutex
 
 var (
@@ -58,7 +58,6 @@ func WriteCookie(w http.ResponseWriter) error {
 		Path:     "/",
 		MaxAge:   deadline,
 		Expires:  time.Now().Add(time.Second * time.Duration(deadline)),
-		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	}
 

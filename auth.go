@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -13,7 +12,6 @@ import (
 func auth(w http.ResponseWriter, r *http.Request, handler func(w http.ResponseWriter, r *http.Request)) {
 	if password != "" {
 		if err := cookie.ReadCookie(r, cookie.CookieName); err != nil {
-			log.Println(r.URL, err)
 			http.Redirect(w, r, "/auth", http.StatusMovedPermanently)
 			return
 		}
@@ -63,26 +61,31 @@ func (s *server) authZip(w http.ResponseWriter, r *http.Request) {
 }
 
 // for "/auth" route
-func (s *server) aunth(w http.ResponseWriter, r *http.Request) {
+func (s *server) auth(w http.ResponseWriter, r *http.Request) {
+	s.printStat(r)
 	if password == "" {
 		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
 		return
 	}
 
+	if err := cookie.ReadCookie(r, cookie.CookieName); err == nil {
+		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
+		return
+	}
+
 	if r.Method != http.MethodPost {
-		//	indexPage := template.New("fo").Funcs(template.FuncMap{ "pathJoin": filepath.Join, })
-		w.Write([]byte(`<!DOCTYPE html> <html lang="en"><head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Password Form</title> </head> <body> <form action="/auth" method="post"> <label for="password">Password:</label> <input type="password" id="password" name="password" required> <br> <input type="submit" value="Submit"> </form> </body> </html> `))
+		s.tmpl.ExecuteTemplate(w, "auth.html", nil)
 		return
 	}
 
 	pass := r.FormValue("password")
 	if pass != password {
-		http.Error(w, "password don't match", http.StatusBadRequest)
+		http.Redirect(w, r, "/auth", http.StatusMovedPermanently)
 		return
 	}
 
 	if err := cookie.WriteCookie(w); err != nil {
-		http.Error(w, "password don't match", http.StatusBadRequest)
+		http.Error(w, "couldn't set cookie", http.StatusBadRequest)
 		return
 	}
 
