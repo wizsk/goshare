@@ -2,11 +2,11 @@
 
 ## TODOS
 
-- [ ] work on the frontend styles
-    - [ ] `/browse/` page
-    - [ ] `/upload` page
-    - [ ] `/login` page
-- [ ] clean tmp directory
+- [x] work on the frontend styles
+    - [x] `/browse/` page
+    - [x] `/upload` page
+    - [x] `/login` page
+- [x] clean tmp directory
 - [x] browse files.
 - [x] upload files where you currently is
 - [x] zip dir && download
