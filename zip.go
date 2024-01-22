@@ -54,7 +54,7 @@ func (z *zipHash) read(k string) (string, bool) {
 
 // if there are multiple files and then this function takes the name
 // hashes the combiend names
-func zipFilesNameHash(val []string) string {
+func zipFilesNameHash(val ...string) string {
 	sort.Slice(val, func(i, j int) bool {
 		return val[i] < val[j]
 	})
@@ -114,7 +114,6 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	}
 	flusher.Flush()
 
-	reqFileNamesHash := ""
 	fileName := ""
 	if len(val) == 1 {
 		names := strings.Split(val[0], "/")
@@ -129,11 +128,10 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 			nm = "root"
 		}
 		fileName = nm + ".zip"
-		reqFileNamesHash = nm + ".zip"
 	} else {
 		fileName = time.Now().Format("2006-01-02_03_04_05.999_PM") + ".zip"
-		reqFileNamesHash = zipFilesNameHash(val) + ".zip"
 	}
+	reqFileNamesHash := zipFilesNameHash(val...) + ".zip"
 
 	if name, ok := zipFileCahce.read(reqFileNamesHash); ok {
 		fmt.Fprintf(w, "event: done\n")
