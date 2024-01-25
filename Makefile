@@ -1,7 +1,15 @@
+# .PHONY: all clean
+
+all: setup curr linuxStatic linuxArm64 winAmd64 clean
+
+setup:
+	sed -i 's/const debug = !false/const debug = false/' main.go
+
+clean:
+	sed -i 's/const debug = false/const debug = !false/' main.go
+
 curr:
 	go build -ldflags "-s -w" -o build/goshare
-
-all: curr linuxStatic linuxArm64 winAmd64
 
 linuxStatic:
 	@echo "[+] Building the static Linux version"
@@ -15,3 +23,6 @@ winAmd64:
 	@echo "[+] Building the Windows version"
 	@env GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o build/goshare.exe
 
+# This target is always executed, even if there are errors in previous targets.
+.PHONY: always
+always: clean
