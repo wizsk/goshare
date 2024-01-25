@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -33,9 +34,9 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cwd := r.FormValue("cwd")
-	if cwd == "" {
-		http.Error(w, "no cwd provided", http.StatusBadRequest)
+	cwd, err := url.QueryUnescape(r.FormValue("cwd"))
+	if cwd == "" || err != nil {
+		http.Error(w, "no or bad cwd provided", http.StatusBadRequest)
 		return
 	}
 	cwd = filepath.Join(s.root, strings.TrimPrefix(cwd, "/browse"))
@@ -44,8 +45,8 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileName := r.FormValue("name")
-	if fileName == "" {
+	fileName, err := url.QueryUnescape(r.FormValue("name"))
+	if fileName == "" || err != nil {
 		http.Error(w, "no name provided", http.StatusBadRequest)
 		return
 	}
