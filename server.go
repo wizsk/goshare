@@ -4,13 +4,13 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -23,18 +23,27 @@ type server struct {
 	root     string
 	tmp      string // tmp is the path where the zip files are stored
 	showStat bool
-	tmpl     *template.Template
+	tmpl     tmplWrapper
 	// zipped    map[string]string
 }
 
-func newServer() server {
-	tmpDirPath, err := os.MkdirTemp(os.TempDir(), "goshare_zip_")
-	if err != nil {
-		log.Fatal(err)
-	}
+// just a warapper for debugigg
+type tmplWrapper interface {
+	ExecuteTemplate(io.Writer, string, any) error
+}
 
-	tmpl := template.New("_base").Funcs(template.FuncMap{
-		// "pathJoin": filepath.Join,
+type tmpl struct{}
+
+func (tp *tmpl) ExecuteTemplate(w io.Writer, name string, data any) error {
+	t, err := newTmplate().ParseGlob("frontend/src/*")
+	if err != nil {
+		return err
+	}
+	return t.ExecuteTemplate(w, name, data)
+}
+
+func newTmplate() *template.Template {
+	return template.New("_base").Funcs(template.FuncMap{
 		"pathJoin": func(base string, elem ...string) string {
 			val, _ := url.JoinPath(base, elem...)
 			return val
@@ -43,22 +52,29 @@ func newServer() server {
 			return t.Format("01/02/2006 03:04 PM")
 		},
 	})
+}
 
-	if debug {
-		tmpl, err = tmpl.ParseGlob("frontend/src/*")
-	} else {
-		tmpl, err = tmpl.ParseFS(templateFiles, "frontend/src/*")
-	}
-
+func newServer() server {
+	tmpDirPath, err := os.MkdirTemp(os.TempDir(), "goshare_zip_")
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	var tr tmplWrapper
+	if debug {
+		tr = &tmpl{}
+	} else {
+		tr, err = newTmplate().ParseFS(templateFiles, "frontend/src/*")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	return server{
 		tmp:      tmpDirPath,
 		root:     rootDir,
 		showStat: true,
-		tmpl:     tmpl,
+		tmpl:     tr,
 	}
 }
 
@@ -84,14 +100,11 @@ type Umap struct {
 }
 
 func (s *server) browse(w http.ResponseWriter, r *http.Request) {
-	// example.com/fo/bar/bazz -> ["/fo/", "/fo/bar", "/fo/bar/bazz"]
 	fileName := filepath.Join(s.root, strings.TrimPrefix(r.URL.Path, "/browse"))
-
-	// fmt.Println("filename:", fileName)
 
 	currentDirName := ""
 	if stat, err := os.Stat(fileName); err != nil {
-		log.Println(err)
+		s.tmpl.ExecuteTemplate(w, "filenotfound.html", nil)
 		return
 	} else if !stat.IsDir() {
 		http.ServeFile(w, r, fileName)
@@ -130,51 +143,5 @@ func (s *server) browse(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	if err = s.tmpl.ExecuteTemplate(w, "index.html", &svd); err != nil {
-		log.Println(err)
-		return
-	}
-}
-
-var validFilenameRegex *regexp.Regexp = regexp.MustCompile(`^[a-zA-Z0-9_\- .()+]+$`)
-
-func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "bad request", http.StatusBadRequest)
-		return
-	}
-	cwd := r.FormValue("cwd")
-	if cwd == "" {
-		http.Error(w, "cwd not provided", http.StatusBadRequest)
-		return
-	}
-
-	parent := filepath.Join(s.root, strings.TrimPrefix(cwd, "/browse"))
-
-	if pStat, err := os.Stat(parent); err != nil {
-		http.Error(w, "could not resolve parent direcoty", http.StatusBadRequest)
-		return
-	} else if !pStat.IsDir() {
-		http.Error(w, "paren is not a drectory", http.StatusBadRequest)
-		return
-	}
-
-	dirName := r.FormValue("name")
-
-	if dirName == "" {
-		http.Error(w, "no directory name provided", http.StatusBadRequest)
-		return
-	} else if !validFilenameRegex.MatchString(dirName) {
-		http.Error(w, "directory name contains illigal chars", http.StatusBadRequest)
-		return
-	}
-
-	err := os.Mkdir(filepath.Join(parent, dirName), permDir)
-	if err != nil && !os.IsExist(err) {
-		http.Error(w, fmt.Sprintf("cludld not create %q", dirName), http.StatusBadRequest)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("file creaded successfully"))
+	_ = s.tmpl.ExecuteTemplate(w, "index.html", &svd)
 }

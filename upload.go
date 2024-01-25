@@ -1,51 +1,35 @@
+// UPLOAD AND MKDIR
 package main
 
 import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"html/template"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
 	permFile = 0664
 	permDir  = 0755
-
+	// TODO:
+	// add '.part' to extention to uncompleased files
 	// upDefaultExt = ".part"
 )
 
 func (s *server) upload(w http.ResponseWriter, r *http.Request) {
+	if dontAllowUploads {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		s.tmpl.ExecuteTemplate(w, "noup.html", nil)
+		return
+	}
 	if r.Method != http.MethodPost && r.Method != http.MethodPatch && r.Method != http.MethodPut {
-		indexPage := template.New("_base").Funcs(template.FuncMap{
-			"pathJoin": filepath.Join,
-			"timeFmt": func(t time.Time) string {
-				return t.Format("01/02/2006 03:04 PM")
-			},
-		})
-
-		var err error
-		if debug {
-			indexPage, err = indexPage.ParseGlob("frontend/src/*")
-		} else {
-			indexPage, err = indexPage.ParseFS(templateFiles, "frontend/src/*")
-		}
-
-		if err != nil {
-			log.Panicln(err)
-		}
-
-		if err = indexPage.ExecuteTemplate(w, "upload.html", nil); err != nil {
-			log.Println(err)
-		}
-
+		_ = s.tmpl.ExecuteTemplate(w, "upload.html", nil)
 		return
 	}
 
@@ -73,21 +57,12 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 	}
 	fileWithUUID := filepath.Join(cwd, fileName+"_"+uuid)
 
-	// size, err := strconv.Atoi(r.FormValue("size"))
-	// if err != nil {
-	// 	http.Error(w, "size err", http.StatusBadRequest)
-	// 	return
-	// }
-
 	offset, err := strconv.Atoi(r.FormValue("offset"))
 	if err != nil {
 		http.Error(w, "offset err", http.StatusBadRequest)
 		return
 	}
 
-	// fmt.Println(r.Method, cwd, file, uuid, size, offset)
-
-	// no proxy or anything will be used so headers will be used to communicate aobut files
 	if r.Method == http.MethodPost {
 		file, err := os.Create(fileWithUUID)
 		if err != nil {
@@ -121,9 +96,8 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer r.Body.Close()
-		// this was already checked
-	} else {
-		// put method
+
+	} else { // put method
 		sum := r.FormValue("sha256")
 		if sum != "" {
 			file, err := os.Open(fileWithUUID)
@@ -158,8 +132,55 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 		}
 		if err := os.Rename(fileWithUUID, rawFileName+add+ext); err != nil {
 			http.Error(w, "something went wrong", http.StatusInternalServerError)
-			log.Println(err)
 			return
 		}
 	}
+}
+
+var validFilenameRegex *regexp.Regexp = regexp.MustCompile(`^[a-zA-Z0-9_\- .()+]+$`)
+
+func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
+	if dontAllowUploads {
+		http.Error(w, "Not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	cwd := r.FormValue("cwd")
+	if cwd == "" {
+		http.Error(w, "cwd not provided", http.StatusBadRequest)
+		return
+	}
+
+	parent := filepath.Join(s.root, strings.TrimPrefix(cwd, "/browse"))
+
+	if pStat, err := os.Stat(parent); err != nil {
+		http.Error(w, "could not resolve parent direcoty", http.StatusBadRequest)
+		return
+	} else if !pStat.IsDir() {
+		http.Error(w, "paren is not a drectory", http.StatusBadRequest)
+		return
+	}
+
+	dirName := r.FormValue("name")
+
+	if dirName == "" {
+		http.Error(w, "no directory name provided", http.StatusBadRequest)
+		return
+	} else if !validFilenameRegex.MatchString(dirName) {
+		http.Error(w, "directory name contains illigal chars", http.StatusBadRequest)
+		return
+	}
+
+	err := os.Mkdir(filepath.Join(parent, dirName), permDir)
+	if err != nil && !os.IsExist(err) {
+		http.Error(w, fmt.Sprintf("cludld not create %q", dirName), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("file creaded successfully"))
 }

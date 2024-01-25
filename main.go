@@ -15,7 +15,7 @@ const version = "4.0"
 var (
 	rootDir, port, password string
 
-	showStat bool
+	dontAllowUploads, showStat bool
 )
 
 func flagParse() {
@@ -23,6 +23,7 @@ func flagParse() {
 	flag.StringVar(&port, "port", "8001", "port number")
 	flag.StringVar(&password, "p", "", "password")
 	flag.BoolVar(&showStat, "s", false, "don't show request information. aka silent")
+	flag.BoolVar(&dontAllowUploads, "noup", false, "don't allow uploads")
 	v := flag.Bool("version", false, "show version number")
 	flag.Parse()
 
@@ -77,6 +78,9 @@ func main() {
 	http.HandleFunc("/upload", sv.authUpload)
 	http.HandleFunc("/mkdir", sv.authMkdir)
 
+	if debug {
+		fmt.Printf("Running in debug mode\n")
+	}
 	fmt.Printf("Serving at http://%s:%s\n", localIp(), port)
 	if password != "" {
 		fmt.Printf("Password is: %s\n\n", password)
