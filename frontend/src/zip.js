@@ -3,6 +3,7 @@
 const dataZipSelect = "data-zip-select";
 const items = document.querySelectorAll(`[${dataZipSelect}]`);
 
+
 /**
  * zipOptions is the html btn for 
  * @type {HTMLElement}
@@ -50,6 +51,7 @@ function clearSelections() {
     showHideZipOptions();
 }
 
+window.onload = clearSelections;
 
 //////////////////
 // zip ssr
