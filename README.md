@@ -2,8 +2,6 @@
 
 ## TODOS
 
-- [ ] don't allow uploads `--noup`
-- [ ] show no files found page
 - [ ] do more testings
 
 ## DONE
@@ -12,6 +10,8 @@
     - [x] `/browse/` page
     - [x] `/upload` page
     - [x] `/login` page
+- [x] don't allow uploads `--noup`
+- [x] show no files found page
 - [x] clean tmp directory
 - [x] browse files.
 - [x] upload files where you currently is
