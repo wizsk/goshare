@@ -114,7 +114,15 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 
 	fileName := ""
 	if len(val) == 1 {
-		names := strings.Split(val[0], "/")
+		v, err := url.QueryUnescape(val[0])
+		if err != nil {
+			log.Println("err while zipping:", err)
+			fmt.Fprintf(w, "event: errror\ndata: {\"urlEscape\": %q}\n\n", "bad url")
+			flusher.Flush()
+			return
+		}
+
+		names := strings.Split(v, "/")
 		nm := ""
 		for i := len(names) - 1; i >= 0; i-- {
 			if names[i] != "" {
@@ -139,7 +147,16 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res := []string{}
+	var err error
 	for _, v := range val {
+		v, err = url.QueryUnescape(v)
+		if err != nil {
+			log.Println("err while zipping:", err)
+			fmt.Fprintf(w, "event: errror\ndata: {\"urlEscape\": %q}\n\n", "bad url")
+			flusher.Flush()
+			return
+		}
+
 		if v = strings.TrimPrefix(v, "/browse/"); v == "" {
 			continue
 		}
