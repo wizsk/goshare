@@ -35,7 +35,7 @@ var (
 func (z *zipHash) write(k, v string) bool {
 	if k == "" || v == "" {
 		return false
-	 }
+	}
 
 	z.mtx.Lock()
 	defer z.mtx.Unlock()
@@ -83,9 +83,19 @@ func (s *server) downZip(w http.ResponseWriter, r *http.Request) {
 
 // zip the files
 func (s *server) zip(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		fmt.Println(err)
+	w.Header().Set("Content-Type", "text/event-stream") // Set the response header for SSE
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
+		return
+	}
+	flusher.Flush()
+
+	if dontAllowZipping {
+		fmt.Fprintf(w, "event: restricted\ndata: {}\n\n")
+		flusher.Flush()
 		return
 	}
 
@@ -101,18 +111,6 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "no files for zipping proved", http.StatusBadRequest)
 		return
 	}
-
-	// Set the response header for SSE
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	// Flush the response to ensure the message is sent immediately
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
-		return
-	}
-	flusher.Flush()
 
 	fileName := ""
 	if len(val) == 1 {
@@ -163,7 +161,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filePath := filepath.Join(s.tmp, fileName)
-	if err = zipDirs(callback, filePath, cwd, res...); err != nil {
+	if err := zipDirs(callback, filePath, cwd, res...); err != nil {
 		log.Println("err while zipping:", err)
 		fmt.Fprintf(w, "event: errror\ndata: {}\n\n")
 		flusher.Flush()

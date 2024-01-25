@@ -15,7 +15,7 @@ const version = "4.0"
 var (
 	rootDir, port, password string
 
-	dontAllowUploads, showStat bool
+	dontAllowUploads, dontAllowZipping, showStat bool
 )
 
 func flagParse() {
@@ -24,6 +24,7 @@ func flagParse() {
 	flag.StringVar(&password, "p", "", "password")
 	flag.BoolVar(&showStat, "s", false, "don't show request information. aka silent")
 	flag.BoolVar(&dontAllowUploads, "noup", false, "don't allow uploads")
+	flag.BoolVar(&dontAllowZipping, "nozip", false, "don't allow zipping")
 	v := flag.Bool("version", false, "show version number")
 	flag.Parse()
 

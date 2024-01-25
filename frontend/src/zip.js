@@ -103,6 +103,13 @@ function downloadAsZip() {
         isZippin = false;
     }
 
+    sse.addEventListener("restricted", async (e) => {
+        zipDownProgress.innerText = 'Zipping not allowed';
+        sse.close();
+        zipDownBtn.disabled = false;
+        isZippin = false;
+    });
+
     // done event
     sse.addEventListener("done", async (e) => {
         console.log("sse done:", e.data);
