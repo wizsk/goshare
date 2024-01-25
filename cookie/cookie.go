@@ -10,9 +10,12 @@ import (
 	"time"
 )
 
-var cUsers = map[string]bool{}
-var CookieName = "__cokief_gf"
-var cMutes sync.Mutex
+const CookieName = "__cokief_gf"
+
+var (
+	cUsers = map[string]bool{}
+	cMutes sync.Mutex
+)
 
 var (
 	ErrValueTooLong = errors.New("cookie value too long")
