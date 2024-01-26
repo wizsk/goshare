@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{template "output.tcss"}}
+    <title>{{.Cd}}</title>
+</head>
+
+<body class="">
+    <div id="backdrop" class="hidden absolute w-[100vw] h-[100vh] bg-[#00000024] top-0 left-0 right-0 bottom-0"></div>
+    <div>
+        <div
+            class="w-screen px-2 py-2 md:py-2 fixed nav-bottom md:top-0 md:left-0 bg-blue-50 flex flex-row justify-between items-center text-xl">
+            <div class="w-[88vw] md:w-[75vw] whitespace-nowrap overflow-x-scroll md:overflow-hidden md:hover:overflow-x-scroll flex flex-row items-center">
+                {{range .Umap}}
+                <a class="block hover:underline md:ease-in md:duration-100 py-2" href="{{.Url}}">{{.Name}}/</a>
+                {{end}}
+            </div>
+            <div class="relative md:static w-fit">
+                <button onclick="showHideZipOptions()" class="md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-6 h-6"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                    </svg>
+                </button>
+                <div class="hidden md:flex md:flex-row md:gap-2 absolute md:static bottom-16 right-2 px-2 py-2 bg-white md:bg-inherit"
+                    id="zip-options">
+                    <button
+                        onclick="window.location.href = `/upload?cwd=${encodeURIComponent(window.location.pathname)}`"
+                        title="Upload files to current directory"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-cloud-upload" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383" />
+                            <path fill-rule="evenodd"
+                                d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708z" />
+                        </svg>
+                        <span>Upload</span>
+                    </button>
+                    <button title="Start zipping selected files"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        id="zip-download" onclick="downloadAsZip()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-arrow-down-square" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm8.5 2.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293z" />
+                        </svg>
+                        <span class="whitespace-nowrap">Start zipping</span>
+                    </button>
+                    <button title="Select all files and directories for zipping"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        onclick="selectAll()" id="selectAll-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-check2-square" viewBox="0 0 16 16">
+                            <path
+                                d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z" />
+                            <path
+                                d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0" />
+                        </svg>
+                        <span class="whitespace-nowrap">Select all</span>
+                    </button>
+                    <button title="Deselect all files and directories for zipping"
+                        class="px-4 py-2 flex flex-row items-center gap-2 md:hover:bg-blue-200 ease-in duration-150 rounded-md"
+                        onclick="clearSelections()" id="clearSelections-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-square" viewBox="0 0 16 16">
+                            <path
+                                d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                            <path
+                                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                        </svg>
+                        <span class="whitespace-nowrap">Clear selections</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- this is because of the nab bar -->
+        <div class="py-10 hidden md:block"></div>
+
+        <div id="zip-down-progress"
+            class="hidden fixed bottom-20 md:bottom-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-md"></div>
+
+        <!-- <div>UPLOD <button onclick="gotoUploadPage()">uppp -></button>
+        </div> -->
+
+
+        <div class="py-2 md:p-0">
+            <table class="mx-auto divide-y divide-slate-700">
+                <!--
+                    type Item struct {
+                    Name         string
+                    LastModified time.Time
+                    Size         string
+                    IsDir        bool
+                }
+                -->
+                {{range $.Dir}}
+                {{$path := pathJoin $.Od .Name}}
+                <tr class="h-12">
+                    <td class="flex flex-col w-[85vw] md:w-[60vw] overflow-hidden">
+                        <a class="flex flex-row gap-2 items-center hover:bg-blue-100 ease-in duration-100"
+                            title="{{if .IsDir}}Directory:{{else}}File:{{end}} {{.Name}}" href="{{$path}}" {{if not .IsDir}}download="{{.Name}}"{{end}}>
+                            <span class="pl-2">
+                                {{if .IsDir}}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="w-8 h-8 fill-yellow-500" viewBox="0 0 16 16">
+                                    <path
+                                        d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z" />
+                                </svg>
+                                {{else}}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="w-8 h-8" viewBox="0 0 16 16">
+                                    <path
+                                        d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2z" />
+                                </svg>
+                                {{end}}
+                            </span>
+                            <span class="flex flex-col">
+                                <span
+                                    class="w-[70vw] md:w-[45vw] text-ellipsis overflow-hidden whitespace-nowrap">{{.Name}}</span>
+                                <span class="text-gray-500 text-sm">
+                                    {{if .IsDir}}
+                                    <span>{{.LastModified | timeFmt}}</span>
+                                    {{else}}
+                                    <span>{{.Size}}</span>
+                                    <span>|</span>
+                                    <span>{{.LastModified | timeFmt}}</span>
+                                    {{end}}
+                                </span>
+                            </span>
+                        </a>
+                    </td>
+                    <td class="px-1">
+                        <input class="hover:cursor-pointer" title="select or deselect file for zipping" type="checkbox"
+                            data-zip-select="{{$path}}" />
+                    </td>
+                </tr>
+                {{end}}
+            </table>
+        </div>
+    </div>
+    <div class="py-12 md:hidden"></div>
+
+    <script>
+        // {{ template "zip.js"}}
+    </script>
+</body>
+
+</html>
