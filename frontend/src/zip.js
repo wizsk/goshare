@@ -51,7 +51,7 @@ function clearSelections() {
     showHideZipOptions();
 }
 
-window.onload = clearSelections;
+window.onload = () => items.forEach((itm) => { itm.checked = false; });;
 
 //////////////////
 // zip ssr

@@ -116,7 +116,7 @@ async function upload(file, uuid) {
             throw err;
         }
 
-        const msg = `curret: ${Math.round((chuckId / chuckCount) * 100)}% ${file.name}`;
+        const msg = `${Math.round((chuckId / chuckCount) * 100)}% ${file.name}`;
         fileProgress.innerHTML = msg;
         console.log(msg);
     }
