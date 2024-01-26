@@ -70,7 +70,7 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "could not create file", http.StatusInternalServerError)
 			return
 		}
-		file.Close()
+		defer file.Close()
 		w.WriteHeader(http.StatusCreated)
 
 	} else if r.Method == http.MethodPatch {
@@ -106,13 +106,14 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "something went wrong [0]", http.StatusBadRequest)
 				return
 			}
-			defer file.Close()
 
 			hasher := sha256.New()
 			if _, err := io.Copy(hasher, file); err != nil {
+				file.Close()
 				http.Error(w, "something went wrong [2]", http.StatusBadRequest)
 				return
 			}
+			file.Close()
 
 			if gotSum := hex.EncodeToString(hasher.Sum(nil)); gotSum != sum {
 				fmt.Println(fileName, sum, gotSum)
