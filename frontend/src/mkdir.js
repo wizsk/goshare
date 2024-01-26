@@ -10,7 +10,8 @@ async function mkdir() {
         alert("No name provided");
         return;
     }
-
+    
+    input = input.trim();
     const url = `/mkdir?cwd=${encodeURIComponent(cwd)}&name=${encodeURIComponent(input)}`;
     console.log("req", url);
     const res = await fetch(url, {

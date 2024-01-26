@@ -151,7 +151,14 @@ func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
-	cwd := r.FormValue("cwd")
+
+	cwd, err := url.QueryUnescape(r.FormValue("cwd"))
+	if err != nil {
+		http.Error(w, "bad cwd provided", http.StatusBadRequest)
+		return
+	}
+
+	cwd = strings.TrimSpace(cwd)
 	if cwd == "" {
 		http.Error(w, "cwd not provided", http.StatusBadRequest)
 		return
@@ -177,7 +184,7 @@ func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := os.Mkdir(filepath.Join(parent, dirName), permDir)
+	err = os.Mkdir(filepath.Join(parent, dirName), permDir)
 	if err != nil && !os.IsExist(err) {
 		http.Error(w, fmt.Sprintf("cludld not create %q", dirName), http.StatusBadRequest)
 		return
