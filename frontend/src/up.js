@@ -77,9 +77,9 @@ async function uploadFiles() {
 
 /**
  * uploads a sinlge file to the "/upload?cwd=fo" aka fo directory directory
- * 
- * @param {File} file 
- * @param {string} uuid 
+ *
+ * @param {File} file
+ * @param {string} uuid
  * @returns {Promise<void>}
  */
 async function upload(file, uuid) {
@@ -117,7 +117,7 @@ async function upload(file, uuid) {
         }
 
         const msg = `${Math.round((chuckId / chuckCount) * 100)}% ${file.name}`;
-        fileProgress.innerHTML = msg;
+        fileProgress.innerText = msg;
         console.log(msg);
     }
 

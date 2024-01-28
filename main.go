@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const debug = !false
@@ -78,6 +79,10 @@ func main() {
 	http.HandleFunc("/downzip/", sv.authDownZip)
 	http.HandleFunc("/upload", sv.authUpload)
 	http.HandleFunc("/mkdir", sv.authMkdir)
+	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.URL.Path)
+		http.ServeFile(w, r, strings.TrimPrefix(r.URL.Path, "/"))
+	})
 
 	if debug {
 		fmt.Printf("Running in debug mode\n")
