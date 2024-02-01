@@ -13,6 +13,27 @@ import (
 const debug = !false
 const version = "4.0"
 
+const usages string = `Usage of goshare:
+  -d
+        the directory for sharing (default ".")
+  -p
+        password (default is no password)
+  -s
+		don't show status, be silent
+  --noup
+        don't allow uploads or making directories
+  --nozip
+        don't allow zipping
+  --port string
+        port number (default "8001")
+  --version
+        show version number
+
+EXAMPLES
+       goshare -d "fo/bar/bazz" -p "777"
+           share "fo/bar/bazz" directory. password would be "777"
+`
+
 var (
 	rootDir, port, password string
 
@@ -27,6 +48,7 @@ func flagParse() {
 	flag.BoolVar(&dontAllowUploads, "noup", false, "don't allow uploads")
 	flag.BoolVar(&dontAllowZipping, "nozip", false, "don't allow zipping")
 	v := flag.Bool("version", false, "show version number")
+	flag.Usage = func() { fmt.Println(usages) }
 	flag.Parse()
 
 	if *v {
