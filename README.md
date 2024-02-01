@@ -11,7 +11,7 @@ It's used for quickly share files from one device to another in the local networ
 - Upload files to directories.
 - Create directory.
 - Super-fast transfers
-- Stylish UI ~(subjective)~
+- ~Stylish~ UI (subjective)
 
 <!-- ## Install -->
 <!---->
@@ -32,23 +32,23 @@ sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
 
 ## usages
 
-```bash
+```
 goshare --help
 Usage of goshare:
   -d
-        the directory for sharing (default ".")
+      the directory for sharing (default ".")
   -p
-        password (default is no password)
+      password (default is no password)
   -s
-		don't show status, be silent
+      don't show status, be silent
   --noup
-        don't allow uploads or making directories
+      don't allow uploads or making directories
   --nozip
-        don't allow zipping
+      don't allow zipping
   --port string
-        port number (default "8001")
+      port number (default "8001")
   --version
-        show version number
+      show version number
 
 EXAMPLES
        goshare -d "fo/bar/bazz" -p "777"
