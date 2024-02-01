@@ -86,6 +86,8 @@ EXAMPLES
 ## TODOS for the rewrite
 
 - [ ] do more testings
+- [ ] static files dir upload
+- [ ] favicons
 
 ## DONE
 
