@@ -81,7 +81,7 @@ EXAMPLES
 
 ## Thanks to
 
-- @mdJoOy for testing and bug contributions.
+- [@mdJoOy](https://github.com/mdJoOy) for testing and bug contributions.
 
 ## TODOS for the rewrite
 
