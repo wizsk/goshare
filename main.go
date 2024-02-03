@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 )
 
 const debug = !false
@@ -48,7 +47,7 @@ func flagParse() {
 	flag.BoolVar(&dontAllowUploads, "noup", false, "don't allow uploads")
 	flag.BoolVar(&dontAllowZipping, "nozip", false, "don't allow zipping")
 	v := flag.Bool("version", false, "show version number")
-	flag.Usage = func() { fmt.Println(usages) }
+	flag.Usage = func() { fmt.Print(usages) }
 	flag.Parse()
 
 	if *v {
@@ -101,10 +100,7 @@ func main() {
 	http.HandleFunc("/downzip/", sv.authDownZip)
 	http.HandleFunc("/upload", sv.authUpload)
 	http.HandleFunc("/mkdir", sv.authMkdir)
-	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.URL.Path)
-		http.ServeFile(w, r, strings.TrimPrefix(r.URL.Path, "/"))
-	})
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	if debug {
 		fmt.Printf("Running in debug mode\n")
