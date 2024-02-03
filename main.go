@@ -13,6 +13,8 @@ const debug = !false
 const version = "4.0"
 
 const usages string = `Usage of goshare:
+Shares the specifed directy to the loalnetwork.
+
   -d
         the directory for sharing (default ".")
   -p
@@ -103,7 +105,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	if debug {
-		fmt.Printf("Running in debug mode\n")
+		fmt.Printf("Running in debug mode version: %s\n", version)
 	}
 	fmt.Printf("Serving at http://%s:%s\n", localIp(), port)
 	if password != "" {
@@ -114,6 +116,8 @@ func main() {
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		fmt.Printf("\nwhile serving err: %v\n", err)
+		fmt.Printf("Hint: mostlikely the issue is the port is alredy in use\n")
+		fmt.Printf("use `--port 8002` to specefy another port\n")
 		os.Exit(1)
 	}
 }
