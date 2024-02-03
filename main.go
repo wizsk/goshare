@@ -13,7 +13,7 @@ const debug = !false
 const version = "4.0"
 
 const usages string = `Usage of goshare:
-Shares the specifed directy to the loalnetwork.
+Share specifed directy to the localnetwork.
 
   -d
         the directory for sharing (default ".")
