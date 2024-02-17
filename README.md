@@ -78,7 +78,9 @@ EXAMPLES
 
 ### mobile
 
-![mobile browse and menu](/demo/img/mobile_browse+menu.jpg)
+<div align="center" style="width: 100%;">
+ <img alt="mobile browse menu" src="demo/img/mobile_browse+menu.jpg" style="max-width:400px;">
+</div>
 
 
 ## Thanks to
