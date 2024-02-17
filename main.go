@@ -9,23 +9,24 @@ import (
 	"os"
 )
 
-const debug = !false
+const debug = false
 const version = "4.0"
 
 const usages string = `Usage of goshare:
 Share specifed directy to the localnetwork.
 
-  -d
+OPTIONS:
+  -d <directory_name>
         the directory for sharing (default ".")
-  -p
+  -p <password>
         password (default is no password)
   -s
-		don't show status, be silent
+        don't show status, be silent
   --noup
         don't allow uploads or making directories
   --nozip
         don't allow zipping
-  --port string
+  --port <port_number>
         port number (default "8001")
   --version
         show version number
