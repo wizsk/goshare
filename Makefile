@@ -7,11 +7,11 @@ DESCRIPTION =  file share // server written in golang
 
 # all: setup curr linuxStatic linuxArm64 winAmd64 clean
 
-release:
-	sed -i 's/const debug = !false/const debug = false/' main.go
-
-debug:
-	sed -i 's/const debug = false/const debug = !false/' main.go
+# release:
+# 	sed -i 's/const debug = !false/const debug = false/' main.go
+#
+# debug:
+# 	sed -i 's/const debug = false/const debug = !false/' main.go
 
 curr:
 	go build -ldflags "-s -w" -o build/goshare
@@ -29,7 +29,7 @@ winAmd64:
 	@env GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o build/goshare.exe
 
 
-all: release build debug
+all: build
 check: format vet test
 
 build: clean update tidyup format vet test
@@ -40,20 +40,28 @@ build: clean update tidyup format vet test
 	@mkdir -p $(EXEC_DIR)
 
 	@echo "[+] Building the Linux version"
-	@go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
+	@env GOOS=linux CGO_ENABLED=0 go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
 
 	@echo "[+] Packaging the Linux version"
 	@tar -czvf $(EXEC_DIR)goshare_Linux.tar.gz -C $(EXEC_DIR) goshare > /dev/null
 	@sha256sum $(EXEC_DIR)goshare_Linux.tar.gz
+
+	@echo "[+] Building the Linux ARM version"
+	@env GOARCH=arm64 GOOS=linux CGO_ENABLED=0 go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
+
+	@echo "[+] Packaging the Linux ARM version"
+	@tar -czvf $(EXEC_DIR)goshare_Linux_ARM.tar.gz -C $(EXEC_DIR) goshare > /dev/null
+	# @sha256sum $(EXEC_DIR)goshare_Linux.tar.gz
+
 	# @sha256sum $(EXEC_DIR)goshare_Linux.tar.gz > $(EXEC_DIR)goshare_Linux_sha256sum.txt
 
-	@echo
-	@echo "[+] Building the static Linux version"
-	@env GOOS=linux CGO_ENABLED=0 go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
+	# @echo
+	# @echo "[+] Building the static Linux version"
+	# @CGO_ENABLED=0 go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
 
-	@echo "[+] Packaging the static Linux version"
-	@tar -czvf $(EXEC_DIR)goshare_Linux_static.tar.gz -C $(EXEC_DIR) goshare > /dev/null
-	@sha256sum $(EXEC_DIR)goshare_Linux_static.tar.gz
+	# @echo "[+] Packaging the static Linux version"
+	# @tar -czvf $(EXEC_DIR)goshare_Linux_static.tar.gz -C $(EXEC_DIR) goshare > /dev/null
+	# @sha256sum $(EXEC_DIR)goshare_Linux_static.tar.gz
 	# @sha256sum $(EXEC_DIR)goshare_Linux_static.tar.gz > $(EXEC_DIR)goshare_Linux_static_sha256sum.txt
 
 	# @echo
