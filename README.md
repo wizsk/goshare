@@ -28,8 +28,8 @@ goshare --help
 ```bash
 # linux
 cd /tmp
-wget 'https://github.com/wizsk/goshare/releases/latest/download/goshare_Linux_static.tar.gz'
-tar xf 'goshare_Linux_static.tar.gz'
+wget 'https://github.com/wizsk/goshare/releases/latest/download/goshare_Linux.tar.gz'
+tar xf 'goshare_Linux.tar.gz'
 sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
 ```
 
