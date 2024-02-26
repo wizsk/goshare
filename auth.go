@@ -91,3 +91,8 @@ func (s *server) auth(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
 }
+
+func (s *server) authServeStaticFilese(w http.ResponseWriter, r *http.Request) {
+	s.printStat(r)
+	auth(w, r, serveStaticFiles)
+}

@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-const debug = !false
+const debug = false
 const version = "4.0"
 
 const usages string = `Usage of goshare:
@@ -103,7 +103,8 @@ func main() {
 	http.HandleFunc("/downzip/", sv.authDownZip)
 	http.HandleFunc("/upload", sv.authUpload)
 	http.HandleFunc("/mkdir", sv.authMkdir)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	http.HandleFunc("/static/", sv.authServeStaticFilese)
 
 	if debug {
 		fmt.Printf("Running in debug mode version: %s\n", version)
