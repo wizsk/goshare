@@ -10,7 +10,7 @@ import (
 )
 
 const debug = false
-const version = "4.0"
+const version = "4.1"
 
 const usages string = `Usage of goshare:
 Share specifed directy to the localnetwork.
