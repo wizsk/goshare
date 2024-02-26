@@ -73,7 +73,7 @@ func newServer() server {
 	return server{
 		tmp:      tmpDirPath,
 		root:     rootDir,
-		showStat: true,
+		showStat: showStat,
 		tmpl:     tr,
 	}
 }

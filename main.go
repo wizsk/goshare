@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-const debug = false
+const debug = !false
 const version = "4.0"
 
 const usages string = `Usage of goshare:

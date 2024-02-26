@@ -116,11 +116,12 @@
                 }
                 -->
                 {{range $.Dir}}
-                {{$path := pathJoin $.Od .Name}}
+                <!-- {{$path := pathJoin $.Od .Name}} -->
+                {{$path := .Name}}
                 <tr class="h-12">
                     <td class="flex flex-col w-[85vw] md:w-[60vw] overflow-hidden">
                         <a class="flex flex-row gap-2 items-center hover:bg-blue-100 ease-in duration-100"
-                            title="{{if .IsDir}}Directory:{{else}}File:{{end}} {{.Name}}" href="{{$path}}" {{if not .IsDir}}download="{{.Name}}"{{end}}>
+                            title="{{if .IsDir}}Directory:{{else}}File:{{end}} {{.Name}}" href="{{$path}}{{if .IsDir}}/{{end}}" {{if not .IsDir}}download="{{.Name}}"{{end}}>
                             <span class="pl-2">
                                 {{if .IsDir}}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
