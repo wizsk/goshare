@@ -124,13 +124,13 @@ async function upload(file, uuid) {
     // last request
     // rename the file
     try {
-        let sum = "";
-        if (fileCheckSum.checked) {
-            console.log("calcualing checksum of:", file.name);
-            fileProgress.innerHTML = `current: cheching 256sum ${file.name}`;
-            sum = await calculateHashofFile(file);
-        }
-        await fetch(`${UPLOAD_URL}?cwd=${encodeURIComponent(cwd)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=${file.size}&sha256=${sum}`, {
+        // let sum = "";
+        // if (fileCheckSum.checked) {
+        //     console.log("calcualing checksum of:", file.name);
+        //     fileProgress.innerHTML = `current: cheching 256sum ${file.name}`;
+        //     sum = await calculateHashofFile(file);
+        // }
+        await fetch(`${UPLOAD_URL}?cwd=${encodeURIComponent(cwd)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=${file.size}`, {
             method: 'PUT',
         })
     } catch (err) {
