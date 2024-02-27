@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"time"
 )
 
 const debug = false
@@ -109,16 +110,44 @@ func main() {
 	if debug {
 		fmt.Printf("Running in debug mode version: %s\n", version)
 	}
-	fmt.Printf("Serving at http://%s:%s\n", localIp(), port)
 	if password != "" {
-		fmt.Printf("Password is: %s\n\n", password)
-	} else {
-		fmt.Println()
+		fmt.Printf("Password is: %s\n", password)
 	}
 
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	// This blob of code is related to port number
+	// TODO:
+	//		- find a better apoach?
+	var err error
+	p := newPortNum(port)
+	errCh := make(chan error)
+	fmt.Printf("Serving at http://%s:%s\r", localIp(), p)
+loop:
+	for range 10 {
+
+		go func(ec chan<- error) {
+			ec <- http.ListenAndServe(":"+p.String(), nil)
+		}(errCh)
+
+		select {
+		case err = <-errCh:
+			// ie. default port so will try to guess the next port
+			if port == "8001" {
+				p.next()
+				fmt.Printf("Serving at http://%s:%s\r", localIp(), p)
+			} else {
+				break loop
+			}
+
+		// 3 sec is more than enough time to start the server. ig
+		case <-time.Tick(3 * time.Second):
+			fmt.Println()
+			err = <-errCh // wait for ther server now
+		}
+	}
+
+	if err != nil {
 		fmt.Printf("\nwhile serving err: %v\n", err)
-		fmt.Printf("Hint: mostlikely the issue is the port is alredy in use\n")
+		fmt.Printf("Hint: most likely the issue is, the port is alredy in use\n")
 		fmt.Printf("use `--port 8002` to specefy another port\n")
 		os.Exit(1)
 	}
