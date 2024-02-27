@@ -138,8 +138,8 @@ loop:
 				break loop
 			}
 
-		// 3 sec is more than enough time to start the server. ig
-		case <-time.Tick(3 * time.Second):
+		// 2 sec is more than enough time to start the server. ig
+		case <-time.Tick(2 * time.Second):
 			fmt.Println()
 			err = <-errCh // wait for ther server now
 		}
