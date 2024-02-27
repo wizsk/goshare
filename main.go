@@ -39,14 +39,14 @@ EXAMPLES
 var (
 	rootDir, port, password string
 
-	dontAllowUploads, dontAllowZipping, showStat bool
+	dontAllowUploads, dontAllowZipping, dontShowStat bool
 )
 
 func flagParse() {
 	flag.StringVar(&rootDir, "d", ".", "the directory for sharing")
 	flag.StringVar(&port, "port", "8001", "port number")
 	flag.StringVar(&password, "p", "", "password")
-	flag.BoolVar(&showStat, "s", false, "don't show request information. aka silent")
+	flag.BoolVar(&dontShowStat, "s", false, "don't show request information. aka silent")
 	flag.BoolVar(&dontAllowUploads, "noup", false, "don't allow uploads")
 	flag.BoolVar(&dontAllowZipping, "nozip", false, "don't allow zipping")
 	v := flag.Bool("version", false, "show version number")
@@ -63,7 +63,7 @@ func flagParse() {
 	}
 
 	if port == "" {
-		log.Fatal("prot number can't be empty")
+		log.Fatal("port number can't be empty")
 	}
 
 	if rootDir == "" {

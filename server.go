@@ -60,6 +60,18 @@ func newTmplate() *template.Template {
 }
 
 func newServer() server {
+	if stat, err := os.Stat(rootDir); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf("err: %q no such directory\n", rootDir)
+		} else {
+			fmt.Printf("err newServer: while opening the file: %v\n", err)
+		}
+		os.Exit(1)
+	} else if !stat.IsDir() {
+		fmt.Printf("err newServer: %q is not a directory", rootDir)
+		os.Exit(1)
+	}
+
 	tmpDirPath, err := os.MkdirTemp(os.TempDir(), "goshare_zip_")
 	if err != nil {
 		log.Fatal(err)
@@ -78,7 +90,7 @@ func newServer() server {
 	return server{
 		tmp:      tmpDirPath,
 		root:     rootDir,
-		showStat: showStat,
+		showStat: !dontShowStat,
 		tmpl:     tr,
 	}
 }
