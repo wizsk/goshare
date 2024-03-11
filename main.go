@@ -10,8 +10,11 @@ import (
 	"time"
 )
 
-const debug = false
-const version = "4.1"
+const (
+	debug                  = false
+	version                = "4.1"
+	waitDurationForPortNum = 1500 * time.Millisecond // 1.5s
+)
 
 const usages string = `Usage of goshare:
 Share specifed directy to the localnetwork.
@@ -120,7 +123,8 @@ func main() {
 	var err error
 	p := newPortNum(port)
 	errCh := make(chan error)
-	fmt.Printf("Serving at http://%s:%s\r", localIp(), p)
+	lIP := localIp()
+	fmt.Printf("Serving at http://%s:%s\r", lIP, p)
 loop:
 	for range 10 {
 
@@ -133,13 +137,14 @@ loop:
 			// ie. default port so will try to guess the next port
 			if port == "8001" {
 				p.next()
-				fmt.Printf("Serving at http://%s:%s\r", localIp(), p)
+				fmt.Printf("Serving at http://%s:%s\r", lIP, p)
 			} else {
 				break loop
 			}
 
 		// 2 sec is more than enough time to start the server. ig
-		case <-time.Tick(2 * time.Second):
+		case <-time.Tick(waitDurationForPortNum):
+			fmt.Printf("Serving at http://%s:%s\r", lIP, p)
 			fmt.Println()
 			err = <-errCh // wait for ther server now
 		}
