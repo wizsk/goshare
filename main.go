@@ -6,14 +6,17 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
+
+	"github.com/skip2/go-qrcode"
 )
 
 const (
-	debug                  = false
-	version                = "4.1"
-	waitDurationForPortNum = 1500 * time.Millisecond // 1.5s
+	debug        = false
+	version      = "4.2"
+	authPostPath = "/authp"
 )
 
 const usages string = `Usage of goshare:
@@ -26,6 +29,8 @@ OPTIONS:
         password (default is no password)
   -s
         don't show status, be silent
+  --noqr
+        don't show qrcode
   --noup
         don't allow uploads or making directories
   --nozip
@@ -43,7 +48,7 @@ EXAMPLES
 var (
 	rootDir, port, password string
 
-	dontAllowUploads, dontAllowZipping, dontShowStat bool
+	dontAllowUploads, dontAllowZipping, dontShowStat, dontShowQr bool
 )
 
 func flagParse() {
@@ -51,6 +56,7 @@ func flagParse() {
 	flag.StringVar(&port, "port", "8001", "port number")
 	flag.StringVar(&password, "p", "", "password")
 	flag.BoolVar(&dontShowStat, "s", false, "don't show request information. aka silent")
+	flag.BoolVar(&dontShowQr, "noqr", false, "don't show qr")
 	flag.BoolVar(&dontAllowUploads, "noup", false, "don't allow uploads")
 	flag.BoolVar(&dontAllowZipping, "nozip", false, "don't allow zipping")
 	v := flag.Bool("version", false, "show version number")
@@ -91,9 +97,11 @@ func localIp() string {
 }
 
 func main() {
+	fmt.Println("Starting server")
 	flagParse()
 
 	sv := newServer()
+	sv.showStat = false
 	go sv.cleanup()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -102,6 +110,11 @@ func main() {
 
 	// don't chage the /browse/ ok it will break suff
 	http.HandleFunc("/auth", sv.auth)
+	// work aoround
+	http.HandleFunc(authPostPath, func(w http.ResponseWriter, r *http.Request) {
+		r.Method = http.MethodPost
+		sv.auth(w, r)
+	})
 	http.HandleFunc("/browse/", sv.authBrowse)
 	http.HandleFunc("/zip", sv.authZip)
 	http.HandleFunc("/downzip/", sv.authDownZip)
@@ -113,40 +126,47 @@ func main() {
 	if debug {
 		fmt.Printf("Running in debug mode version: %s\n", version)
 	}
+
+	serveMsgStr := "Serving at http://%s:%s"
 	if password != "" {
 		fmt.Printf("Password is: %s\n", password)
+		serveMsgStr += authPostPath + "?password=" + url.QueryEscape(password)
 	}
 
-	// This blob of code is related to port number
-	// TODO:
-	//		- find a better apoach?
-	var err error
 	p := newPortNum(port)
-	errCh := make(chan error)
 	lIP := localIp()
-	fmt.Printf("Serving at http://%s:%s\r", lIP, p)
+
+	c := make(chan struct{})
+	var err error
 loop:
 	for range 10 {
-
-		go func(ec chan<- error) {
-			ec <- http.ListenAndServe(":"+p.String(), nil)
-		}(errCh)
+		go func() {
+			err = http.ListenAndServe(":"+p.String(), nil)
+			c <- struct{}{}
+		}()
 
 		select {
-		case err = <-errCh:
-			// ie. default port so will try to guess the next port
-			if port == "8001" {
-				p.next()
-				fmt.Printf("Serving at http://%s:%s\r", lIP, p)
-			} else {
-				break loop
+		case <-c:
+			if err != nil {
+				continue loop
 			}
-
-		// 2 sec is more than enough time to start the server. ig
-		case <-time.Tick(waitDurationForPortNum):
-			fmt.Printf("Serving at http://%s:%s\r", lIP, p)
+		case <-time.Tick(1 * time.Second):
+			m := fmt.Sprintf(serveMsgStr, lIP, p)
+			fmt.Println(m + "\n")
+			if !dontShowQr {
+				var err error
+				q, err := qrcode.New(m, qrcode.Medium)
+				if err == nil {
+					fmt.Println(q.ToSmallString(false))
+				}
+			}
 			fmt.Println()
-			err = <-errCh // wait for ther server now
+			sv.showStat = !dontShowStat
+
+			select {
+			case <-c:
+				break loop
+			} // just wait now
 		}
 	}
 
