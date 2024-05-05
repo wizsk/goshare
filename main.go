@@ -97,8 +97,8 @@ func localIp() string {
 }
 
 func main() {
-	fmt.Println("Starting server")
 	flagParse()
+	fmt.Println("Starting server")
 
 	sv := newServer()
 	sv.showStat = false
