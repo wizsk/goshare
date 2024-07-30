@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/skip2/go-qrcode"
@@ -16,6 +17,7 @@ import (
 const (
 	debug        = false
 	version      = "4.2"
+	defaultPort  = "8001"
 	authPostPath = "/authp"
 )
 
@@ -36,7 +38,7 @@ OPTIONS:
   --nozip
         don't allow zipping
   --port <port_number>
-        port number (default "8001")
+        port number (default "` + defaultPort + `")
   --version
         show version number
 
@@ -53,7 +55,7 @@ var (
 
 func flagParse() {
 	flag.StringVar(&rootDir, "d", ".", "the directory for sharing")
-	flag.StringVar(&port, "port", "8001", "port number")
+	flag.StringVar(&port, "port", defaultPort, "port number")
 	flag.StringVar(&password, "p", "", "password")
 	flag.BoolVar(&dontShowStat, "s", false, "don't show request information. aka silent")
 	flag.BoolVar(&dontShowQr, "noqr", false, "don't show qr")
@@ -133,25 +135,35 @@ func main() {
 		serveMsgStr += authPostPath + "?password=" + url.QueryEscape(password)
 	}
 
-	p := newPortNum(port)
+	// port number
+	pn := 8001
 	lIP := localIp()
 
 	c := make(chan struct{})
 	var err error
 loop:
 	for range 10 {
+		var p string
 		go func() {
-			err = http.ListenAndServe(":"+p.String(), nil)
+			if port != defaultPort {
+				p = port
+			} else {
+				p = strconv.Itoa(pn)
+			}
+			err = http.ListenAndServe(":"+p, nil)
 			c <- struct{}{}
 		}()
 
 		select {
 		case <-c:
-			if err != nil {
-				continue loop
+			if port == "" {
+				break loop
 			}
+
+			pn++ // next port
+			continue loop
 		case <-time.Tick(1 * time.Second):
-			m := fmt.Sprintf(serveMsgStr, lIP, p)
+			m := fmt.Sprintf("http://%s:%s", lIP, p)
 			fmt.Println(m + "\n")
 			if !dontShowQr {
 				var err error
@@ -162,11 +174,8 @@ loop:
 			}
 			fmt.Println()
 			sv.showStat = !dontShowStat
-
-			select {
-			case <-c:
-				break loop
-			} // just wait now
+			err = nil
+			break loop
 		}
 	}
 
@@ -176,4 +185,6 @@ loop:
 		fmt.Printf("use `--port 8002` to specefy another port\n")
 		os.Exit(1)
 	}
+
+	select {}
 }
