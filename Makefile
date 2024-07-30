@@ -43,14 +43,14 @@ build: clean update tidyup format vet test
 	@env GOOS=linux CGO_ENABLED=0 go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
 
 	@echo "[+] Packaging the Linux version"
-	@tar -czvf $(EXEC_DIR)goshare_Linux.tar.gz -C $(EXEC_DIR) goshare > /dev/null
-	@sha256sum $(EXEC_DIR)goshare_Linux.tar.gz
+	@tar -czvf $(EXEC_DIR)goshare_Linux_x86_64.tar.gz -C $(EXEC_DIR) goshare > /dev/null
+	# @sha256sum $(EXEC_DIR)goshare_Linux.tar.gz
 
 	@echo "[+] Building the Linux ARM version"
 	@env GOARCH=arm64 GOOS=linux CGO_ENABLED=0 go build -ldflags "-s -w" -o $(EXEC_DIR)goshare
 
 	@echo "[+] Packaging the Linux ARM version"
-	@tar -czvf $(EXEC_DIR)goshare_Linux_ARM.tar.gz -C $(EXEC_DIR) goshare > /dev/null
+	@tar -czvf $(EXEC_DIR)goshare_Linux_aarch64.tar.gz -C $(EXEC_DIR) goshare > /dev/null
 	# @sha256sum $(EXEC_DIR)goshare_Linux.tar.gz
 
 	# @sha256sum $(EXEC_DIR)goshare_Linux.tar.gz > $(EXEC_DIR)goshare_Linux_sha256sum.txt
@@ -106,7 +106,7 @@ build: clean update tidyup format vet test
 
 	@echo "[+] Packaging the MacOS version"
 	@tar -czvf $(EXEC_DIR)goshare_MacOS.tar.gz -C $(EXEC_DIR) goshare > /dev/null
-	@sha256sum $(EXEC_DIR)goshare_MacOS.tar.gz
+	# @sha256sum $(EXEC_DIR)goshare_MacOS.tar.gz
 	# @sha256sum $(EXEC_DIR)goshare_MacOS.tar.gz > $(EXEC_DIR)goshare_MacOS_sha256sum.txt
 
 
@@ -119,7 +119,7 @@ build: clean update tidyup format vet test
 
 	@echo "[+] Packaging the MacOS ARM version"
 	@tar -czvf $(EXEC_DIR)goshare_MacOS_ARM.tar.gz -C $(EXEC_DIR) goshare > /dev/null
-	@sha256sum $(EXEC_DIR)goshare_MacOS_ARM.tar.gz
+	# @sha256sum $(EXEC_DIR)goshare_MacOS_ARM.tar.gz
 	# @sha256sum $(EXEC_DIR)goshare_MacOS_ARM.tar.gz > $(EXEC_DIR)goshare_MacOS_ARM_sha256sum.txt
 
 	@echo "[+] Removing the MacOS ARM binary"
@@ -131,7 +131,7 @@ build: clean update tidyup format vet test
 
 	@echo "[+] Packaging the FreeBSD AMD64 version"
 	@tar -czvf $(EXEC_DIR)goshare_FreeBSD.tar.gz -C $(EXEC_DIR) goshare > /dev/null
-	@sha256sum $(EXEC_DIR)goshare_FreeBSD.tar.gz
+	# @sha256sum $(EXEC_DIR)goshare_FreeBSD.tar.gz
 	# @sha256sum $(EXEC_DIR)goshare_FreeBSD.tar.gz > $(EXEC_DIR)goshare_FreeBSD_sha256sum.txt
 
 	@echo "[+] Removing the FreeBSD binary"

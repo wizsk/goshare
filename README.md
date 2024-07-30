@@ -19,8 +19,8 @@ It's used for quickly share files from one device to another in the local networ
 ### complile
 
 ```bash
-go install github.com/wizsk/goshare@latest
-goshare --help
+go install -ldflags "-s -w" github.com/wizsk/goshare@latest
+goshare --help # make sure go bin is your path!
 ```
 
 ### or see releases
@@ -28,8 +28,8 @@ goshare --help
 ```bash
 # linux
 cd /tmp
-wget 'https://github.com/wizsk/goshare/releases/latest/download/goshare_Linux.tar.gz'
-tar xf 'goshare_Linux.tar.gz'
+wget 'https://github.com/wizsk/goshare/releases/latest/download/goshare_Linux_$(uname -m).tar.gz'
+tar xf 'goshare_Linux_$(uname -m).tar.gz'
 sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
 ```
 
