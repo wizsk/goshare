@@ -28,8 +28,8 @@ goshare --help # make sure go bin is your path!
 ```bash
 # linux
 cd /tmp
-wget 'https://github.com/wizsk/goshare/releases/latest/download/goshare_Linux_$(uname -m).tar.gz'
-tar xf 'goshare_Linux_$(uname -m).tar.gz'
+wget "https://github.com/wizsk/goshare/releases/latest/download/goshare_Linux_$(uname -m).tar.gz"
+tar xf "goshare_Linux_$(uname -m).tar.gz"
 sudo mv goshare /usr/local/bin/ # or mv goshare ~/.local/bin/
 ```
 
