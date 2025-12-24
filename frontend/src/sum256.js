@@ -1,10 +1,13 @@
 // from chatGPT
 
 
+function shaOk() {
+  return crypto && crypto.subtle && crypto.subtle.digest;
+}
+
 /**
- * 
- * @param {ArrayBuffer} buffer 
- * @returns {string}
+ *
+ * @param {ArrayBuffer} buffer
  */
 async function sha256(buffer) {
     // Calculate the hash using the Web Crypto API
@@ -16,9 +19,8 @@ async function sha256(buffer) {
 }
 
 /**
- * 
- * @param {File} file 
- * @returns
+ *
+ * @param {File} file
  */
 function readFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
@@ -34,11 +36,10 @@ function readFileAsArrayBuffer(file) {
     });
 }
 
-/** 
+/**
  * calculates checksum of the given File
- * 
- * @param {File} file 
- * @returns {string}
+ *
+ * @param {File} file
  */
 async function calculateHashofFile(file) {
     if (!file) {

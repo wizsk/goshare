@@ -15,7 +15,7 @@ import (
 
 const (
 	debug        = false
-	version      = "4.3"
+	version      = "4.4"
 	defaultPortS = 8080
 	defaultPortE = 8099
 	authPostPath = "/authp"
@@ -180,6 +180,10 @@ func main() {
 		m += "?password=" + url.QueryEscape(password)
 	}
 
+	if !noHttps {
+		fmt.Println("INFO: as the certificate is self signed please ignore browser warning by clicking on advaced and continue")
+		fmt.Println("INFO: do not forget to use https://")
+	}
 	fmt.Printf("\n%s\n\n", m)
 	if !dontShowQr {
 		var err error
