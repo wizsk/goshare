@@ -5,7 +5,7 @@ const items = document.querySelectorAll(`[${dataZipSelect}]`);
 
 
 /**
- * zipOptions is the html btn for 
+ * zipOptions is the html btn for
  * @type {HTMLElement}
  */
 const zipOptions = document.getElementById("zip-options");
@@ -134,7 +134,7 @@ function downloadAsZip() {
 
     sse.addEventListener("onProgress", async (e) => {
         const data = JSON.parse(e.data);
-        console.log("sse onPgoress", e.data.status);
+        console.log("sse onPgoress", data.status);
         zipDownProgress.innerText = `Zipping: ${data.status}%`;
     });
 

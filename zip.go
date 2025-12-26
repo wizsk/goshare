@@ -12,7 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"sort"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -55,9 +55,7 @@ func (z *zipHash) read(k string) (string, bool) {
 // if there are multiple files and then this function takes the name
 // hashes the combiend names
 func zipFilesNameHash(val ...string) string {
-	sort.Slice(val, func(i, j int) bool {
-		return val[i] < val[j]
-	})
+	slices.Sort(val)
 
 	reqFileNames := new(bytes.Buffer)
 	for _, v := range val {
@@ -165,7 +163,7 @@ func (s *server) zip(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Bad actor '..'", http.StatusBadRequest)
 			return
 		}
-		res = append(res, filepath.Join(s.root, v))
+		res = append(res, filepath.Join(cwd, v))
 	}
 
 	callback := func(p int) error {
