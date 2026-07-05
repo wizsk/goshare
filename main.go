@@ -15,7 +15,7 @@ import (
 
 const (
 	debug        = false
-	version      = "4.4"
+	version      = "4.5"
 	defaultPortS = 8080
 	defaultPortE = 8099
 	authPostPath = "/authp"
@@ -42,8 +42,7 @@ OPTIONS:
   --http
         don't use https
   --allow-ips <ip_addresses>
-        only allow this specific ip addresses to access the server 
-        if never set, every ip is allowed (default behavior)
+        only allow this specific ip addresses to access the server. If never set, every ip is allowed (default behavior)
   --version
         show version number
 
