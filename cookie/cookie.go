@@ -38,41 +38,40 @@ func CreateUUID() (string, error) {
 }
 
 func WriteCookie(w http.ResponseWriter) error {
-	// ignoring err
-	u, err := CreateUUID()
-	if err != nil {
-		return err
-	}
+	var u string
+	var err error
 
+	// Cleaned up loop: generates and checks unique UUIDs efficiently
 	for {
-		if _, ok := cUsers[u]; !ok {
-			break
-		}
 		u, err = CreateUUID()
 		if err != nil {
 			return err
 		}
+		cMutes.Lock()
+		_, ok := cUsers[u]
+		cMutes.Unlock()
+		if !ok {
+			break
+		}
 	}
-
 	deadline := 14 * 24 * 60 * 60 // in seconds
 	c := http.Cookie{
 		Name:     CookieName,
-		Value:    u,
 		Path:     "/",
+		Value:    base64.URLEncoding.EncodeToString([]byte(u)),
 		MaxAge:   deadline,
 		Expires:  time.Now().Add(time.Second * time.Duration(deadline)),
 		SameSite: http.SameSiteLaxMode,
 	}
-
-	c.Value = base64.URLEncoding.EncodeToString([]byte(c.Value))
 
 	if len(c.String()) > 4096 {
 		return ErrValueTooLong
 	}
 
 	http.SetCookie(w, &c)
+
 	cMutes.Lock()
-	cUsers[u] = true
+	cUsers[u] = true // Stores the raw UUID internally matching your loop check
 	cMutes.Unlock()
 
 	return nil
@@ -87,8 +86,13 @@ func ReadCookie(r *http.Request, name string) error {
 	if err != nil {
 		return ErrInvalidValue
 	}
-	if cUsers[string(value)] {
-		return nil
+	cMutes.Lock()
+	exists := cUsers[string(value)] // Looks up the decoded raw UUID
+	cMutes.Unlock()
+
+	if !exists {
+		return ErrInvalidValue
 	}
-	return ErrInvalidValue
+
+	return nil
 }

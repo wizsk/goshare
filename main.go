@@ -41,16 +41,22 @@ OPTIONS:
         port number (default range "` + fmt.Sprintf("%d-%d", defaultPortS, defaultPortE) + `")
   --http
         don't use https
+  --allow-ips <ip_addresses>
+        only allow this specific ip addresses to access the server 
+        if never set, every ip is allowed (default behavior)
   --version
         show version number
 
 EXAMPLES
        goshare -d "fo/bar/bazz" -p "777"
            share "fo/bar/bazz" directory. password would be "777"
+
+       goshare --allow-ips "192.168.1.5, 192.168.1.10"
+           only requests coming from 192.168.1.5 or 192.168.1.10 will be served
 `
 
 var (
-	rootDir, port, password string
+	rootDir, port, password, allowedIPs string
 
 	dontAllowUploads, dontAllowZipping, dontShowStat, dontShowQr, noHttps bool
 )
@@ -64,6 +70,7 @@ func flagParse() {
 	flag.BoolVar(&dontAllowUploads, "noup", false, "don't allow uploads")
 	flag.BoolVar(&dontAllowZipping, "nozip", false, "don't allow zipping")
 	flag.BoolVar(&noHttps, "http", false, "use https")
+	flag.StringVar(&allowedIPs, "allow-ips", "", "only allow this ip addresses")
 	v := flag.Bool("version", false, "show version number")
 	flag.Usage = func() { fmt.Print(usages) }
 	flag.Parse()
@@ -104,25 +111,25 @@ func main() {
 	sv := newServer()
 	sv.showStat = false
 	go sv.cleanup()
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	populateIpListSlice(allowedIPs)
+	http.HandleFunc("/", restrictIP(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
-	})
+	}))
 
 	// don't chage the /browse/ ok it will break suff
-	http.HandleFunc("/auth", sv.auth)
+	http.HandleFunc("/auth", restrictIP(sv.auth))
 	// work aoround
-	http.HandleFunc(authPostPath, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(authPostPath, restrictIP(func(w http.ResponseWriter, r *http.Request) {
 		r.Method = http.MethodPost
 		sv.auth(w, r)
-	})
-	http.HandleFunc("/browse/", sv.authBrowse)
-	http.HandleFunc("/zip", sv.authZip)
-	http.HandleFunc("/downzip/", sv.authDownZip)
-	http.HandleFunc("/upload", sv.authUpload)
-	http.HandleFunc("/mkdir", sv.authMkdir)
+	}))
+	http.HandleFunc("/browse/", restrictIP(sv.authBrowse))
+	http.HandleFunc("/zip", restrictIP(sv.authZip))
+	http.HandleFunc("/downzip/", restrictIP(sv.authDownZip))
+	http.HandleFunc("/upload", restrictIP(sv.authUpload))
+	http.HandleFunc("/mkdir", restrictIP(sv.authMkdir))
 
-	http.HandleFunc("/static/", sv.authServeStaticFilese)
+	http.HandleFunc("/static/", restrictIP(sv.authServeStaticFilese))
 
 	if debug {
 		fmt.Printf("Running in debug mode version: %s\n", version)
