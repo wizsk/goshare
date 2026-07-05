@@ -110,7 +110,9 @@ func main() {
 	sv := newServer()
 	sv.showStat = false
 	go sv.cleanup()
+
 	populateIpListSlice(allowedIPs)
+
 	http.HandleFunc("/", restrictIP(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/browse/", http.StatusMovedPermanently)
 	}))

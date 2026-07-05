@@ -16,28 +16,34 @@ import (
 var allowedIPSlice []string
 
 func populateIpListSlice(ipListString string) {
-
 	if ipListString == "" {
 		return
 	}
-	if strings.ContainsAny(ipListString, ",") {
 
-		ipaddrs := strings.Split(ipListString, ",")
-
-		for i, v := range ipaddrs {
+	if strings.Contains(ipListString, ",") {
+		for _, v := range strings.Split(ipListString, ",") {
 			ip := strings.TrimSpace(v)
-			if net.ParseIP(ip) == nil {
-				log.Fatalf("--allow-ip: %q is not a valid ip address", ip)
+
+			if ip == "" {
+				continue
 			}
+			cheackIP(ip)
+
 			allowedIPSlice = append(allowedIPSlice, ip)
-			if i+1 == len(ipaddrs) {
-				allowedIPSlice = append(allowedIPSlice, "127.0.0.1")
-				return
-			}
 		}
 	}
+
+	if  ipListString != "" && len(allowedIPSlice) == 0 {
+		cheackIP(ipListString)
+		allowedIPSlice = append(allowedIPSlice, strings.TrimSpace(ipListString))
+	}
 	allowedIPSlice = append(allowedIPSlice, "127.0.0.1")
-	allowedIPSlice = append(allowedIPSlice, strings.TrimSpace(ipListString))
+}
+
+func cheackIP(ip string) {
+	if net.ParseIP(ip) == nil {
+		log.Fatalf("--allow-ip: %q is not a valid ip address", ip)
+	}
 }
 
 // remoteIP strips the port off r.RemoteAddr, returning just the IP.
