@@ -35,7 +35,7 @@ func populateIpListSlice(ipListString string) {
 		}
 	}
 
-	if  ipListString != "" && len(allowedIPSlice) == 0 {
+	if ipListString != "" && len(allowedIPSlice) == 0 {
 		cheackIP(ipListString)
 		allowedIPSlice = append(allowedIPSlice, strings.TrimSpace(ipListString))
 	}
