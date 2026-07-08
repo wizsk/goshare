@@ -16,6 +16,8 @@ import (
 var allowedIPSlice []string
 
 func populateIpListSlice(ipListString string) {
+	ipListString = strings.TrimSpace(ipListString)
+
 	if ipListString == "" {
 		return
 	}
