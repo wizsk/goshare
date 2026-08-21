@@ -15,7 +15,7 @@ import (
 
 const (
 	debug        = false
-	version      = "4.5"
+	version      = "4.6"
 	defaultPortS = 8080
 	defaultPortE = 8099
 	authPostPath = "/authp"
