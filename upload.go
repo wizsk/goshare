@@ -34,12 +34,15 @@ func (s *server) upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cwd, err := url.QueryUnescape(r.FormValue("cwd"))
-	if cwd == "" || err != nil {
+	cwd := r.FormValue("cwd")
+
+	if imvalidCWD(cwd) {
 		http.Error(w, "no or bad cwd provided", http.StatusBadRequest)
 		return
 	}
+
 	cwd = filepath.Join(s.root, strings.TrimPrefix(cwd, "/browse"))
+
 	if stat, err := os.Stat(cwd); err != nil || !stat.IsDir() {
 		http.Error(w, "bad file path", http.StatusBadRequest)
 		return
@@ -152,15 +155,10 @@ func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cwd, err := url.QueryUnescape(r.FormValue("cwd"))
-	if err != nil {
-		http.Error(w, "bad cwd provided", http.StatusBadRequest)
-		return
-	}
+	cwd := r.FormValue("cwd")
 
-	cwd = strings.TrimSpace(cwd)
-	if cwd == "" {
-		http.Error(w, "cwd not provided", http.StatusBadRequest)
+	if imvalidCWD(cwd) {
+		http.Error(w, "no or bad cwd provided", http.StatusBadRequest)
 		return
 	}
 
@@ -184,7 +182,7 @@ func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = os.Mkdir(filepath.Join(parent, dirName), permDir)
+	err := os.Mkdir(filepath.Join(parent, dirName), permDir)
 	if err != nil && !os.IsExist(err) {
 		http.Error(w, fmt.Sprintf("cludld not create %q", dirName), http.StatusBadRequest)
 		return
@@ -192,4 +190,10 @@ func (s *server) mkdir(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("file creaded successfully"))
+}
+
+func imvalidCWD(cwd string) bool {
+	return cwd == "" || !strings.HasPrefix(cwd, "/browse") ||
+		strings.HasSuffix(cwd, "/..") ||
+		strings.Contains(cwd, "/../")
 }

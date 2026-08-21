@@ -21,19 +21,22 @@ document.addEventListener("DOMContentLoaded", () => {
     fileCheckSum.checked = false;
     fileCheckSumDiv.classList.add("hidden");
   }
+  fileInput.value = '';
 });
 
 let isUploading = false;
 
-fileInput.addEventListener("change", () => {
+fileInput.onchange = () => {
   if (fileInput.files.length > 0) {
     const nm =
       fileInput.files.length > 1
         ? `${fileInput.files.length} files`
         : `${fileInput.files[0].name}`;
     fileInputLabel.innerText = "Selected: " + nm;
+  } else {
+    fileInputLabel.textContent = 'Select some files';
   }
-});
+};
 
 /** current working direcotry */
 const cwd = getCWD();
@@ -74,8 +77,9 @@ async function uploadFiles() {
     const uuid = generateUUID();
     try {
       await upload(file, uuid);
-    } catch {
-      fileProgress.innerText = `Could not upload file${fileInput.files.length > 1 ? "s" : ""}`;
+    } catch (err) {
+      console.error(`error: ${err}`);
+      fileProgress.innerHTML = `<span style="color: red;">Could not upload file${fileInput.files.length > 1 ? "s" : ""}</span>`;
       isUploading = false;
       return;
     }
@@ -83,6 +87,8 @@ async function uploadFiles() {
   }
   fileProgress.innerHTML = `Uploading finished <button class="px-4 py-2 rounded bg-blue-100 hover:bg-blue-200 ease-in duration-100" onclick="window.location.href = cwd">Go-to directoy</button>`;
   isUploading = false;
+  fileInput.value = '';
+  fileInput?.onchange();
 }
 
 /**
@@ -118,13 +124,14 @@ async function upload(file, uuid) {
     if (data.size === 0) break;
 
     try {
-      await fetch(
+      const res = await fetch(
         `${UPLOAD_URL}?cwd=${encodeURIComponent(cwd)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=${offset}`,
         {
           method: "PATCH",
           body: data,
         },
       );
+      if (!res.ok) throw 'Result not ok!';
     } catch (err) {
       console.error("while uploading file", file.name, err);
       fileProgress.innerText = err;
@@ -145,12 +152,14 @@ async function upload(file, uuid) {
       fileProgress.innerHTML = `current: cheching 256sum ${file.name}`;
       sum = await calculateHashofFile(file);
     }
-    await fetch(
+    const res = await fetch(
       `${UPLOAD_URL}?cwd=${encodeURIComponent(cwd)}&name=${encodeURIComponent(file.name)}&uuid=${uuid}&size=${file.size}&offset=${file.size}&sum=${sum}`,
       {
         method: "PUT",
       },
     );
+
+    if (!res.ok) throw 'Result not ok!';
   } catch (err) {
     console.error("while uploading file", file.name, err);
     fileProgress.innerText = err;
